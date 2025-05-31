@@ -1,0 +1,1 @@
+export const API_URL = "https://eep.onrender.com/api/v1/eep";
