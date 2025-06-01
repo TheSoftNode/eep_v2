@@ -203,7 +203,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 },
                 {
                     name: "Mentor availability",
-                    href: "/admin/dashboard/mentors",
+                    href: "/admin/dashboard/mentor-availablity",
                     icon: <UserMinus className="h-4 w-4" />
                 },
                 {
