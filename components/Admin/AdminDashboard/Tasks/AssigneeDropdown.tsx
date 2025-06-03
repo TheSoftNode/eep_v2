@@ -23,6 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { FirebaseDate } from "@/Redux/types/Projects";
 
 // Updated interface based on new API structure
 interface ProjectMember {
@@ -46,7 +47,7 @@ interface ProjectMember {
         taskCount: number;
         completedTaskCount: number;
         totalHours: number;
-        lastActiveAt: string | Date;
+        lastActiveAt: FirebaseDate;
     };
 }
 
@@ -126,7 +127,7 @@ export default function AssigneeDropdown({
     placeholder = 'Unassigned',
     className
 }: AssigneeDropdownProps) {
-    const currentMember = members.find(m => m.id === currentAssignee);
+    const currentMember = members.find(m => m.id === currentAssignee || m.userId === currentAssignee);
 
     // Group members by role for better organization
     const groupedMembers = members.reduce((acc, member) => {

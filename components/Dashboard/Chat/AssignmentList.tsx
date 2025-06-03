@@ -94,57 +94,57 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
         };
     };
 
-    // Get status badge for assignment
+    // Get status badge for assignment with dark mode support
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
                 return {
                     text: 'Pending',
-                    className: "bg-amber-50 text-amber-700 border-amber-200"
+                    className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/50"
                 };
             case 'submitted':
                 return {
                     text: 'Submitted',
-                    className: "bg-blue-50 text-blue-700 border-blue-200"
+                    className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50"
                 };
             case 'reviewed':
                 return {
                     text: 'Reviewed',
-                    className: "bg-green-50 text-green-700 border-green-200"
+                    className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50"
                 };
             case 'late':
                 return {
                     text: 'Late',
-                    className: "bg-orange-50 text-orange-700 border-orange-200"
+                    className: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/50"
                 };
             case 'missed':
                 return {
                     text: 'Missed',
-                    className: "bg-red-50 text-red-700 border-red-200"
+                    className: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/50"
                 };
             default:
                 return {
                     text: status,
-                    className: "bg-gray-50 text-gray-700 border-gray-200"
+                    className: "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-700/50"
                 };
         }
     };
 
-    // Get status icon for assignment
+    // Get status icon for assignment with dark mode colors
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'pending':
-                return <Clock className="h-4 w-4 text-amber-600" />;
+                return <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
             case 'submitted':
-                return <FileCheck className="h-4 w-4 text-blue-600" />;
+                return <FileCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
             case 'reviewed':
-                return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+                return <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
             case 'late':
-                return <AlertTriangle className="h-4 w-4 text-orange-600" />;
+                return <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400" />;
             case 'missed':
-                return <AlertTriangle className="h-4 w-4 text-red-600" />;
+                return <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />;
             default:
-                return <FileText className="h-4 w-4 text-gray-600" />;
+                return <FileText className="h-4 w-4 text-slate-600 dark:text-slate-400" />;
         }
     };
 
@@ -177,15 +177,15 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
         }
     };
 
-    // Get button color class
+    // Get button color class with dark mode support
     const getButtonClass = (status: string) => {
         switch (status) {
             case 'pending':
-                return 'bg-purple-600 hover:bg-purple-700';
+                return 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border-0';
             case 'late':
-                return 'bg-orange-600 hover:bg-orange-700';
+                return 'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white shadow-lg shadow-orange-500/20 border-0';
             default:
-                return '';
+                return 'dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50 backdrop-blur-sm';
         }
     };
 
@@ -215,17 +215,17 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
         }
     };
 
-    // Get progress indicator color
+    // Get progress indicator color with dark mode support
     const getProgressClassName = (status: string) => {
         switch (status) {
             case 'reviewed':
-                return "bg-green-600";
+                return "bg-emerald-600 dark:bg-emerald-500";
             case 'submitted':
-                return "bg-blue-600";
+                return "bg-blue-600 dark:bg-blue-500";
             case 'late':
-                return "bg-orange-600";
+                return "bg-orange-600 dark:bg-orange-500";
             default:
-                return "bg-purple-600";
+                return "bg-indigo-600 dark:bg-indigo-500";
         }
     };
 
@@ -238,11 +238,14 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
                 const progressColor = getProgressClassName(assignment.status);
 
                 return (
-                    <Card key={assignment.id} className="overflow-hidden border-purple-100 transition-all hover:shadow-md">
+                    <Card
+                        key={assignment.id}
+                        className="overflow-hidden border-indigo-100 dark:border-slate-700/50 dark:bg-slate-800/50 backdrop-blur-sm transition-all hover:shadow-lg dark:hover:shadow-indigo-500/10 shadow-sm"
+                    >
                         <CardHeader className="p-4 pb-2">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
-                                    <CardTitle className="text-base line-clamp-1">
+                                    <CardTitle className="text-base line-clamp-1 dark:text-white">
                                         {assignment.title}
                                     </CardTitle>
                                     <div className="flex items-center text-sm">
@@ -263,12 +266,12 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <span className="text-xs text-gray-500 flex items-center">
+                                                        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
                                                             <BookOpen className="h-3.5 w-3.5 mr-1" />
                                                             {assignment.points} points
                                                         </span>
                                                     </TooltipTrigger>
-                                                    <TooltipContent>
+                                                    <TooltipContent className="dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
                                                         <p>Assignment worth {assignment.points} points</p>
                                                     </TooltipContent>
                                                 </Tooltip>
@@ -276,7 +279,7 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
                                         )}
 
                                         {assignment.grade !== undefined && (
-                                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-sm">
+                                            <span className="ml-2 text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded-sm">
                                                 {assignment.grade}%
                                             </span>
                                         )}
@@ -286,7 +289,7 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
                         </CardHeader>
 
                         <CardContent className="p-4 pt-2">
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
                                 {assignment.description}
                             </p>
 
@@ -294,32 +297,34 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
                                 <div className="flex items-center justify-between">
                                     <div className={cn(
                                         "flex items-center text-sm",
-                                        dueDate.isUrgent ? "text-amber-600 font-medium" : "text-gray-500"
+                                        dueDate.isUrgent
+                                            ? "text-amber-600 dark:text-amber-400 font-medium"
+                                            : "text-slate-500 dark:text-slate-400"
                                     )}>
                                         <Calendar className="h-4 w-4 mr-1" />
                                         {dueDate.text}
                                     </div>
 
                                     {progress > 0 && (
-                                        <span className="text-xs text-gray-500">
+                                        <span className="text-xs text-slate-500 dark:text-slate-400">
                                             {Math.round(progress)}% complete
                                         </span>
                                     )}
                                 </div>
 
-                                {/* Custom progress bar since indicatorClassName is not supported */}
-                                <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                                {/* Custom progress bar with dark mode support */}
+                                <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-700/50 rounded-full overflow-hidden">
                                     <div
-                                        className={cn("h-full rounded-full", progressColor)}
+                                        className={cn("h-full rounded-full transition-all duration-300", progressColor)}
                                         style={{ width: `${progress}%` }}
                                     />
                                 </div>
                             </div>
                         </CardContent>
 
-                        <CardFooter className="p-4 pt-0 flex justify-between items-center">
+                        <CardFooter className="p-4 pt-0 flex justify-between items-center border-t dark:border-slate-700/50">
                             {assignment.status === 'reviewed' && assignment.feedback && (
-                                <div className="text-xs text-gray-500 overflow-hidden line-clamp-1 mr-2">
+                                <div className="text-xs text-slate-500 dark:text-slate-400 overflow-hidden line-clamp-1 mr-2">
                                     <span className="font-medium">Feedback:</span> {assignment.feedback}
                                 </div>
                             )}
@@ -346,15 +351,19 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
             })}
 
             {assignments.length === 0 && (
-                <div className="p-8 text-center border-2 border-dashed border-gray-200 rounded-lg">
-                    <div className="w-14 h-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto mb-3">
+                <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-slate-700/50 rounded-lg dark:bg-slate-800/30 backdrop-blur-sm">
+                    <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
                         <FileText className="h-6 w-6" />
                     </div>
-                    <h3 className="font-medium text-lg text-gray-800 mb-1">No assignments available</h3>
-                    <p className="text-gray-500 max-w-sm mx-auto">
+                    <h3 className="font-medium text-lg text-slate-800 dark:text-white mb-1">No assignments available</h3>
+                    <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                         You don't have any active assignments at the moment. Check back later or contact your mentor.
                     </p>
-                    <Button variant="outline" className="mt-4" asChild>
+                    <Button
+                        variant="outline"
+                        className="mt-4 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50 backdrop-blur-sm"
+                        asChild
+                    >
                         <Link href="/dashboard/projects">
                             View Your Projects
                         </Link>
@@ -366,5 +375,3 @@ export const AssignmentList: React.FC<AssignmentListProps> = ({ assignments }) =
 };
 
 export default AssignmentList;
-
-

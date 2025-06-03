@@ -13,7 +13,6 @@ import Navbar from "@/components/Layout/Navbar/Navbar";
 export default function Home() {
   return (
     <>
-      <Navbar />
 
       <HeroSection />
       <EEPFeatures />
@@ -25,7 +24,6 @@ export default function Home() {
       <TestimonialsSection />
       <DynamicCtaSection />
 
-      <Footer />
     </>
   );
 }

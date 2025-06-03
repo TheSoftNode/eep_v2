@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { firebaseFormatDate } from "@/components/utils/dateUtils";
 
 interface LearningPathInfoCardProps {
     learningPath: {
@@ -97,17 +98,7 @@ export const LearningPathInfoCard: React.FC<LearningPathInfoCardProps> = ({
         (learningPath.prerequisites?.projects?.length || 0) +
         (learningPath.prerequisites?.courses?.length || 0);
 
-    const formatDate = (date: any) => {
-        if (!date) return 'N/A';
-        try {
-            if (date.seconds) {
-                return new Date(date.seconds * 1000).toLocaleDateString();
-            }
-            return new Date(date).toLocaleDateString();
-        } catch {
-            return 'N/A';
-        }
-    };
+
 
     return (
         <motion.div
@@ -157,7 +148,7 @@ export const LearningPathInfoCard: React.FC<LearningPathInfoCardProps> = ({
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Last Updated</span>
                             <span className="text-sm text-slate-900 dark:text-white">
-                                {formatDate(learningPath.updatedAt)}
+                                {firebaseFormatDate(learningPath.updatedAt)}
                             </span>
                         </div>
                     </div>

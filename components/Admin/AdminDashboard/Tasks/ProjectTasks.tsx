@@ -1,34 +1,17 @@
+
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import {
     PlusCircle,
-    CalendarCheck,
-    FileText,
     Search,
-    MoreVertical,
-    Grid3X3,
-    List,
     SortAsc,
-    Clock,
-    AlertCircle,
-    TrendingUp,
-
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
-    DropdownMenuLabel
-} from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -46,6 +29,7 @@ import { Project, ProjectArea } from '@/Redux/types/Projects';
 // Import APIs
 import {
     TaskQueryParams,
+    useAssignTaskMutation,
     useDeleteTaskMutation,
     useGetTasksQuery,
     useUpdateTaskMutation,
@@ -60,79 +44,20 @@ import TaskDetails from './TaskDetails';
 import { firebaseFormatDate } from '@/components/utils/dateUtils';
 import { useGetProjectMembersQuery } from '@/Redux/apiSlices/Projects/projectsApiSlice';
 
-// Status configuration with elegant design
+// Simple status configuration like the old design but with dark mode
 const statusTabs: {
     value: TaskStatus | 'all';
     label: string;
-    icon: React.ComponentType<{ className?: string }>;
     colorClass: string;
-    bgClass: string;
-    borderClass: string;
 }[] = [
-        {
-            value: 'all',
-            label: 'All Tasks',
-            icon: Grid3X3,
-            colorClass: 'text-slate-700 dark:text-slate-300',
-            bgClass: 'bg-slate-100 dark:bg-slate-800',
-            borderClass: 'border-slate-200 dark:border-slate-700'
-        },
-        {
-            value: 'todo',
-            label: 'To Do',
-            icon: List,
-            colorClass: 'text-slate-600 dark:text-slate-400',
-            bgClass: 'bg-slate-50 dark:bg-slate-800/50',
-            borderClass: 'border-slate-200 dark:border-slate-700'
-        },
-        {
-            value: 'upcoming',
-            label: 'Upcoming',
-            icon: Clock,
-            colorClass: 'text-indigo-700 dark:text-indigo-400',
-            bgClass: 'bg-indigo-50 dark:bg-indigo-900/20',
-            borderClass: 'border-indigo-200 dark:border-indigo-800'
-        },
-        {
-            value: 'in-progress',
-            label: 'In Progress',
-            icon: TrendingUp,
-            colorClass: 'text-blue-700 dark:text-blue-400',
-            bgClass: 'bg-blue-50 dark:bg-blue-900/20',
-            borderClass: 'border-blue-200 dark:border-blue-800'
-        },
-        {
-            value: 'submitted',
-            label: 'Submitted',
-            icon: FileText,
-            colorClass: 'text-yellow-700 dark:text-yellow-400',
-            bgClass: 'bg-yellow-50 dark:bg-yellow-900/20',
-            borderClass: 'border-yellow-200 dark:border-yellow-800'
-        },
-        {
-            value: 'completed',
-            label: 'Completed',
-            icon: CalendarCheck,
-            colorClass: 'text-emerald-700 dark:text-emerald-400',
-            bgClass: 'bg-emerald-50 dark:bg-emerald-900/20',
-            borderClass: 'border-emerald-200 dark:border-emerald-800'
-        },
-        {
-            value: 'blocked',
-            label: 'Blocked',
-            icon: AlertCircle,
-            colorClass: 'text-red-700 dark:text-red-400',
-            bgClass: 'bg-red-50 dark:bg-red-900/20',
-            borderClass: 'border-red-200 dark:border-red-800'
-        },
-        {
-            value: 'overdue',
-            label: 'Overdue',
-            icon: AlertCircle,
-            colorClass: 'text-orange-700 dark:text-orange-400',
-            bgClass: 'bg-orange-50 dark:bg-orange-900/20',
-            borderClass: 'border-orange-200 dark:border-orange-800'
-        },
+        { value: 'all', label: 'All', colorClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+        { value: 'todo', label: 'To Do', colorClass: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' },
+        { value: 'upcoming', label: 'Upcoming', colorClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+        { value: 'in-progress', label: 'In Progress', colorClass: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+        { value: 'submitted', label: 'Submitted', colorClass: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
+        { value: 'completed', label: 'Completed', colorClass: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+        { value: 'blocked', label: 'Blocked', colorClass: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
+        { value: 'overdue', label: 'Overdue', colorClass: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
     ];
 
 interface ProjectTasksProps {
@@ -152,7 +77,7 @@ export default function ProjectTasks({
 }: ProjectTasksProps) {
     const { toast } = useToast();
 
-    // State management
+    // State management - keep it simple like the old version
     const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<UnifiedTask | null>(null);
     const [selectedTask, setSelectedTask] = useState<UnifiedTask | null>(null);
@@ -160,7 +85,6 @@ export default function ProjectTasks({
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<string>('dueDate');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [viewMode, setViewMode] = useState<'compact' | 'detailed' | 'card'>('detailed');
 
     // API Query Parameters for tasks
     const queryParams: TaskQueryParams = useMemo(() => ({
@@ -171,7 +95,7 @@ export default function ProjectTasks({
         sortBy,
         sortOrder,
         page: 1,
-        limit: 100, // Get all tasks for better UX
+        limit: 100,
     }), [project.id, projectArea?.id, activeTab, searchQuery, sortBy, sortOrder]);
 
     // Fetch tasks using the unified API
@@ -193,6 +117,7 @@ export default function ProjectTasks({
     const [updateTask] = useUpdateTaskMutation();
     const [updateTaskStatus] = useUpdateTaskStatusMutation();
     const [deleteTask] = useDeleteTaskMutation();
+    const [assignTask] = useAssignTaskMutation();
 
     // Extract data from API responses
     const allTasks = tasksResponse?.data || [];
@@ -200,45 +125,32 @@ export default function ProjectTasks({
     const projectMembers = membersResponse?.data || [];
     const isLoading = isLoadingTasks || isLoadingMembers;
 
-    // Group tasks by status for tab counts
-    const tasksGroupedByStatus = useMemo(() => {
-        const groups: Record<string, UnifiedTask[]> = {
+    // Group tasks by status for tab counts - simple like old version
+    const groupTasksByStatus = () => {
+        const result: Record<string, UnifiedTask[]> = {
             'all': allTasks
         };
 
         // Initialize empty arrays for each status
         statusTabs.forEach(tab => {
             if (tab.value !== 'all') {
-                groups[tab.value] = [];
+                result[tab.value] = [];
             }
         });
 
-        // Group tasks by status
+        // Populate with tasks
         allTasks.forEach(task => {
-            if (task.status && groups[task.status]) {
-                groups[task.status].push(task);
+            if (task.status && result[task.status]) {
+                result[task.status].push(task);
             }
         });
 
-        return groups;
-    }, [allTasks]);
+        return result;
+    };
 
-    // Task statistics for the header
-    const taskStats = useMemo(() => {
-        const stats = {
-            total: allTasks.length,
-            completed: allTasks.filter(t => t.status === 'completed').length,
-            inProgress: allTasks.filter(t => t.status === 'in-progress').length,
-            overdue: allTasks.filter(t => t.status === 'overdue').length,
-            blocked: allTasks.filter(t => t.status === 'blocked').length,
-        };
-        return {
-            ...stats,
-            completionRate: stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0
-        };
-    }, [allTasks]);
+    const tasksGroupedByStatus = groupTasksByStatus();
 
-    // Event Handlers
+    // Event Handlers - keep the enhanced functionality but simpler error handling
     const handleStatusChange = async (taskId: string, newStatus: TaskStatus): Promise<void> => {
         try {
             await updateTaskStatus({
@@ -255,7 +167,7 @@ export default function ProjectTasks({
             console.error('Error updating task status:', error);
             toast({
                 title: "Failed to Update Task",
-                description: error?.data?.message || "Failed to update task status.",
+                description: "Failed to update task status.",
                 variant: "destructive",
             });
             throw error;
@@ -270,6 +182,8 @@ export default function ProjectTasks({
                 priority: newPriority
             }).unwrap();
 
+            console.log(newPriority)
+
             toast({
                 title: "Task Updated",
                 description: "Task priority has been updated successfully.",
@@ -278,7 +192,7 @@ export default function ProjectTasks({
             console.error('Error updating task priority:', error);
             toast({
                 title: "Failed to Update Task",
-                description: error?.data?.message || "Failed to update task priority.",
+                description: "Failed to update task priority.",
                 variant: "destructive",
             });
         }
@@ -286,11 +200,15 @@ export default function ProjectTasks({
 
     const handleAssigneeChange = async (taskId: string, assigneeId: string | null) => {
         try {
-            await updateTask({
+
+            console.log(assigneeId)
+
+            await assignTask({
                 id: taskId,
                 projectId: project.id,
                 assigneeId
             }).unwrap();
+
 
             toast({
                 title: "Task Updated",
@@ -302,7 +220,7 @@ export default function ProjectTasks({
             console.error('Error updating task assignee:', error);
             toast({
                 title: "Failed to Update Task",
-                description: error?.data?.message || "Failed to update task assignee.",
+                description: "Failed to update task assignee.",
                 variant: "destructive",
             });
         }
@@ -347,7 +265,7 @@ export default function ProjectTasks({
             console.error('Error updating task:', error);
             toast({
                 title: "Failed to Update Task",
-                description: error?.data?.message || "Failed to update task.",
+                description: "Failed to update task.",
                 variant: "destructive",
             });
         }
@@ -369,7 +287,7 @@ export default function ProjectTasks({
             console.error('Error deleting task:', error);
             toast({
                 title: "Failed to Delete Task",
-                description: error?.data?.message || "Failed to delete task.",
+                description: "Failed to delete task.",
                 variant: "destructive",
             });
         }
@@ -377,7 +295,7 @@ export default function ProjectTasks({
 
     const handleTaskCreated = () => {
         setIsAddTaskModalOpen(false);
-        refetchTasks(); // Refresh task list
+        refetchTasks();
     };
 
     const handleTaskSelect = (task: UnifiedTask) => {
@@ -385,7 +303,6 @@ export default function ProjectTasks({
     };
 
     const handleDownloadResource = (resource: any) => {
-        // Implement resource download functionality
         toast({
             title: "Downloading Resource",
             description: `Downloading ${resource.title}...`,
@@ -396,13 +313,7 @@ export default function ProjectTasks({
         if (projectArea) {
             return `${projectArea.name} Tasks`;
         }
-        return `${project.name} Tasks`;
-    };
-
-    const getContextSubtitle = () => {
-        const taskCount = totalTasks;
-        const areaContext = projectArea ? ` in ${projectArea.name}` : '';
-        return `${taskCount} task${taskCount !== 1 ? 's' : ''}${areaContext}`;
+        return "Tasks";
     };
 
     // If a task is selected, show its details
@@ -423,224 +334,130 @@ export default function ProjectTasks({
 
     return (
         <>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className={cn("space-y-6", className)}
-            >
-                {/* Header Card with Stats */}
-                <Card className="bg-gradient-to-r from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
-                    <CardHeader>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div className="flex-1">
-                                <CardTitle className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-3">
-                                    <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
-                                        <FileText className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        {getContextTitle()}
-                                        <p className="text-sm font-normal text-slate-600 dark:text-slate-400 mt-1">
-                                            {getContextSubtitle()}
-                                        </p>
-                                    </div>
-                                </CardTitle>
-                            </div>
+            {/* Use old design but with dark mode support */}
+            <Card className={cn("border border-indigo-100 dark:border-indigo-800 shadow-sm rounded-lg dark:bg-slate-800", className)}>
+                <CardHeader className="pb-2 bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-800">
+                    <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
+                        <CardTitle className="text-lg font-semibold text-indigo-900 dark:text-indigo-200">
+                            {getContextTitle()}
+                            <p className="text-sm font-normal text-indigo-600 dark:text-indigo-400 mt-1">
+                                {totalTasks} task{totalTasks !== 1 ? 's' : ''} {projectArea ? `in ${projectArea.name}` : ''}
+                            </p>
+                        </CardTitle>
+                        {canManage && (
+                            <Button
+                                size="sm"
+                                onClick={() => setIsAddTaskModalOpen(true)}
+                                className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white shadow-sm w-full xs:w-auto"
+                                aria-label="Add new task"
+                            >
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Task
+                            </Button>
+                        )}
+                    </div>
 
-                            {/* Quick Stats */}
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-4 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                                        <span className="text-slate-600 dark:text-slate-400">
-                                            {taskStats.completed} completed
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        <span className="text-slate-600 dark:text-slate-400">
-                                            {taskStats.inProgress} in progress
-                                        </span>
-                                    </div>
-                                    {taskStats.overdue > 0 && (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                            <span className="text-red-600 dark:text-red-400">
-                                                {taskStats.overdue} overdue
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="h-6 w-px bg-slate-300 dark:bg-slate-600"></div>
-
-                                <div className="flex items-center gap-2">
-                                    {canManage && (
-                                        <Button
-                                            onClick={() => setIsAddTaskModalOpen(true)}
-                                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
-                                        >
-                                            <PlusCircle className="h-4 w-4 mr-2" />
-                                            Add Task
-                                        </Button>
-                                    )}
-
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="sm" className="border-slate-300 dark:border-slate-600">
-                                                <MoreVertical className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-48">
-                                            <DropdownMenuLabel>View Options</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => setViewMode('detailed')}>
-                                                <List className="h-4 w-4 mr-2" />
-                                                Detailed View
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setViewMode('card')}>
-                                                <Grid3X3 className="h-4 w-4 mr-2" />
-                                                Card View
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setViewMode('compact')}>
-                                                <List className="h-4 w-4 mr-2" />
-                                                Compact View
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuLabel>Sort By</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => setSortBy('dueDate')}>
-                                                <CalendarCheck className="h-4 w-4 mr-2" />
-                                                Due Date
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setSortBy('priority')}>
-                                                <AlertCircle className="h-4 w-4 mr-2" />
-                                                Priority
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setSortBy('title')}>
-                                                <SortAsc className="h-4 w-4 mr-2" />
-                                                Title
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </div>
+                    {/* Simple search like old version but with enhanced functionality */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search tasks..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-10 border-slate-300 dark:border-slate-600 focus:border-indigo-500 dark:focus:border-indigo-400 dark:bg-slate-700 dark:text-slate-200"
+                            />
                         </div>
 
-                        {/* Search and Filters */}
-                        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <Input
-                                    placeholder="Search tasks by title, description, or assignee..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 border-slate-300 dark:border-slate-600 focus:border-indigo-500 dark:focus:border-indigo-400"
+                        <div className="flex gap-2">
+                            <Select value={sortBy} onValueChange={setSortBy}>
+                                <SelectTrigger className="w-36 border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200">
+                                    <SelectValue placeholder="Sort by..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="dueDate">Due Date</SelectItem>
+                                    <SelectItem value="priority">Priority</SelectItem>
+                                    <SelectItem value="title">Title</SelectItem>
+                                    <SelectItem value="createdAt">Created</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                                className="border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+                            >
+                                <SortAsc className={cn(
+                                    "h-4 w-4 transition-transform",
+                                    sortOrder === 'desc' && "rotate-180"
+                                )} />
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+
+                <CardContent className="p-4 sm:p-6 dark:bg-slate-800">
+                    <Tabs
+                        defaultValue="all"
+                        value={activeTab}
+                        onValueChange={(value) => setActiveTab(value)}
+                        className='h-full'
+                    >
+                        {/* Keep the old tab design but with dark mode */}
+                        <div className="inline-flex flex-wrap min-w-full mb-2 overflow-x-auto">
+                            <TabsList className="bg-gray-100 dark:bg-gray-800 p-1 flex flex-wrap justify-start gap-2 w-auto h-full">
+                                {statusTabs.map((tab) => (
+                                    <TabsTrigger
+                                        key={tab.value}
+                                        value={tab.value}
+                                        className={cn(
+                                            "data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-600",
+                                            "data-[state=active]:shadow-sm text-gray-600 dark:text-gray-400 min-w-[100px] px-3 text-center whitespace-nowrap"
+                                        )}
+                                    >
+                                        {tab.label}
+                                        <span className={cn(
+                                            "ml-1 text-xs rounded-full px-1.5 py-0.5",
+                                            tab.value === 'all'
+                                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                                                : tab.colorClass
+                                        )}>
+                                            {tab.value === 'all'
+                                                ? allTasks.length
+                                                : (tasksGroupedByStatus[tab.value]?.length || 0)}
+                                        </span>
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </div>
+
+                        {/* Tab contents with proper task list */}
+                        {statusTabs.map((tab) => (
+                            <TabsContent key={tab.value} value={tab.value} className="mt-4">
+                                <TaskList
+                                    tasks={tasksGroupedByStatus[tab.value] || []}
+                                    members={projectMembers}
+                                    onStatusChange={handleStatusChange}
+                                    onPriorityChange={canManage ? handlePriorityChange : undefined}
+                                    onAssigneeChange={canManage ? handleAssigneeChange : undefined}
+                                    onEditTask={canManage ? handleEditTask : undefined}
+                                    onDeleteTask={canManage ? handleDeleteTask : undefined}
+                                    onTaskSelect={handleTaskSelect}
+                                    canUpdate={canManage}
+                                    isLoading={isLoading}
+                                    viewMode="detailed"
+                                    emptyMessage={
+                                        searchQuery
+                                            ? `No tasks found matching "${searchQuery}"`
+                                            : `No ${tab.label.toLowerCase()} tasks`
+                                    }
                                 />
-                            </div>
-
-                            <div className="flex gap-2">
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-36 border-slate-300 dark:border-slate-600">
-                                        <SelectValue placeholder="Sort by..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="dueDate">Due Date</SelectItem>
-                                        <SelectItem value="priority">Priority</SelectItem>
-                                        <SelectItem value="title">Title</SelectItem>
-                                        <SelectItem value="createdAt">Created</SelectItem>
-                                        <SelectItem value="updatedAt">Updated</SelectItem>
-                                    </SelectContent>
-                                </Select>
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                                    className="border-slate-300 dark:border-slate-600"
-                                >
-                                    <SortAsc className={cn(
-                                        "h-4 w-4 transition-transform",
-                                        sortOrder === 'desc' && "rotate-180"
-                                    )} />
-                                </Button>
-                            </div>
-                        </div>
-                    </CardHeader>
-                </Card>
-
-                {/* Tasks Content */}
-                <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg">
-                    <CardContent className="p-6">
-                        <Tabs
-                            value={activeTab}
-                            onValueChange={setActiveTab}
-                            className="w-full"
-                        >
-                            {/* Status Tabs */}
-                            <div className="flex overflow-x-auto pb-4 mb-6">
-                                <TabsList className="bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl flex gap-1 min-w-max shadow-inner">
-                                    {statusTabs.map((tab) => {
-                                        const Icon = tab.icon;
-                                        const count = tasksGroupedByStatus[tab.value]?.length || 0;
-
-                                        return (
-                                            <TabsTrigger
-                                                key={tab.value}
-                                                value={tab.value}
-                                                className={cn(
-                                                    "flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all font-medium",
-                                                    "data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900",
-                                                    "data-[state=active]:shadow-sm data-[state=active]:border",
-                                                    "hover:bg-white/50 dark:hover:bg-slate-900/50",
-                                                    "text-slate-600 dark:text-slate-400",
-                                                    "data-[state=active]:text-slate-900 dark:data-[state=active]:text-slate-100"
-                                                )}
-                                            >
-                                                <Icon className="h-4 w-4" />
-                                                <span>{tab.label}</span>
-                                                <Badge
-                                                    variant="secondary"
-                                                    className={cn(
-                                                        "text-xs font-medium px-2 py-0.5 rounded-full",
-                                                        "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300",
-                                                        "data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700",
-                                                        "dark:data-[state=active]:bg-indigo-900/50 dark:data-[state=active]:text-indigo-300"
-                                                    )}
-                                                >
-                                                    {count}
-                                                </Badge>
-                                            </TabsTrigger>
-                                        );
-                                    })}
-                                </TabsList>
-                            </div>
-
-                            {/* Tab Contents */}
-                            {statusTabs.map((tab) => (
-                                <TabsContent key={tab.value} value={tab.value} className="mt-0">
-                                    <TaskList
-                                        tasks={tasksGroupedByStatus[tab.value] || []}
-                                        members={projectMembers}
-                                        onStatusChange={handleStatusChange}
-                                        onPriorityChange={canManage ? handlePriorityChange : undefined}
-                                        onAssigneeChange={canManage ? handleAssigneeChange : undefined}
-                                        onEditTask={canManage ? handleEditTask : undefined}
-                                        onDeleteTask={canManage ? handleDeleteTask : undefined}
-                                        onTaskSelect={handleTaskSelect}
-                                        canUpdate={canManage}
-                                        isLoading={isLoading}
-                                        viewMode={viewMode}
-                                        emptyMessage={
-                                            searchQuery
-                                                ? `No tasks found matching "${searchQuery}"`
-                                                : `No ${tab.label.toLowerCase()} found`
-                                        }
-                                    />
-                                </TabsContent>
-                            ))}
-                        </Tabs>
-                    </CardContent>
-                </Card>
-            </motion.div>
+                            </TabsContent>
+                        ))}
+                    </Tabs>
+                </CardContent>
+            </Card>
 
             {/* Modals */}
             <AddTaskModal

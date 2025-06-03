@@ -347,7 +347,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Notifications",
-            href: "/admin/notifications",
+            href: "/admin/dashboard/notifications",
             icon: <Bell className="h-4 w-4" />,
             badge: unreadCount > 0 ? unreadCount : undefined
         },

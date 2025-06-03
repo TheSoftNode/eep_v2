@@ -1,21 +1,9 @@
+import { apiSlice } from "@/Redux/services/api";
 import { DeleteResponse, ProfilePictureResponse, ProfileResponse, UpdateProfilePictureRequest, UpdateProfileRequest } from "@/Redux/types/Users/profile";
 import { User } from "@/Redux/types/Users/user";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 
-export const profileApi = createApi({
-    reducerPath: 'profileApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: 'https://api-4b7msmz37a-uc.a.run.app/v1/eep',
-        prepareHeaders: (headers) => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                headers.set('Authorization', `Bearer ${token}`);
-            }
-            return headers;
-        }
-    }),
-    tagTypes: ['Profile'],
+export const profileApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getCurrentUser: builder.query<ProfileResponse, void>({
             query: () => ({

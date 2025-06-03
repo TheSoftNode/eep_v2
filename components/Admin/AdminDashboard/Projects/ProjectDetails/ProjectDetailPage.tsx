@@ -276,10 +276,15 @@ export default function ProjectDetailPage() {
                             isLoading={isLoadingMembers}
                         />
 
-                        <ProjectActivity
-                            projectId={projectId}
-                            onViewAllActivity={handleViewAllActivity}
-                        />
+                        {
+                            canManage && (
+                                <ProjectActivity
+                                    projectId={projectId}
+                                    onViewAllActivity={handleViewAllActivity}
+                                />
+                            )
+                        }
+
 
                         <ProjectFeedback
                             projectId={projectId}

@@ -192,6 +192,10 @@ export default function ProjectActivity({
         pollingInterval: 30000, // Poll every 30 seconds
     });
 
+    useEffect(() => {
+        if (error) console.error('API Error:', error);
+    }, [error]);
+
     const activities = activityResponse?.data || [];
     const isLoadingState = isLoading || isManualRefreshing;
 

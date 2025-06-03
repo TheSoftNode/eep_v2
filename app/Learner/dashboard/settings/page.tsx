@@ -53,13 +53,13 @@ export default function SettingsPage() {
                             <Bell className="h-5 w-5" />
                             <span className="hidden sm:inline font-medium">Notifications</span>
                         </TabsTrigger>
-                        <TabsTrigger
+                        {/* <TabsTrigger
                             value="appearance"
                             className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/80 data-[state=active]:to-gray-50/80 dark:data-[state=active]:from-gray-900/60 dark:data-[state=active]:to-gray-800/60 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-100/70 dark:data-[state=active]:border-gray-800/40 rounded-lg py-2.5 transition-all duration-300 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             <Paintbrush className="h-5 w-5" />
                             <span className="hidden sm:inline font-medium">Appearance</span>
-                        </TabsTrigger>
+                        </TabsTrigger> */}
                         <TabsTrigger
                             value="privacy"
                             className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/80 data-[state=active]:to-gray-50/80 dark:data-[state=active]:from-gray-900/60 dark:data-[state=active]:to-gray-800/60 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-100/70 dark:data-[state=active]:border-gray-800/40 rounded-lg py-2.5 transition-all duration-300 hover:text-indigo-600 dark:hover:text-indigo-400"
@@ -90,13 +90,13 @@ export default function SettingsPage() {
                             <NotificationPreferencesSettings />
                         </TabsContent>
 
-                        {/* Appearance Settings */}
+                        {/* Appearance Settings
                         <TabsContent
                             value="appearance"
                             className="animate-fadeIn"
                         >
                             <AppearanceSettings />
-                        </TabsContent>
+                        </TabsContent> */}
 
                         {/* Privacy Settings */}
                         <TabsContent

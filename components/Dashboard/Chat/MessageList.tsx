@@ -149,30 +149,30 @@ export const MessageList: React.FC<MessageListProps> = ({
         }
     };
 
-    // Get avatar colors based on role
+    // Get avatar colors based on role with dark mode support
     const getAvatarColorClass = (userId: string) => {
         const participant = conversation.participants.find(p => p.id === userId);
-        if (!participant) return "bg-gray-600";
+        if (!participant) return "bg-slate-600 dark:bg-slate-500";
 
         switch (participant.role) {
-            case 'admin': return "bg-red-600";
-            case 'mentor': return "bg-blue-600";
-            case 'learner': return "bg-indigo-600";
-            case 'user': return "bg-purple-600";
-            default: return "bg-green-600"; // peers/students
+            case 'admin': return "bg-red-600 dark:bg-red-500";
+            case 'mentor': return "bg-blue-600 dark:bg-blue-500";
+            case 'learner': return "bg-indigo-600 dark:bg-indigo-500";
+            case 'user': return "bg-purple-600 dark:bg-purple-500";
+            default: return "bg-emerald-600 dark:bg-emerald-500"; // peers/students
         }
     };
 
     return (
-        <div className="flex-1 overflow-hidden p-4">
+        <div className="flex-1 overflow-hidden p-4 bg-white dark:bg-transparent">
             <div
                 ref={scrollContainerRef}
-                className="h-full pr-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"
+                className="h-full pr-4 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
             >
                 {sortedDates.map((date) => (
                     <div key={date} className="mb-6">
                         <div className="flex items-center justify-center mb-4">
-                            <div className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-medium">
+                            <div className="bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-xs px-3 py-1 rounded-full font-medium backdrop-blur-sm border border-indigo-200/50 dark:border-indigo-800/50">
                                 {date}
                             </div>
                         </div>
@@ -194,7 +194,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                                             isCurrentUser && "flex-row-reverse"
                                         )}>
                                             {!isCurrentUser && sender && (
-                                                <Avatar className="h-8 w-8 flex-shrink-0">
+                                                <Avatar className="h-8 w-8 flex-shrink-0 ring-2 ring-white dark:ring-slate-700/50 shadow-sm">
                                                     <AvatarImage src={sender.profilePicture || undefined} />
                                                     <AvatarFallback className={cn("text-white", getAvatarColorClass(msg.senderId))}>
                                                         {sender.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
@@ -202,14 +202,14 @@ export const MessageList: React.FC<MessageListProps> = ({
                                                 </Avatar>
                                             )}
                                             <div className={cn(
-                                                "p-3 rounded-lg group relative",
+                                                "p-3 rounded-lg group relative shadow-sm backdrop-blur-sm transition-all duration-200",
                                                 isCurrentUser
-                                                    ? "bg-indigo-600 text-white rounded-br-none"
-                                                    : "bg-gray-100 text-gray-800 rounded-bl-none",
-                                                editingMessageId === msg.id && "border-2 border-blue-400"
+                                                    ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-br-none shadow-indigo-500/20"
+                                                    : "bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100 rounded-bl-none border border-slate-200/50 dark:border-slate-600/50",
+                                                editingMessageId === msg.id && "border-2 border-blue-400 dark:border-blue-500"
                                             )}>
                                                 {!isCurrentUser && sender && (
-                                                    <p className="text-xs text-gray-500 mb-1">{sender.fullName}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">{sender.fullName}</p>
                                                 )}
 
                                                 {editingMessageId === msg.id ? (
@@ -217,20 +217,20 @@ export const MessageList: React.FC<MessageListProps> = ({
                                                         <textarea
                                                             value={editContent}
                                                             onChange={(e) => setEditContent(e.target.value)}
-                                                            className="w-full p-2 border rounded-md text-black min-h-[100px]"
+                                                            className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-md text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 min-h-[100px] focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                         />
                                                         <div className="flex justify-end gap-2">
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                className="bg-white"
+                                                                className="bg-white dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                                                                 onClick={handleCancelEditing}
                                                             >
                                                                 Cancel
                                                             </Button>
                                                             <Button
                                                                 size="sm"
-                                                                className="bg-indigo-600 hover:bg-indigo-700"
+                                                                className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20"
                                                                 onClick={handleSaveEdit}
                                                             >
                                                                 Save
@@ -243,28 +243,31 @@ export const MessageList: React.FC<MessageListProps> = ({
 
                                                 {isCurrentUser && onDeleteMessage && onEditMessage && (
                                                     <div className={cn(
-                                                        "absolute -top-10 right-0 bg-white shadow-lg rounded-lg p-1 border opacity-0 group-hover:opacity-100 transition-opacity",
+                                                        "absolute -top-10 right-0 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-1 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm",
                                                         editingMessageId === msg.id && "hidden"
                                                     )}>
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 dark:hover:bg-slate-700">
                                                                     <MoreHorizontal className="h-4 w-4" />
                                                                 </Button>
                                                             </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem onClick={() => handleStartEditing(msg)}>
+                                                            <DropdownMenuContent align="end" className="dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
+                                                                <DropdownMenuItem
+                                                                    onClick={() => handleStartEditing(msg)}
+                                                                    className="dark:hover:bg-slate-700/50 dark:text-slate-300"
+                                                                >
                                                                     <Edit className="h-4 w-4 mr-2" />
                                                                     Edit
                                                                 </DropdownMenuItem>
-                                                                <DropdownMenuItem>
+                                                                <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">
                                                                     <Reply className="h-4 w-4 mr-2" />
                                                                     Reply
                                                                 </DropdownMenuItem>
-                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuSeparator className="dark:border-slate-700/50" />
                                                                 <DropdownMenuItem
                                                                     onClick={() => onDeleteMessage(msg.id)}
-                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                                                                 >
                                                                     <Trash2 className="h-4 w-4 mr-2" />
                                                                     Delete
@@ -286,26 +289,26 @@ export const MessageList: React.FC<MessageListProps> = ({
                                                     <div
                                                         key={attachment.id}
                                                         className={cn(
-                                                            "inline-block p-2 border rounded-lg",
+                                                            "inline-block p-2 border rounded-lg backdrop-blur-sm",
                                                             isCurrentUser
-                                                                ? "bg-indigo-50 border-indigo-200"
-                                                                : "bg-gray-50 border-gray-200"
+                                                                ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800/50"
+                                                                : "bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600/50"
                                                         )}
                                                     >
                                                         <div className="flex items-center gap-2">
                                                             <div className={cn(
                                                                 "h-8 w-8 rounded-lg flex items-center justify-center",
                                                                 isCurrentUser
-                                                                    ? "bg-indigo-100 text-indigo-600"
-                                                                    : "bg-gray-100 text-gray-600"
+                                                                    ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                                                                    : "bg-slate-100 dark:bg-slate-600/50 text-slate-600 dark:text-slate-400"
                                                             )}>
                                                                 <FileText className="h-4 w-4" />
                                                             </div>
                                                             <div className="min-w-0">
-                                                                <p className="text-sm font-medium truncate">
+                                                                <p className="text-sm font-medium truncate dark:text-slate-200">
                                                                     {attachment.name}
                                                                 </p>
-                                                                <p className="text-xs text-gray-500">
+                                                                <p className="text-xs text-slate-500 dark:text-slate-400">
                                                                     {typeof attachment.size === 'number'
                                                                         ? `${Math.round(attachment.size / 1024)} KB`
                                                                         : attachment.size}
@@ -314,7 +317,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8"
+                                                                className="h-8 w-8 dark:hover:bg-slate-600/50"
                                                                 onClick={() => window.open(attachment.url, '_blank')}
                                                             >
                                                                 <Download className="h-4 w-4" />
@@ -326,16 +329,16 @@ export const MessageList: React.FC<MessageListProps> = ({
                                         )}
 
                                         <div className={cn(
-                                            "text-xs text-gray-500 mt-1",
+                                            "text-xs text-slate-500 dark:text-slate-400 mt-1",
                                             isCurrentUser ? "text-right" : "text-left"
                                         )}>
                                             {formatMessageTime(msg.timestamp)}
                                             {isCurrentUser && (
                                                 <span className="ml-1">
                                                     {msg.readBy && msg.readBy.length > 1 ? (
-                                                        <CheckCircle className="h-3 w-3 text-green-500 inline" />
+                                                        <CheckCircle className="h-3 w-3 text-emerald-500 inline" />
                                                     ) : (
-                                                        <CheckCircle className="h-3 w-3 text-gray-400 inline" />
+                                                        <CheckCircle className="h-3 w-3 text-slate-400 dark:text-slate-500 inline" />
                                                     )}
                                                 </span>
                                             )}
@@ -348,12 +351,12 @@ export const MessageList: React.FC<MessageListProps> = ({
                 ))}
                 {messages.length === 0 && (
                     <div className="h-full flex items-center justify-center">
-                        <div className="text-center p-6 bg-purple-50 rounded-lg max-w-md space-y-4">
-                            <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto">
+                        <div className="text-center p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg max-w-md space-y-4 border border-indigo-200/50 dark:border-indigo-800/50 backdrop-blur-sm">
+                            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/10">
                                 <MessageSquare className="h-8 w-8" />
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900">No messages yet</h3>
-                            <p className="text-gray-500">Start the conversation by sending a message below.</p>
+                            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No messages yet</h3>
+                            <p className="text-slate-500 dark:text-slate-400">Start the conversation by sending a message below.</p>
                         </div>
                     </div>
                 )}
@@ -362,4 +365,3 @@ export const MessageList: React.FC<MessageListProps> = ({
         </div>
     );
 };
-

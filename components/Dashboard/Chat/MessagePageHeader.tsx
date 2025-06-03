@@ -156,18 +156,18 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
         return filtered;
     };
 
-    // Get badge color based on notification type
+    // Get badge color based on notification type with dark mode support
     const getNotificationBadgeColor = (type: string) => {
         if (type.includes('task') || type.includes('assignment')) {
-            return "bg-amber-100 text-amber-800";
+            return "bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400";
         } else if (type.includes('message')) {
-            return "bg-purple-100 text-purple-800";
+            return "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400";
         } else if (type.includes('project')) {
-            return "bg-indigo-100 text-indigo-800";
+            return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
         } else if (type.includes('system')) {
-            return "bg-blue-100 text-blue-800";
+            return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400";
         } else {
-            return "bg-gray-100 text-gray-800";
+            return "bg-slate-100 text-slate-800 dark:bg-slate-800/50 dark:text-slate-400";
         }
     };
 
@@ -191,33 +191,34 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-gray-900">Messages</h1>
-                <p className="text-gray-500">Connect with mentors, peers, and collaborate on your projects</p>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Messages</h1>
+                <p className="text-slate-500 dark:text-slate-400">Connect with mentors, peers, and collaborate on your projects</p>
             </div>
 
             <div className="flex items-center gap-2">
                 {/* Notifications Dropdown */}
                 <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="relative">
+                        <Button variant="outline" size="sm" className="relative dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50 backdrop-blur-sm">
                             <Bell className="h-4 w-4 mr-2" />
                             <span className="hidden sm:inline">Notifications</span>
                             {unreadNotificationsCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-lg">
                                     {unreadNotificationsCount}
                                 </span>
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-[350px] sm:w-[400px]" align="end">
-                        <div className="p-2 border-b">
+                    <DropdownMenuContent className="w-[350px] sm:w-[400px] dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md" align="end">
+                        <div className="p-2 border-b border-slate-200 dark:border-slate-700/50">
                             <div className="flex items-center justify-between mb-2">
-                                <DropdownMenuLabel className="px-0">Notifications</DropdownMenuLabel>
+                                <DropdownMenuLabel className="px-0 dark:text-white">Notifications</DropdownMenuLabel>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={handleMarkAllAsRead}
                                     disabled={!notificationsData?.data || notificationsData?.data.every(n => n.read)}
+                                    className="dark:hover:bg-slate-700/50 dark:text-slate-300"
                                 >
                                     <CheckCheck className="h-4 w-4 mr-1" />
                                     Mark all as read
@@ -226,11 +227,11 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
 
                             {/* Notification Search */}
                             <div className="relative mb-2">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
                                 <Input
                                     type="search"
                                     placeholder="Search notifications..."
-                                    className="pl-9"
+                                    className="pl-9 dark:bg-slate-800/50 dark:border-slate-700/50 dark:text-slate-100 dark:placeholder-slate-400 backdrop-blur-sm"
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                 />
@@ -238,7 +239,7 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="absolute right-1 top-1 h-7 w-7"
+                                        className="absolute right-1 top-1 h-7 w-7 dark:hover:bg-slate-700/50"
                                         onClick={() => setSearchQuery('')}
                                     >
                                         <X className="h-4 w-4" />
@@ -248,18 +249,18 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
 
                             {/* Notification Tabs */}
                             <Tabs defaultValue="all" value={activeNotificationTab} onValueChange={setActiveNotificationTab}>
-                                <TabsList className="w-full grid grid-cols-4">
-                                    <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                                    <TabsTrigger value="unread" className="text-xs">
+                                <TabsList className="w-full grid grid-cols-4 dark:bg-slate-800/50 dark:border-slate-700/50 backdrop-blur-sm">
+                                    <TabsTrigger value="all" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">All</TabsTrigger>
+                                    <TabsTrigger value="unread" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">
                                         Unread
                                         {unreadNotificationsCount > 0 && (
-                                            <Badge className="ml-1 bg-purple-600 hover:bg-purple-700 h-4 min-w-4 flex items-center justify-center">
+                                            <Badge className="ml-1 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 h-4 min-w-4 flex items-center justify-center text-white border-0">
                                                 {unreadNotificationsCount}
                                             </Badge>
                                         )}
                                     </TabsTrigger>
-                                    <TabsTrigger value="messages" className="text-xs">Messages</TabsTrigger>
-                                    <TabsTrigger value="tasks" className="text-xs">Tasks</TabsTrigger>
+                                    <TabsTrigger value="messages" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">Messages</TabsTrigger>
+                                    <TabsTrigger value="tasks" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">Tasks</TabsTrigger>
                                 </TabsList>
                             </Tabs>
                         </div>
@@ -268,15 +269,15 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
                         <ScrollArea className="max-h-[350px]">
                             {isLoadingNotifications ? (
                                 <div className="p-6 text-center">
-                                    <div className="animate-spin h-6 w-6 border-t-2 border-purple-600 border-r-2 rounded-full mx-auto mb-2"></div>
-                                    <p className="text-gray-500">Loading notifications...</p>
+                                    <div className="animate-spin h-6 w-6 border-t-2 border-indigo-600 dark:border-indigo-400 border-r-2 rounded-full mx-auto mb-2"></div>
+                                    <p className="text-slate-500 dark:text-slate-400">Loading notifications...</p>
                                 </div>
                             ) : filteredNotifications.length === 0 ? (
                                 <div className="p-6 text-center">
-                                    <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                                    <p className="text-gray-500">No notifications found</p>
+                                    <Bell className="h-8 w-8 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                                    <p className="text-slate-500 dark:text-slate-400">No notifications found</p>
                                     {searchQuery && (
-                                        <p className="text-sm text-gray-400">Try a different search term</p>
+                                        <p className="text-sm text-slate-400 dark:text-slate-500">Try a different search term</p>
                                     )}
                                 </div>
                             ) : (
@@ -285,8 +286,8 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
                                         <DropdownMenuItem
                                             key={notification.id}
                                             className={cn(
-                                                "p-3 focus:bg-purple-50 cursor-pointer",
-                                                !notification.read && "bg-purple-50"
+                                                "p-3 focus:bg-indigo-50 dark:focus:bg-indigo-900/20 cursor-pointer transition-colors",
+                                                !notification.read && "bg-indigo-50 dark:bg-indigo-900/20"
                                             )}
                                             onClick={() => handleMarkNotificationAsRead(notification?.id)}
                                         >
@@ -299,20 +300,20 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className={cn(
-                                                        "text-sm",
+                                                        "text-sm dark:text-slate-200",
                                                         !notification?.read && "font-medium"
                                                     )}>
                                                         {notification?.title}
                                                     </p>
-                                                    <p className="text-sm text-gray-600 mt-0.5 line-clamp-2">
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
                                                         {notification?.description}
                                                     </p>
-                                                    <p className="text-xs text-gray-500 mt-1">
+                                                    <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
                                                         {formatNotificationTime(notification?.time)}
                                                     </p>
                                                 </div>
                                                 {!notification.read && (
-                                                    <div className="w-2 h-2 rounded-full bg-purple-600 flex-shrink-0 mt-1"></div>
+                                                    <div className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-500 flex-shrink-0 mt-1"></div>
                                                 )}
                                             </div>
                                         </DropdownMenuItem>
@@ -321,9 +322,9 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
                             )}
                         </ScrollArea>
 
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild className="p-2 focus:bg-purple-50">
-                            <Link href="/dashboard/notifications" className="w-full flex items-center justify-center">
+                        <DropdownMenuSeparator className="dark:border-slate-700/50" />
+                        <DropdownMenuItem asChild className="p-2 focus:bg-indigo-50 dark:focus:bg-indigo-900/20">
+                            <Link href="/dashboard/notifications" className="w-full flex items-center justify-center dark:text-slate-300">
                                 View all notifications
                                 <ChevronRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -333,7 +334,7 @@ export const MessagePageHeader: React.FC<MessagePageHeaderProps> = ({
 
                 {/* New Chat Button - Triggers the Modal */}
                 <Button
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border-0"
                     onClick={() => setIsCreateDialogOpen(true)}
                 >
                     <Users className="h-4 w-4 mr-2" />
@@ -368,7 +369,3 @@ const CheckIcon = ({ className }: { className?: string }) => (
         <polyline points="20 6 9 17 4 12" />
     </svg>
 );
-
-
-
-

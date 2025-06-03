@@ -119,32 +119,32 @@ const EEPSidebar: React.FC<EEPSidebarProps> = ({
     const learnerNavItems: NavItem[] = [
         {
             name: "Dashboard",
-            href: "/Learner/dashboard",
+            href: "/Learner/dashboard/",
             icon: <Home className="h-4 w-4" />
         },
         {
             name: "Projects",
-            href: "/Learner/dashboard/projects",
+            href: "/Learner/dashboard/projects/",
             icon: <Briefcase className="h-4 w-4" />
         },
         {
             name: "Workspaces",
-            href: "/Learner/dashboard/workspaces",
+            href: "/Learner/dashboard/workspaces/",
             icon: <FolderKanban className="h-4 w-4" />
         },
         {
             name: "Learning Path",
-            href: "/Learner/dashboard/learning-path",
+            href: "/Learner/dashboard/projects/learning-paths",
             icon: <Book className="h-4 w-4" />
         },
         {
             name: "Tasks",
-            href: "/Learner/dashboard/tasks",
+            href: "/Learner/dashboard/tasks/",
             icon: <FileText className="h-4 w-4" />
         },
         {
             name: "Terminal",
-            href: "/Learner/dashboard/terminal",
+            href: "/Learner/dashboard/terminal/",
             icon: <Terminal className="h-4 w-4" />
         },
         {
@@ -167,23 +167,11 @@ const EEPSidebar: React.FC<EEPSidebarProps> = ({
             badge: unreadMentorReplies > 0 ? unreadMentorReplies : undefined
         },
 
-        // ...(user?.role !== "mentor" ? [{
-        //     name: "Mentor Replies",
-        //     href: "/Learner/dashboard/mentor-replies",
-        //     icon: <GraduationCap className="h-4 w-4" />,
-        //     badge: unreadMentorReplies > 0 ? unreadMentorReplies : undefined
-        // }] : []),
-
         {
             name: user?.role === 'mentor' ? "Direct Contact" : "Messages",
             href: user?.role === 'mentor' ? "/Learner/dashboard/direct-contact" : "/Learner/dashboard/messages",
             icon: <MessageSquare className="h-4 w-4" />,
             badge: user?.role === 'mentor' ? (unreadDirectMessages > 0 ? unreadDirectMessages : undefined) : 3
-        },
-        {
-            name: "Schedule",
-            href: "/Learner/dashboard/schedule",
-            icon: <Calendar className="h-4 w-4" />
         },
         {
             name: "Sessions",
@@ -225,13 +213,22 @@ const EEPSidebar: React.FC<EEPSidebarProps> = ({
 
     // Check if a nav item is active
     const isActiveLink = (href: string) => {
-        if (href === "/dashboard" && pathname === "/dashboard") {
+        const normalizedHref = href.replace(/\/$/, '');
+        const normalizedPathname = pathname.replace(/\/$/, '');
+
+        // Exact match
+        if (normalizedHref === normalizedPathname) {
             return true;
         }
-        if (href === "/dashboard/admin" && pathname === "/dashboard/admin") {
+
+        // Only allow startsWith for paths that are clearly the same route with dynamic segments
+        // Learning paths with project IDs: /learning-paths/project-123
+        if (href === "/Learner/dashboard/projects/learning-paths" &&
+            normalizedPathname.startsWith("/Learner/dashboard/projects/learning-paths/")) {
             return true;
         }
-        return pathname.startsWith(href) && href !== "/dashboard";
+
+        return false;
     };
 
     // Render a navigation item with refined styling

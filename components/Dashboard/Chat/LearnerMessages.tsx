@@ -144,73 +144,85 @@ export default function ChatPage() {
 
 
     return (
-        <div className="container px-4 mx-auto py-6 max-w-7xl">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-6"
-            >
-                <MessagePageHeader
-                    notificationsOpen={notificationsOpen}
-                    setNotificationsOpen={setNotificationsOpen}
-                    unreadNotificationsCount={unreadNotificationsCount}
-                    onStartNewChat={handleStartNewChat}
+        <div className="min-h-screen bg-slate-50 dark:bg-gradient-to-br dark:from-[#0A0F2C] dark:to-[#0A0E1F] transition-colors duration-300">
+            {/* Background Effects */}
+            <div className="fixed inset-0 dark:bg-grid-slate-900/[0.01] bg-grid-slate-700/[0.01] bg-[size:60px_60px] pointer-events-none opacity-20"></div>
+            <div className="fixed top-0 right-0 w-full h-full z-0 opacity-10 overflow-hidden pointer-events-none">
+                <div className="absolute top-[15%] right-[15%] w-[55%] h-[65%] rounded-full dark:bg-gradient-to-br dark:from-indigo-600/8 dark:via-pink-500/4 dark:to-violet-600/4 bg-gradient-to-br from-indigo-600/6 via-pink-500/3 to-violet-600/3 blur-3xl" />
+            </div>
+
+            <div className="container px-4 mx-auto py-6 max-w-7xl relative z-10">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-6"
+                >
+                    <MessagePageHeader
+                        notificationsOpen={notificationsOpen}
+                        setNotificationsOpen={setNotificationsOpen}
+                        unreadNotificationsCount={unreadNotificationsCount}
+                        onStartNewChat={handleStartNewChat}
+                    />
+                </motion.div>
+
+                {/* Loading State */}
+                {isLoadingConversations && conversations.length === 0 && (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="relative">
+                            {/* Subtle glow effect behind loader */}
+                            <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-xl animate-pulse"></div>
+                            <Loader2 className="h-10 w-10 text-indigo-600 dark:text-indigo-400 animate-spin relative z-10" />
+                        </div>
+                        <span className="ml-4 text-xl text-slate-600 dark:text-slate-400">Loading conversations...</span>
+                    </div>
+                )}
+
+                {/* Main Content */}
+                {(!isLoadingConversations || conversations.length > 0) && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {/* Conversations Sidebar */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="md:col-span-1"
+                        >
+                            <ConversationsSidebar
+                                conversations={conversations}
+                                selectedConversationId={currentConversationId}
+                                onSelectConversation={handleSelectConversation}
+                            />
+                        </motion.div>
+
+                        {/* Chat Area */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            className="md:col-span-2 lg:col-span-3"
+                        >
+                            <ChatArea
+                                currentConversation={currentConversation}
+                                isLoading={isLoadingConversation}
+                                onSendMessage={handleSendMessage}
+                                onDeleteMessage={handleDeleteMessage}
+                                onEditMessage={handleEditMessage}
+                                onStartNewChat={handleStartNewChat}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* New Chat Modal */}
+                <NewChatModal
+                    isOpen={isNewChatModalOpen}
+                    onClose={() => setIsNewChatModalOpen(false)}
+                    onCreateChat={handleCreateChat}
+                    isCreating={isCreatingConversation}
                 />
-            </motion.div>
-
-            {/* Loading State */}
-            {isLoadingConversations && conversations.length === 0 && (
-                <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
-                    <span className="ml-4 text-xl text-gray-600">Loading conversations...</span>
-                </div>
-            )}
-
-            {/* Main Content */}
-            {(!isLoadingConversations || conversations.length > 0) && (
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {/* Conversations Sidebar */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="md:col-span-1"
-                    >
-                        <ConversationsSidebar
-                            conversations={conversations}
-                            selectedConversationId={currentConversationId}
-                            onSelectConversation={handleSelectConversation}
-                        />
-                    </motion.div>
-
-                    {/* Chat Area */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                        className="md:col-span-2 lg:col-span-3"
-                    >
-                        <ChatArea
-                            currentConversation={currentConversation}
-                            isLoading={isLoadingConversation}
-                            onSendMessage={handleSendMessage}
-                            onDeleteMessage={handleDeleteMessage}
-                            onEditMessage={handleEditMessage}
-                            onStartNewChat={handleStartNewChat}
-                        />
-                    </motion.div>
-                </div>
-            )}
-
-            {/* New Chat Modal */}
-            <NewChatModal
-                isOpen={isNewChatModalOpen}
-                onClose={() => setIsNewChatModalOpen(false)}
-                onCreateChat={handleCreateChat}
-                isCreating={isCreatingConversation}
-            />
+            </div>
         </div>
     );
 }

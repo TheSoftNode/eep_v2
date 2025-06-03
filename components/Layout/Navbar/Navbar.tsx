@@ -31,11 +31,9 @@ const Navbar: React.FC = () => {
     const isDark = theme === 'dark';
 
     const { isAuthenticated, logout } = useAuth();
-    const { data: userData, isLoading, isError } = useGetCurrentUserQuery();
+    const { data: userData } = useGetCurrentUserQuery();
 
     const user = userData?.user;
-
-    console.log(userData)
 
     // Handle scroll events for navbar styling and active section tracking
     useEffect(() => {
@@ -113,7 +111,6 @@ const Navbar: React.FC = () => {
         { name: 'How It Works', href: '/#how-it-works' },
         { name: 'Testimonials', href: '/#testimonials' },
         { name: 'Pricing', href: '/#pricing' },
-        { name: 'Workspace', href: '/dashboard' }
     ];
 
     const menuVariants = {
@@ -291,9 +288,9 @@ const Navbar: React.FC = () => {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild className="rounded-md h-9 my-0.5">
-                                        <Link href="/Learner/dashboard/settings" className="cursor-pointer">
+                                        <Link href="/Learner/dashboard" className="cursor-pointer">
                                             <Settings className="mr-2 h-4 w-4" />
-                                            <span>Settings</span>
+                                            <span>Dashboard</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
@@ -389,7 +386,7 @@ const Navbar: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <Link href="/workspace/profile" className="block">
+                                        <Link href="/Learner/dashboard/profile" className="block">
                                             <Button
                                                 variant="outline"
                                                 className="w-full justify-center text-xs h-9 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg"
@@ -398,13 +395,13 @@ const Navbar: React.FC = () => {
                                                 My Profile
                                             </Button>
                                         </Link>
-                                        <Link href="/workspace/settings" className="block">
+                                        <Link href="/Learner/dashboard" className="block">
                                             <Button
                                                 variant="outline"
                                                 className="w-full justify-center text-xs h-9 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg"
                                             >
                                                 <Settings className="h-3.5 w-3.5 mr-1.5" />
-                                                Settings
+                                                Dashboard
                                             </Button>
                                         </Link>
                                     </div>

@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MentorSummary } from '@/Redux/types/Users/mentor';
 import { SendMessageRequest } from '@/Redux/types/Users/mentorMessage';
 import { useSendMessageToMentorMutation } from '@/Redux/apiSlices/users/mentorMessagApi';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MessageMentorModalProps {
     mentor: MentorSummary;
@@ -42,6 +43,8 @@ const MessageMentorModal: React.FC<MessageMentorModalProps> = ({
     const [message, setMessage] = useState<string>('');
     const [priority, setPriority] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal');
     const [includeScheduling, setIncludeScheduling] = useState<boolean>(false);
+
+    const { isAdmin, isMentor, isLearner } = useAuth();
 
     // API hook
     const [sendMessage, { isLoading: isSending, isSuccess, isError, error }] = useSendMessageToMentorMutation();
@@ -415,7 +418,9 @@ const MessageMentorModal: React.FC<MessageMentorModalProps> = ({
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
                                     <User className="h-4 w-4" />
-                                    <span>Sending as Admin</span>
+                                    {isAdmin() && (<span>Sending as Admin</span>)}
+                                    {isMentor() && (<span>Sending as Mentor</span>)}
+                                    {isLearner() && (<span>Sending as Learner</span>)}
                                 </div>
 
                                 <div className="flex items-center space-x-3">

@@ -13,7 +13,7 @@ import {
     Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -129,10 +129,10 @@ const StatsCard = ({
     );
 };
 
-export default function AdminProjectsPage() {
+export default function LearnerProjectsPage() {
     const router = useRouter();
     const { toast } = useToast();
-    const { user, isAdmin, isMentor } = useAuth();
+    const { isLearner, isAdmin, isMentor } = useAuth();
 
     // Filter states
     const [searchQuery, setSearchQuery] = useState('');
@@ -228,19 +228,19 @@ export default function AdminProjectsPage() {
 
     // Event handlers
     const handleProjectClick = (projectId: string) => {
-        router.push(`/admin/dashboard/projects/${projectId}`);
+        router.push(`/Learner/dashboard/projects/${projectId}`);
     };
 
     const handleEditProject = (projectId: string) => {
-        router.push(`/admin/dashboard/projects/${projectId}/edit`);
+        router.push(`/Learner/dashboard/projects/${projectId}/edit`);
     };
 
     const handleViewAnalytics = (projectId: string) => {
-        router.push(`/admin/dashboard/projects/${projectId}/analytics`);
+        router.push(`/Learner/dashboard/projects/${projectId}/analytics`);
     };
 
     const handleCreateProject = () => {
-        router.push('/admin/dashboard/projects/create');
+        router.push('/Learner/dashboard/projects/create');
     };
 
     const handleResetFilters = () => {
@@ -309,11 +309,9 @@ export default function AdminProjectsPage() {
                 >
                     <div className="space-y-2">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                            Project Management
+                            Projects
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 text-lg">
-                            Oversee and manage all projects across the platform
-                        </p>
+
                     </div>
 
                     <div className="flex items-center gap-3">

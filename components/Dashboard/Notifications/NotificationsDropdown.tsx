@@ -29,9 +29,12 @@ import {
 } from "@/Redux/types/Notifications/notification";
 import { useDeleteNotificationMutation, useGetNotificationsQuery, useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation } from "@/Redux/apiSlices/notifications/notificationApi";
 import { convertFirebaseDateRobust } from "@/components/utils/dateUtils";
+import { useAuth } from "@/hooks/useAuth";
 
 const NotificationsDropdown: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const { isAdmin } = useAuth();
 
     // RTK Query hooks
     const { data: notificationsData, isLoading } = useGetNotificationsQuery({
@@ -416,7 +419,7 @@ const NotificationsDropdown: React.FC = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="w-full h-8 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100/60 dark:hover:bg-indigo-800/30 rounded-lg"
-                                onClick={() => window.location.href = "/Learner/dashboard/notifications"}
+                                onClick={() => window.location.href = `${isAdmin() ? "/admin/dashboard/notifications" : "/Learner/dashboard/notifications"}`}
                             >
                                 View all notifications
                                 <ChevronRight className="ml-1 h-3.5 w-3.5" />

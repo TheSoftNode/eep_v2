@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { BarChart, Briefcase, Plus, ArrowRight } from 'lucide-react';
 import { useGetProjectsQuery } from '@/Redux/apiSlices/Projects/projectsApiSlice';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ProgressPage() {
     // Fetch active projects
@@ -13,6 +14,8 @@ export default function ProgressPage() {
         status: 'active',
         limit: 10
     });
+
+    const { isAdmin } = useAuth();
 
     // If there are active projects, redirect to the first one's progress page
     const hasProjects = projectsData?.data && projectsData.data.length > 0;
@@ -22,7 +25,7 @@ export default function ProgressPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
                 <h1 className="text-xl sm:text-2xl font-bold text-indigo-900">Progress Tracking</h1>
                 <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
-                    <Link href="/learners-dashboard/projects">
+                    <Link href="/Learner/dashboard/projects">
                         <Briefcase className="h-4 w-4 mr-2" />
                         View Projects
                     </Link>
@@ -68,7 +71,7 @@ export default function ProgressPage() {
                                     </div>
                                     <div className="mt-3 sm:mt-4">
                                         <Button asChild className="w-full text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700">
-                                            <Link href={`/learners-dashboard/projects/${project.id}/progress`}>
+                                            <Link href={`/Learner/dashboard/projects/${project.id}/progress`}>
                                                 <BarChart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                                                 View Progress
                                                 <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
@@ -80,16 +83,18 @@ export default function ProgressPage() {
                         );
                     })}
 
-                    <Card className="border-dashed border-2 border-indigo-200 flex items-center justify-center p-4 sm:p-6">
-                        <Button asChild variant="outline" className="h-auto py-3 sm:py-4 flex flex-col gap-2">
-                            <Link href="/learners-dashboard/projects/create">
-                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
-                                </div>
-                                <span className="text-indigo-700 text-sm sm:text-base font-medium">Create New Project</span>
-                            </Link>
-                        </Button>
-                    </Card>
+                    {isAdmin() && (
+                        <Card className="border-dashed border-2 border-indigo-200 flex items-center justify-center p-4 sm:p-6">
+                            <Button asChild variant="outline" className="h-auto py-3 sm:py-4 flex flex-col gap-2">
+                                <Link href="/learners-dashboard/projects/create">
+                                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                        <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
+                                    </div>
+                                    <span className="text-indigo-700 text-sm sm:text-base font-medium">Create New Project</span>
+                                </Link>
+                            </Button>
+                        </Card>
+                    )}
                 </div>
             ) : (
                 <Card className="border-dashed border-2 border-indigo-200 bg-indigo-50/30">
@@ -99,12 +104,14 @@ export default function ProgressPage() {
                         <p className="text-sm text-gray-600 max-w-md mb-4 sm:mb-6 px-4">
                             You don't have any active projects to track progress. Create a new project to get started.
                         </p>
-                        <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
-                            <Link href="/learners-dashboard/projects/create">
-                                <Plus className="h-4 w-4 mr-2" />
-                                Create New Project
-                            </Link>
-                        </Button>
+                        {isAdmin() && (
+                            <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
+                                <Link href="/learners-dashboard/projects/create">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Create New Project
+                                </Link>
+                            </Button>
+                        )}
                     </CardContent>
                 </Card>
             )}

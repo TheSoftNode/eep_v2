@@ -6,8 +6,12 @@ export const customFetchBase = fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers) => {
         const token = localStorage.getItem('token');
+        const adminToken = localStorage.getItem('adminToken');
         if (token) {
             headers.set('Authorization', `Bearer ${token}`);
+        }
+        else if (adminToken) {
+            headers.set('Authorization', `Bearer ${adminToken}`);
         }
         return headers;
     }

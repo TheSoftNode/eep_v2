@@ -37,6 +37,10 @@ export function PriorityDropdown({
 }: PriorityDropdownProps) {
     const config = priorityConfig[currentPriority];
 
+    const handlePriorityChange = (priority: TaskPriority) => {
+        onPriorityChange(priority);
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -54,6 +58,7 @@ export function PriorityDropdown({
                         disabled && "opacity-50 cursor-not-allowed",
                         className
                     )}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex items-center gap-2">
                         <div className={cn("flex items-center", config.color)}>
@@ -73,6 +78,7 @@ export function PriorityDropdown({
                 align="end"
                 className="w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-lg p-1"
                 sideOffset={4}
+                onClick={(e) => e.stopPropagation()}
             >
                 <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Set Priority Level
@@ -82,7 +88,11 @@ export function PriorityDropdown({
                 {Object.entries(priorityConfig).map(([priority, config]) => (
                     <DropdownMenuItem
                         key={priority}
-                        onClick={() => onPriorityChange(priority as TaskPriority)}
+                        // onClick={() => onPriorityChange(priority as TaskPriority)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Add this line
+                            handlePriorityChange(priority as TaskPriority);
+                        }}
                         className={cn(
                             "p-3 cursor-pointer transition-all duration-200 rounded-md mx-1 my-0.5",
                             config.hoverColor,

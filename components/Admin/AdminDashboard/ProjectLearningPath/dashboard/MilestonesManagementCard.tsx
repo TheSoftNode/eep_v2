@@ -26,6 +26,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface MilestonesManagementCardProps {
     projectId: string;
@@ -111,6 +112,7 @@ export const MilestonesManagementCard: React.FC<MilestonesManagementCardProps> =
 }) => {
     const [sortBy, setSortBy] = useState<'order' | 'status' | 'difficulty' | 'type'>('order');
     const [filterStatus, setFilterStatus] = useState<string>('all');
+    const { isAdmin } = useAuth();
 
     // Sort and filter milestones
     const sortedMilestones = [...milestones]
@@ -269,14 +271,17 @@ export const MilestonesManagementCard: React.FC<MilestonesManagementCardProps> =
                                 <option value="type">Sort by Type</option>
                             </select>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:hover:bg-amber-900/20"
-                        >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add Milestone
-                        </Button>
+                        {isAdmin() && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:text-amber-400 dark:border-amber-800 dark:hover:bg-amber-900/20"
+                            >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add Milestone
+                            </Button>
+                        )}
+
                     </div>
 
                     {/* Milestones List */}
@@ -377,31 +382,34 @@ export const MilestonesManagementCard: React.FC<MilestonesManagementCardProps> =
                                                 </div>
                                             </div>
 
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <MoreVertical className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleEdit(milestone)}>
-                                                        <Edit className="h-4 w-4 mr-2" />
-                                                        Edit Milestone
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleDelete(milestone)}
-                                                        className="text-red-600 focus:text-red-600"
-                                                    >
-                                                        <Trash2 className="h-4 w-4 mr-2" />
-                                                        Delete Milestone
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            {isAdmin() && (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => handleEdit(milestone)}>
+                                                            <Edit className="h-4 w-4 mr-2" />
+                                                            Edit Milestone
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleDelete(milestone)}
+                                                            className="text-red-600 focus:text-red-600"
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-2" />
+                                                            Delete Milestone
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            )}
+
                                         </div>
                                     </motion.div>
                                 );

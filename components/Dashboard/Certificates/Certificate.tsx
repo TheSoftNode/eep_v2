@@ -297,21 +297,21 @@ export default function CertificatesPage() {
     const renderStatusBadge = (status: Certificate['status']) => {
         if (status === 'completed') {
             return (
-                <Badge className="bg-green-100 text-green-800 border-green-200">
+                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Completed
                 </Badge>
             );
         } else if (status === 'in-progress') {
             return (
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50">
                     <Clock className="h-3 w-3 mr-1" />
                     In Progress
                 </Badge>
             );
         } else {
             return (
-                <Badge className="bg-gray-100 text-gray-800 border-gray-200">
+                <Badge className="bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-700/50">
                     <Lock className="h-3 w-3 mr-1" />
                     Not Started
                 </Badge>
@@ -330,352 +330,226 @@ export default function CertificatesPage() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Certificates & Badges</h1>
-                        <p className="text-gray-500">Track your certifications and showcase your achievements</p>
-                    </div>
+        <div className="min-h-screen bg-slate-50 dark:bg-gradient-to-br dark:from-[#0A0F2C] dark:to-[#0A0E1F] transition-colors duration-300">
+            {/* Background Effects */}
+            <div className="fixed inset-0 dark:bg-grid-slate-900/[0.01] bg-grid-slate-700/[0.01] bg-[size:60px_60px] pointer-events-none opacity-20"></div>
+            <div className="fixed top-0 right-0 w-full h-full z-0 opacity-10 overflow-hidden pointer-events-none">
+                <div className="absolute top-[15%] right-[15%] w-[55%] h-[65%] rounded-full dark:bg-gradient-to-br dark:from-indigo-600/8 dark:via-pink-500/4 dark:to-violet-600/4 bg-gradient-to-br from-indigo-600/6 via-pink-500/3 to-violet-600/3 blur-3xl" />
+            </div>
 
-                    <div className="flex items-center gap-2">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                    <Share2 className="h-4 w-4 mr-2" />
-                                    Share
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                    <LinkedinIcon className="h-4 w-4 mr-2" />
-                                    Share on LinkedIn
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <ExternalLink className="h-4 w-4 mr-2" />
-                                    Share portfolio URL
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Download as PDF
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        <Button>
-                            <GraduationCap className="h-4 w-4 mr-2" />
-                            Browse Certifications
-                        </Button>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Progress Overview */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-            >
-                <Card className="bg-gradient-to-br from-indigo-600 to-violet-600 border-0">
-                    <CardContent className="pt-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-2">
-                                <h2 className="text-white text-lg font-semibold mb-2">Your Certification Progress</h2>
-                                <p className="text-indigo-100 mb-4">
-                                    You've completed {certificates.filter(c => c.status === 'completed').length} out of {certificates.length} certificates and badges
-                                </p>
-
-                                <div className="space-y-1">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-indigo-100">Overall Completion</span>
-                                        <span className="text-white font-medium">{calculateOverallProgress()}%</span>
-                                    </div>
-                                    <Progress value={calculateOverallProgress()} className="h-2 bg-white/20 [--progress-foreground:white]" />
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-4 mt-6">
-                                    <div className="bg-white/10 rounded-lg p-3">
-                                        <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'completed').length}</div>
-                                        <div className="text-xs text-indigo-100">Completed</div>
-                                    </div>
-                                    <div className="bg-white/10 rounded-lg p-3">
-                                        <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'in-progress').length}</div>
-                                        <div className="text-xs text-indigo-100">In Progress</div>
-                                    </div>
-                                    <div className="bg-white/10 rounded-lg p-3">
-                                        <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'not-started').length}</div>
-                                        <div className="text-xs text-indigo-100">Not Started</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col items-center justify-center p-4 bg-white/10 rounded-lg">
-                                <Award className="h-10 w-10 text-white mb-3" />
-                                <h3 className="text-white font-medium text-center mb-1">Featured Certificate</h3>
-                                <p className="text-indigo-100 text-sm text-center mb-3">
-                                    {certificates.find(c => c.featured)?.name || "No featured certificate"}
-                                </p>
-                                <Button className="bg-white/20 hover:bg-white/30 text-white w-full">
-                                    <Sparkles className="h-4 w-4 mr-1" />
-                                    Set Featured
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-
-            {/* Main Content */}
-            <div className="space-y-6">
-                {/* Filters & Search */}
-                <div className="flex flex-col sm:flex-row justify-between gap-4">
-                    <div className="flex">
-                        <Tabs
-                            defaultValue="all"
-                            value={activeTab}
-                            onValueChange={setActiveTab}
-                            className="w-full"
-                        >
-                            <TabsList className="grid grid-cols-4 w-full max-w-md">
-                                <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                                <TabsTrigger value="in-progress" className="text-xs">In Progress</TabsTrigger>
-                                <TabsTrigger value="completed" className="text-xs">Completed</TabsTrigger>
-                                <TabsTrigger value="not-started" className="text-xs">Not Started</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </div>
-
-                    <div className="flex gap-2">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                            <Input
-                                type="search"
-                                placeholder="Search certificates..."
-                                className="w-64 pl-9"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+            <div className="relative z-10 space-y-6 p-6">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight dark:text-white text-slate-900">
+                                Certificates & Badges
+                            </h1>
+                            <p className="text-slate-600 dark:text-slate-400">
+                                Track your certifications and showcase your achievements
+                            </p>
                         </div>
 
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon">
-                                    <Filter className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                    <div className="flex items-center justify-between w-full">
-                                        <span>Show Shared</span>
-                                        <Switch checked={showShared} onCheckedChange={setShowShared} className="ml-2" />
-                                    </div>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Filter by Date</DropdownMenuItem>
-                                <DropdownMenuItem>Filter by Type</DropdownMenuItem>
-                                <DropdownMenuItem>Filter by Issuer</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-2">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                                        <Share2 className="h-4 w-4 mr-2" />
+                                        Share
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">
+                                        <LinkedinIcon className="h-4 w-4 mr-2" />
+                                        Share on LinkedIn
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">
+                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                        Share portfolio URL
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator className="dark:border-slate-700/50" />
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Download as PDF
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
 
-                        <div className="flex border rounded-md">
-                            <Button
-                                variant={view === 'grid' ? 'secondary' : 'ghost'}
-                                size="icon"
-                                onClick={() => setView('grid')}
-                                className="rounded-none rounded-l-md"
-                            >
-                                <Grid className="h-4 w-4" />
-                            </Button>
-                            <Separator orientation="vertical" />
-                            <Button
-                                variant={view === 'list' ? 'secondary' : 'ghost'}
-                                size="icon"
-                                onClick={() => setView('list')}
-                                className="rounded-none rounded-r-md"
-                            >
-                                <List className="h-4 w-4" />
+                            <Button className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border-0">
+                                <GraduationCap className="h-4 w-4 mr-2" />
+                                Browse Certifications
                             </Button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Certificates Grid/List */}
-                {filteredCertificates.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="mx-auto h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                            <Award className="h-8 w-8 text-gray-400" />
-                        </div>
-                        <h3 className="font-semibold text-lg mb-2">No Certificates Found</h3>
-                        <p className="text-gray-500 max-w-md mx-auto">
-                            {searchQuery
-                                ? `No certificates matching "${searchQuery}" were found.`
-                                : activeTab !== 'all'
-                                    ? `You don't have any ${activeTab.replace('-', ' ')} certificates.`
-                                    : "You haven't earned any certificates yet. Start your learning journey to earn certificates and badges."}
-                        </p>
-                    </div>
-                ) : (
-                    view === 'grid' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredCertificates.map((certificate) => (
-                                <motion.div
-                                    key={certificate.id}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                    whileHover={{ y: -5 }}
-                                >
-                                    <Card className="overflow-hidden h-full flex flex-col">
-                                        <div className={cn(
-                                            "h-40 flex items-center justify-center p-6 relative",
-                                            certificate.status === 'completed'
-                                                ? "bg-green-50"
-                                                : certificate.status === 'in-progress'
-                                                    ? "bg-blue-50"
-                                                    : "bg-gray-50"
-                                        )}>
-                                            {certificate.imageUrl ? (
-                                                <img
-                                                    src={certificate.imageUrl}
-                                                    alt={certificate.name}
-                                                    className="max-h-full max-w-full object-contain"
-                                                />
-                                            ) : (
-                                                <div className={cn(
-                                                    "h-24 w-24 rounded-full flex items-center justify-center",
-                                                    certificate.status === 'completed'
-                                                        ? "bg-green-100"
-                                                        : certificate.status === 'in-progress'
-                                                            ? "bg-blue-100"
-                                                            : "bg-gray-100"
-                                                )}>
-                                                    {certificate.type === 'certificate' && (
-                                                        <Award className="h-12 w-12 text-indigo-600" />
-                                                    )}
-                                                    {certificate.type === 'badge' && (
-                                                        <Star className="h-12 w-12 text-indigo-600" />
-                                                    )}
-                                                    {certificate.type === 'credential' && (
-                                                        <Trophy className="h-12 w-12 text-indigo-600" />
-                                                    )}
-                                                </div>
-                                            )}
-                                            <div className="absolute top-2 right-2">
-                                                {renderStatusBadge(certificate.status)}
-                                            </div>
-                                            {certificate.featured && (
-                                                <div className="absolute top-2 left-2">
-                                                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                                        <Sparkles className="h-3 w-3 mr-1" />
-                                                        Featured
-                                                    </Badge>
-                                                </div>
-                                            )}
+                {/* Progress Overview */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                    <Card className="bg-gradient-to-br from-indigo-600 to-violet-600 border-0 shadow-xl shadow-indigo-500/20 backdrop-blur-sm">
+                        <CardContent className="pt-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="md:col-span-2">
+                                    <h2 className="text-white text-lg font-semibold mb-2">Your Certification Progress</h2>
+                                    <p className="text-indigo-100 mb-4">
+                                        You've completed {certificates.filter(c => c.status === 'completed').length} out of {certificates.length} certificates and badges
+                                    </p>
+
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-indigo-100">Overall Completion</span>
+                                            <span className="text-white font-medium">{calculateOverallProgress()}%</span>
                                         </div>
-                                        <CardHeader className="pb-2">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <CardTitle className="text-base">{certificate.name}</CardTitle>
-                                                    <CardDescription className="flex items-center">
-                                                        <Avatar className="h-5 w-5 mr-1">
-                                                            <AvatarImage src={certificate.issuerLogo} />
-                                                            <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700">{certificate.issuerInitials}</AvatarFallback>
-                                                        </Avatar>
-                                                        {certificate.issuedBy}
-                                                    </CardDescription>
-                                                </div>
-                                                <Badge variant="outline" className={cn(
-                                                    "capitalize",
-                                                    certificate.type === 'certificate' && "bg-indigo-50 text-indigo-700 border-indigo-200",
-                                                    certificate.type === 'badge' && "bg-purple-50 text-purple-700 border-purple-200",
-                                                    certificate.type === 'credential' && "bg-blue-50 text-blue-700 border-blue-200"
-                                                )}>
-                                                    {certificate.type}
-                                                </Badge>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="py-2 flex-1">
-                                            {certificate.status === 'in-progress' && (
-                                                <div className="mb-3">
-                                                    <div className="flex justify-between items-center text-xs mb-1">
-                                                        <span className="text-gray-500">Progress</span>
-                                                        <span className="font-medium">{certificate.progress}%</span>
-                                                    </div>
-                                                    <Progress value={certificate.progress} className="h-1" />
-                                                </div>
-                                            )}
+                                        <Progress value={calculateOverallProgress()} className="h-2 bg-white/20 [--progress-foreground:white]" />
+                                    </div>
 
-                                            <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                                                {certificate.description}
-                                            </p>
+                                    <div className="grid grid-cols-3 gap-4 mt-6">
+                                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                                            <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'completed').length}</div>
+                                            <div className="text-xs text-indigo-100">Completed</div>
+                                        </div>
+                                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                                            <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'in-progress').length}</div>
+                                            <div className="text-xs text-indigo-100">In Progress</div>
+                                        </div>
+                                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                                            <div className="text-2xl font-bold text-white">{certificates.filter(c => c.status === 'not-started').length}</div>
+                                            <div className="text-xs text-indigo-100">Not Started</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                            <div className="flex flex-wrap gap-1">
-                                                {certificate.skills.slice(0, 3).map((skill, idx) => (
-                                                    <Badge key={idx} variant="outline" className="text-xs bg-gray-50">
-                                                        {skill}
-                                                    </Badge>
-                                                ))}
-                                                {certificate.skills.length > 3 && (
-                                                    <Badge variant="outline" className="text-xs bg-gray-50">
-                                                        +{certificate.skills.length - 3}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="border-t pt-3 flex justify-between">
-                                            {certificate.status === 'completed' ? (
-                                                <div className="text-xs text-gray-500">
-                                                    Issued: {formatDate(certificate.dateIssued)}
-                                                </div>
-                                            ) : certificate.status === 'in-progress' ? (
-                                                <div className="text-xs text-gray-500">
-                                                    <CheckCircle className="h-3 w-3 text-green-500 inline-block mr-1" />
-                                                    {getCertificateRequirements(certificate.id).filter(r => r.completed).length} of {getCertificateRequirements(certificate.id).length} requirements completed
-                                                </div>
-                                            ) : (
-                                                <div className="text-xs text-gray-500">
-                                                    <AlertCircle className="h-3 w-3 text-amber-500 inline-block mr-1" />
-                                                    Not started yet
-                                                </div>
-                                            )}
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="p-0 h-auto text-indigo-600 hover:text-indigo-800"
-                                                onClick={() => setSelectedCertificate(certificate)}
-                                            >
-                                                View
-                                                <ChevronRight className="h-4 w-4 ml-1" />
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </motion.div>
-                            ))}
+                                <div className="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
+                                    <Award className="h-10 w-10 text-white mb-3" />
+                                    <h3 className="text-white font-medium text-center mb-1">Featured Certificate</h3>
+                                    <p className="text-indigo-100 text-sm text-center mb-3">
+                                        {certificates.find(c => c.featured)?.name || "No featured certificate"}
+                                    </p>
+                                    <Button className="bg-white/20 hover:bg-white/30 text-white w-full border border-white/20 backdrop-blur-sm">
+                                        <Sparkles className="h-4 w-4 mr-1" />
+                                        Set Featured
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                {/* Main Content */}
+                <div className="space-y-6">
+                    {/* Filters & Search */}
+                    <div className="flex flex-col sm:flex-row justify-between gap-4">
+                        <div className="flex">
+                            <Tabs
+                                defaultValue="all"
+                                value={activeTab}
+                                onValueChange={setActiveTab}
+                                className="w-full"
+                            >
+                                <TabsList className="grid grid-cols-4 w-full max-w-md dark:bg-slate-800/50 dark:border-slate-700/50 backdrop-blur-sm">
+                                    <TabsTrigger value="all" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">All</TabsTrigger>
+                                    <TabsTrigger value="in-progress" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">In Progress</TabsTrigger>
+                                    <TabsTrigger value="completed" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">Completed</TabsTrigger>
+                                    <TabsTrigger value="not-started" className="text-xs dark:data-[state=active]:bg-slate-700/70 dark:data-[state=active]:text-slate-100">Not Started</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
+                                <Input
+                                    type="search"
+                                    placeholder="Search certificates..."
+                                    className="w-64 pl-9 dark:bg-slate-800/50 dark:border-slate-700/50 dark:text-slate-100 dark:placeholder-slate-400 backdrop-blur-sm"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="icon" className="dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50 backdrop-blur-sm">
+                                        <Filter className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">
+                                        <div className="flex items-center justify-between w-full">
+                                            <span>Show Shared</span>
+                                            <Switch checked={showShared} onCheckedChange={setShowShared} className="ml-2" />
+                                        </div>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator className="dark:border-slate-700/50" />
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">Filter by Date</DropdownMenuItem>
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">Filter by Type</DropdownMenuItem>
+                                    <DropdownMenuItem className="dark:hover:bg-slate-700/50 dark:text-slate-300">Filter by Issuer</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <div className="flex border rounded-md dark:border-slate-700/50 overflow-hidden backdrop-blur-sm">
+                                <Button
+                                    variant={view === 'grid' ? 'secondary' : 'ghost'}
+                                    size="icon"
+                                    onClick={() => setView('grid')}
+                                    className="rounded-none dark:hover:bg-slate-700/50 dark:data-[state=active]:bg-slate-700/70"
+                                >
+                                    <Grid className="h-4 w-4" />
+                                </Button>
+                                <Separator orientation="vertical" className="dark:bg-slate-700/50" />
+                                <Button
+                                    variant={view === 'list' ? 'secondary' : 'ghost'}
+                                    size="icon"
+                                    onClick={() => setView('list')}
+                                    className="rounded-none dark:hover:bg-slate-700/50 dark:data-[state=active]:bg-slate-700/70"
+                                >
+                                    <List className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Certificates Grid/List */}
+                    {filteredCertificates.length === 0 ? (
+                        <div className="text-center py-12">
+                            <div className="mx-auto h-16 w-16 rounded-full bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center mb-4 backdrop-blur-sm">
+                                <Award className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                            </div>
+                            <h3 className="font-semibold text-lg mb-2 dark:text-white text-slate-900">No Certificates Found</h3>
+                            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                                {searchQuery
+                                    ? `No certificates matching "${searchQuery}" were found.`
+                                    : activeTab !== 'all'
+                                        ? `You don't have any ${activeTab.replace('-', ' ')} certificates.`
+                                        : "You haven't earned any certificates yet. Start your learning journey to earn certificates and badges."}
+                            </p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {filteredCertificates.map((certificate) => (
-                                <motion.div
-                                    key={certificate.id}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    <Card>
-                                        <div className="p-4 flex items-start gap-4">
+                        view === 'grid' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredCertificates.map((certificate) => (
+                                    <motion.div
+                                        key={certificate.id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.3 }}
+                                        whileHover={{ y: -5 }}
+                                    >
+                                        <Card className="overflow-hidden h-full flex flex-col dark:bg-slate-800/50 dark:border-slate-700/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 dark:hover:shadow-indigo-500/10">
                                             <div className={cn(
-                                                "h-16 w-16 rounded-lg flex items-center justify-center flex-shrink-0",
+                                                "h-40 flex items-center justify-center p-6 relative",
                                                 certificate.status === 'completed'
-                                                    ? "bg-green-50"
+                                                    ? "bg-emerald-50 dark:bg-emerald-900/20"
                                                     : certificate.status === 'in-progress'
-                                                        ? "bg-blue-50"
-                                                        : "bg-gray-50"
+                                                        ? "bg-blue-50 dark:bg-blue-900/20"
+                                                        : "bg-slate-50 dark:bg-slate-800/30"
                                             )}>
                                                 {certificate.imageUrl ? (
                                                     <img
@@ -684,290 +558,429 @@ export default function CertificatesPage() {
                                                         className="max-h-full max-w-full object-contain"
                                                     />
                                                 ) : (
-                                                    <>
+                                                    <div className={cn(
+                                                        "h-24 w-24 rounded-full flex items-center justify-center",
+                                                        certificate.status === 'completed'
+                                                            ? "bg-emerald-100 dark:bg-emerald-900/30"
+                                                            : certificate.status === 'in-progress'
+                                                                ? "bg-blue-100 dark:bg-blue-900/30"
+                                                                : "bg-slate-100 dark:bg-slate-700/50"
+                                                    )}>
                                                         {certificate.type === 'certificate' && (
-                                                            <Award className="h-8 w-8 text-indigo-600" />
+                                                            <Award className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
                                                         )}
                                                         {certificate.type === 'badge' && (
-                                                            <Star className="h-8 w-8 text-indigo-600" />
+                                                            <Star className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
                                                         )}
                                                         {certificate.type === 'credential' && (
-                                                            <Trophy className="h-8 w-8 text-indigo-600" />
+                                                            <Trophy className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
                                                         )}
-                                                    </>
+                                                    </div>
+                                                )}
+                                                <div className="absolute top-2 right-2">
+                                                    {renderStatusBadge(certificate.status)}
+                                                </div>
+                                                {certificate.featured && (
+                                                    <div className="absolute top-2 left-2">
+                                                        <Badge className="bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/50">
+                                                            <Sparkles className="h-3 w-3 mr-1" />
+                                                            Featured
+                                                        </Badge>
+                                                    </div>
                                                 )}
                                             </div>
-
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                            <CardHeader className="pb-2">
+                                                <div className="flex justify-between items-start">
                                                     <div>
-                                                        <div className="flex items-center">
-                                                            <h3 className="font-medium">{certificate.name}</h3>
-                                                            {certificate.featured && (
-                                                                <Badge className="ml-2 bg-amber-100 text-amber-800 border-amber-200">
-                                                                    <Sparkles className="h-3 w-3 mr-1" />
-                                                                    Featured
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center text-sm text-gray-500">
-                                                            <Avatar className="h-4 w-4 mr-1">
+                                                        <CardTitle className="text-base dark:text-white">{certificate.name}</CardTitle>
+                                                        <CardDescription className="flex items-center dark:text-slate-400">
+                                                            <Avatar className="h-5 w-5 mr-1">
                                                                 <AvatarImage src={certificate.issuerLogo} />
-                                                                <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700">{certificate.issuerInitials}</AvatarFallback>
+                                                                <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">{certificate.issuerInitials}</AvatarFallback>
                                                             </Avatar>
                                                             {certificate.issuedBy}
-                                                            <span className="mx-1">•</span>
-                                                            <Badge variant="outline" className={cn(
-                                                                "capitalize text-xs",
-                                                                certificate.type === 'certificate' && "bg-indigo-50 text-indigo-700 border-indigo-200",
-                                                                certificate.type === 'badge' && "bg-purple-50 text-purple-700 border-purple-200",
-                                                                certificate.type === 'credential' && "bg-blue-50 text-blue-700 border-blue-200"
-                                                            )}>
-                                                                {certificate.type}
-                                                            </Badge>
-                                                        </div>
+                                                        </CardDescription>
                                                     </div>
-
-                                                    <div className="flex items-center">
-                                                        {renderStatusBadge(certificate.status)}
-                                                    </div>
+                                                    <Badge variant="outline" className={cn(
+                                                        "capitalize",
+                                                        certificate.type === 'certificate' && "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800/50",
+                                                        certificate.type === 'badge' && "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/50",
+                                                        certificate.type === 'credential' && "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50"
+                                                    )}>
+                                                        {certificate.type}
+                                                    </Badge>
                                                 </div>
-
+                                            </CardHeader>
+                                            <CardContent className="py-2 flex-1">
                                                 {certificate.status === 'in-progress' && (
-                                                    <div className="mt-3 mb-2 max-w-md">
+                                                    <div className="mb-3">
                                                         <div className="flex justify-between items-center text-xs mb-1">
-                                                            <span className="text-gray-500">Progress</span>
-                                                            <span className="font-medium">{certificate.progress}%</span>
+                                                            <span className="text-slate-500 dark:text-slate-400">Progress</span>
+                                                            <span className="font-medium dark:text-slate-300">{certificate.progress}%</span>
                                                         </div>
-                                                        <Progress value={certificate.progress} className="h-1" />
+                                                        <Progress value={certificate.progress} className="h-1 dark:bg-slate-700/50" />
                                                     </div>
                                                 )}
 
-                                                <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                                                <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
                                                     {certificate.description}
                                                 </p>
 
-                                                <div className="flex flex-wrap gap-1 mt-2">
-                                                    {certificate.skills.map((skill, idx) => (
-                                                        <Badge key={idx} variant="outline" className="text-xs bg-gray-50">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {certificate.skills.slice(0, 3).map((skill, idx) => (
+                                                        <Badge key={idx} variant="outline" className="text-xs bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600/50">
                                                             {skill}
                                                         </Badge>
                                                     ))}
+                                                    {certificate.skills.length > 3 && (
+                                                        <Badge variant="outline" className="text-xs bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600/50">
+                                                            +{certificate.skills.length - 3}
+                                                        </Badge>
+                                                    )}
                                                 </div>
-                                            </div>
-
-                                            <div className="flex flex-col items-end justify-between h-full gap-4">
-                                                <div className="text-xs text-gray-500 text-right">
-                                                    {certificate.status === 'completed' ? (
-                                                        <>Issued: {formatDate(certificate.dateIssued)}</>
-                                                    ) : certificate.status === 'in-progress' ? (
-                                                        <>
-                                                            <CheckCircle className="h-3 w-3 text-green-500 inline-block mr-1" />
-                                                            {getCertificateRequirements(certificate.id).filter(r => r.completed).length} of {getCertificateRequirements(certificate.id).length} requirements
-                                                        </>
+                                            </CardContent>
+                                            <CardFooter className="border-t dark:border-slate-700/50 pt-3 flex justify-between">
+                                                {certificate.status === 'completed' ? (
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                                        Issued: {formatDate(certificate.dateIssued)}
+                                                    </div>
+                                                ) : certificate.status === 'in-progress' ? (
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                                        <CheckCircle className="h-3 w-3 text-emerald-500 inline-block mr-1" />
+                                                        {getCertificateRequirements(certificate.id).filter(r => r.completed).length} of {getCertificateRequirements(certificate.id).length} requirements completed
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                                        <AlertCircle className="h-3 w-3 text-amber-500 inline-block mr-1" />
+                                                        Not started yet
+                                                    </div>
+                                                )}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="p-0 h-auto text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                    onClick={() => setSelectedCertificate(certificate)}
+                                                >
+                                                    View
+                                                    <ChevronRight className="h-4 w-4 ml-1" />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {filteredCertificates.map((certificate) => (
+                                    <motion.div
+                                        key={certificate.id}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <Card className="dark:bg-slate-800/50 dark:border-slate-700/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 dark:hover:shadow-indigo-500/10">
+                                            <div className="p-4 flex items-start gap-4">
+                                                <div className={cn(
+                                                    "h-16 w-16 rounded-lg flex items-center justify-center flex-shrink-0",
+                                                    certificate.status === 'completed'
+                                                        ? "bg-emerald-50 dark:bg-emerald-900/20"
+                                                        : certificate.status === 'in-progress'
+                                                            ? "bg-blue-50 dark:bg-blue-900/20"
+                                                            : "bg-slate-50 dark:bg-slate-800/30"
+                                                )}>
+                                                    {certificate.imageUrl ? (
+                                                        <img
+                                                            src={certificate.imageUrl}
+                                                            alt={certificate.name}
+                                                            className="max-h-full max-w-full object-contain"
+                                                        />
                                                     ) : (
                                                         <>
-                                                            <AlertCircle className="h-3 w-3 text-amber-500 inline-block mr-1" />
-                                                            Not started
+                                                            {certificate.type === 'certificate' && (
+                                                                <Award className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                                                            )}
+                                                            {certificate.type === 'badge' && (
+                                                                <Star className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                                                            )}
+                                                            {certificate.type === 'credential' && (
+                                                                <Trophy className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                                                            )}
                                                         </>
                                                     )}
                                                 </div>
 
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => setSelectedCertificate(certificate)}
-                                                >
-                                                    View Details
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </motion.div>
-                            ))}
-                        </div>
-                    )
-                )}
-            </div>
-
-            {/* Certificate Detail Dialog */}
-            {selectedCertificate && (
-                <Dialog open={!!selectedCertificate} onOpenChange={() => setSelectedCertificate(null)}>
-                    <DialogContent className="sm:max-w-[700px]">
-                        <DialogHeader>
-                            <DialogTitle>Certificate Details</DialogTitle>
-                            <DialogDescription>
-                                Information about your {selectedCertificate.type}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4">
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <div className="md:w-1/3">
-                                    <div className={cn(
-                                        "h-48 rounded-lg flex items-center justify-center p-4",
-                                        selectedCertificate.status === 'completed'
-                                            ? "bg-green-50"
-                                            : selectedCertificate.status === 'in-progress'
-                                                ? "bg-blue-50"
-                                                : "bg-gray-50"
-                                    )}>
-                                        {selectedCertificate.imageUrl ? (
-                                            <img
-                                                src={selectedCertificate.imageUrl}
-                                                alt={selectedCertificate.name}
-                                                className="max-h-full max-w-full object-contain"
-                                            />
-                                        ) : (
-                                            <div className={cn(
-                                                "h-24 w-24 rounded-full flex items-center justify-center",
-                                                selectedCertificate.status === 'completed'
-                                                    ? "bg-green-100"
-                                                    : selectedCertificate.status === 'in-progress'
-                                                        ? "bg-blue-100"
-                                                        : "bg-gray-100"
-                                            )}>
-                                                {selectedCertificate.type === 'certificate' && (
-                                                    <Award className="h-12 w-12 text-indigo-600" />
-                                                )}
-                                                {selectedCertificate.type === 'badge' && (
-                                                    <Star className="h-12 w-12 text-indigo-600" />
-                                                )}
-                                                {selectedCertificate.type === 'credential' && (
-                                                    <Trophy className="h-12 w-12 text-indigo-600" />
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="mt-4 space-y-3">
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-500">Issued By</div>
-                                            <div className="flex items-center mt-1">
-                                                <Avatar className="h-5 w-5 mr-2">
-                                                    <AvatarImage src={selectedCertificate.issuerLogo} />
-                                                    <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700">{selectedCertificate.issuerInitials}</AvatarFallback>
-                                                </Avatar>
-                                                <span>{selectedCertificate.issuedBy}</span>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-500">Date Issued</div>
-                                            <div>{formatDate(selectedCertificate.dateIssued)}</div>
-                                        </div>
-
-                                        {selectedCertificate.expiryDate && (
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-500">Expiry Date</div>
-                                                <div>{formatDate(selectedCertificate.expiryDate)}</div>
-                                            </div>
-                                        )}
-
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-500">Credential ID</div>
-                                            <div className="font-mono text-sm">{selectedCertificate.credentialId}</div>
-                                        </div>
-
-                                        {selectedCertificate.featured && (
-                                            <div className="pt-2">
-                                                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                                                    <Sparkles className="h-3 w-3 mr-1" />
-                                                    Featured in Portfolio
-                                                </Badge>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="md:w-2/3">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-semibold">{selectedCertificate.name}</h3>
-                                        {renderStatusBadge(selectedCertificate.status)}
-                                    </div>
-
-                                    <p className="text-gray-600 mt-2 mb-4">
-                                        {selectedCertificate.description}
-                                    </p>
-
-                                    {selectedCertificate.status === 'in-progress' && (
-                                        <div className="mb-4">
-                                            <div className="flex justify-between items-center text-sm mb-1">
-                                                <span className="text-gray-500">Progress</span>
-                                                <span className="font-medium">{selectedCertificate.progress}%</span>
-                                            </div>
-                                            <Progress value={selectedCertificate.progress} className="h-2" />
-                                        </div>
-                                    )}
-
-                                    <div className="mt-4">
-                                        <h4 className="font-medium text-gray-700 mb-2">Skills</h4>
-                                        <div className="flex flex-wrap gap-1">
-                                            {selectedCertificate.skills.map((skill, idx) => (
-                                                <Badge key={idx} variant="outline" className="bg-gray-50">
-                                                    {skill}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {getCertificateRequirements(selectedCertificate.id).length > 0 && (
-                                        <div className="mt-6">
-                                            <h4 className="font-medium text-gray-700 mb-2">Requirements</h4>
-                                            <div className="space-y-2">
-                                                {getCertificateRequirements(selectedCertificate.id).map((req) => (
-                                                    <div key={req.id} className="p-3 bg-gray-50 rounded-lg">
-                                                        <div className="flex items-start">
-                                                            <div className={cn(
-                                                                "h-5 w-5 rounded-full flex items-center justify-center mr-2 mt-0.5",
-                                                                req.completed ? "bg-green-100" : "bg-gray-200"
-                                                            )}>
-                                                                {req.completed ? (
-                                                                    <CheckCircle className="h-4 w-4 text-green-600" />
-                                                                ) : (
-                                                                    <Clock className="h-3 w-3 text-gray-500" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                        <div>
+                                                            <div className="flex items-center">
+                                                                <h3 className="font-medium dark:text-white text-slate-900">{certificate.name}</h3>
+                                                                {certificate.featured && (
+                                                                    <Badge className="ml-2 bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/50">
+                                                                        <Sparkles className="h-3 w-3 mr-1" />
+                                                                        Featured
+                                                                    </Badge>
                                                                 )}
                                                             </div>
-                                                            <div>
-                                                                <div className="font-medium">{req.title}</div>
-                                                                <div className="text-sm text-gray-500">{req.description}</div>
-                                                                {req.completed && req.date && (
-                                                                    <div className="text-xs text-green-600 mt-1">Completed on {formatDate(req.date)}</div>
-                                                                )}
+                                                            <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+                                                                <Avatar className="h-4 w-4 mr-1">
+                                                                    <AvatarImage src={certificate.issuerLogo} />
+                                                                    <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">{certificate.issuerInitials}</AvatarFallback>
+                                                                </Avatar>
+                                                                {certificate.issuedBy}
+                                                                <span className="mx-1">•</span>
+                                                                <Badge variant="outline" className={cn(
+                                                                    "capitalize text-xs",
+                                                                    certificate.type === 'certificate' && "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800/50",
+                                                                    certificate.type === 'badge' && "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/50",
+                                                                    certificate.type === 'credential' && "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50"
+                                                                )}>
+                                                                    {certificate.type}
+                                                                </Badge>
                                                             </div>
                                                         </div>
+
+                                                        <div className="flex items-center">
+                                                            {renderStatusBadge(certificate.status)}
+                                                        </div>
                                                     </div>
+
+                                                    {certificate.status === 'in-progress' && (
+                                                        <div className="mt-3 mb-2 max-w-md">
+                                                            <div className="flex justify-between items-center text-xs mb-1">
+                                                                <span className="text-slate-500 dark:text-slate-400">Progress</span>
+                                                                <span className="font-medium dark:text-slate-300">{certificate.progress}%</span>
+                                                            </div>
+                                                            <Progress value={certificate.progress} className="h-1 dark:bg-slate-700/50" />
+                                                        </div>
+                                                    )}
+
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 line-clamp-2">
+                                                        {certificate.description}
+                                                    </p>
+
+                                                    <div className="flex flex-wrap gap-1 mt-2">
+                                                        {certificate.skills.map((skill, idx) => (
+                                                            <Badge key={idx} variant="outline" className="text-xs bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600/50">
+                                                                {skill}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col items-end justify-between h-full gap-4">
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400 text-right">
+                                                        {certificate.status === 'completed' ? (
+                                                            <>Issued: {formatDate(certificate.dateIssued)}</>
+                                                        ) : certificate.status === 'in-progress' ? (
+                                                            <>
+                                                                <CheckCircle className="h-3 w-3 text-emerald-500 inline-block mr-1" />
+                                                                {getCertificateRequirements(certificate.id).filter(r => r.completed).length} of {getCertificateRequirements(certificate.id).length} requirements
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <AlertCircle className="h-3 w-3 text-amber-500 inline-block mr-1" />
+                                                                Not started
+                                                            </>
+                                                        )}
+                                                    </div>
+
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => setSelectedCertificate(certificate)}
+                                                        className="dark:bg-slate-700/50 dark:hover:bg-slate-600/50 dark:text-slate-200 backdrop-blur-sm"
+                                                    >
+                                                        View Details
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )
+                    )}
+                </div>
+
+                {/* Certificate Detail Dialog */}
+                {selectedCertificate && (
+                    <Dialog open={!!selectedCertificate} onOpenChange={() => setSelectedCertificate(null)}>
+                        <DialogContent className="sm:max-w-[700px] dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
+                            <DialogHeader>
+                                <DialogTitle className="dark:text-white">Certificate Details</DialogTitle>
+                                <DialogDescription className="dark:text-slate-400">
+                                    Information about your {selectedCertificate.type}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="py-4">
+                                <div className="flex flex-col md:flex-row gap-6">
+                                    <div className="md:w-1/3">
+                                        <div className={cn(
+                                            "h-48 rounded-lg flex items-center justify-center p-4",
+                                            selectedCertificate.status === 'completed'
+                                                ? "bg-emerald-50 dark:bg-emerald-900/20"
+                                                : selectedCertificate.status === 'in-progress'
+                                                    ? "bg-blue-50 dark:bg-blue-900/20"
+                                                    : "bg-slate-50 dark:bg-slate-800/30"
+                                        )}>
+                                            {selectedCertificate.imageUrl ? (
+                                                <img
+                                                    src={selectedCertificate.imageUrl}
+                                                    alt={selectedCertificate.name}
+                                                    className="max-h-full max-w-full object-contain"
+                                                />
+                                            ) : (
+                                                <div className={cn(
+                                                    "h-24 w-24 rounded-full flex items-center justify-center",
+                                                    selectedCertificate.status === 'completed'
+                                                        ? "bg-emerald-100 dark:bg-emerald-900/30"
+                                                        : selectedCertificate.status === 'in-progress'
+                                                            ? "bg-blue-100 dark:bg-blue-900/30"
+                                                            : "bg-slate-100 dark:bg-slate-700/50"
+                                                )}>
+                                                    {selectedCertificate.type === 'certificate' && (
+                                                        <Award className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
+                                                    )}
+                                                    {selectedCertificate.type === 'badge' && (
+                                                        <Star className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
+                                                    )}
+                                                    {selectedCertificate.type === 'credential' && (
+                                                        <Trophy className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="mt-4 space-y-3">
+                                            <div>
+                                                <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Issued By</div>
+                                                <div className="flex items-center mt-1">
+                                                    <Avatar className="h-5 w-5 mr-2">
+                                                        <AvatarImage src={selectedCertificate.issuerLogo} />
+                                                        <AvatarFallback className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">{selectedCertificate.issuerInitials}</AvatarFallback>
+                                                    </Avatar>
+                                                    <span className="dark:text-slate-300">{selectedCertificate.issuedBy}</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Date Issued</div>
+                                                <div className="dark:text-slate-300">{formatDate(selectedCertificate.dateIssued)}</div>
+                                            </div>
+
+                                            {selectedCertificate.expiryDate && (
+                                                <div>
+                                                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Expiry Date</div>
+                                                    <div className="dark:text-slate-300">{formatDate(selectedCertificate.expiryDate)}</div>
+                                                </div>
+                                            )}
+
+                                            <div>
+                                                <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Credential ID</div>
+                                                <div className="font-mono text-sm dark:text-slate-300">{selectedCertificate.credentialId}</div>
+                                            </div>
+
+                                            {selectedCertificate.featured && (
+                                                <div className="pt-2">
+                                                    <Badge className="bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/50">
+                                                        <Sparkles className="h-3 w-3 mr-1" />
+                                                        Featured in Portfolio
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="md:w-2/3">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-semibold dark:text-white">{selectedCertificate.name}</h3>
+                                            {renderStatusBadge(selectedCertificate.status)}
+                                        </div>
+
+                                        <p className="text-slate-600 dark:text-slate-400 mt-2 mb-4">
+                                            {selectedCertificate.description}
+                                        </p>
+
+                                        {selectedCertificate.status === 'in-progress' && (
+                                            <div className="mb-4">
+                                                <div className="flex justify-between items-center text-sm mb-1">
+                                                    <span className="text-slate-500 dark:text-slate-400">Progress</span>
+                                                    <span className="font-medium dark:text-slate-300">{selectedCertificate.progress}%</span>
+                                                </div>
+                                                <Progress value={selectedCertificate.progress} className="h-2 dark:bg-slate-700/50" />
+                                            </div>
+                                        )}
+
+                                        <div className="mt-4">
+                                            <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">Skills</h4>
+                                            <div className="flex flex-wrap gap-1">
+                                                {selectedCertificate.skills.map((skill, idx) => (
+                                                    <Badge key={idx} variant="outline" className="bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 dark:border-slate-600/50">
+                                                        {skill}
+                                                    </Badge>
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
+
+                                        {getCertificateRequirements(selectedCertificate.id).length > 0 && (
+                                            <div className="mt-6">
+                                                <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">Requirements</h4>
+                                                <div className="space-y-2">
+                                                    {getCertificateRequirements(selectedCertificate.id).map((req) => (
+                                                        <div key={req.id} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg backdrop-blur-sm">
+                                                            <div className="flex items-start">
+                                                                <div className={cn(
+                                                                    "h-5 w-5 rounded-full flex items-center justify-center mr-2 mt-0.5",
+                                                                    req.completed ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-slate-200 dark:bg-slate-700/50"
+                                                                )}>
+                                                                    {req.completed ? (
+                                                                        <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                                                    ) : (
+                                                                        <Clock className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+                                                                    )}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-medium dark:text-slate-200">{req.title}</div>
+                                                                    <div className="text-sm text-slate-500 dark:text-slate-400">{req.description}</div>
+                                                                    {req.completed && req.date && (
+                                                                        <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Completed on {formatDate(req.date)}</div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <DialogFooter className="gap-2 flex-wrap">
-                            <div className="flex-1 flex justify-start">
-                                {!selectedCertificate.featured && selectedCertificate.status === 'completed' && (
-                                    <Button variant="outline">
-                                        <Sparkles className="h-4 w-4 mr-1" />
-                                        Set as Featured
+                            <DialogFooter className="gap-2 flex-wrap dark:border-slate-700/50">
+                                <div className="flex-1 flex justify-start">
+                                    {!selectedCertificate.featured && selectedCertificate.status === 'completed' && (
+                                        <Button variant="outline" className="dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                                            <Sparkles className="h-4 w-4 mr-1" />
+                                            Set as Featured
+                                        </Button>
+                                    )}
+                                </div>
+                                <Button variant="outline" className="dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                                    <Share2 className="h-4 w-4 mr-1" />
+                                    Share
+                                </Button>
+                                {selectedCertificate.status === 'completed' && (
+                                    <Button variant="outline" className="dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                                        <Download className="h-4 w-4 mr-1" />
+                                        Download
                                     </Button>
                                 )}
-                            </div>
-                            <Button variant="outline">
-                                <Share2 className="h-4 w-4 mr-1" />
-                                Share
-                            </Button>
-                            {selectedCertificate.status === 'completed' && (
-                                <Button variant="outline">
-                                    <Download className="h-4 w-4 mr-1" />
-                                    Download
-                                </Button>
-                            )}
-                            <DialogClose asChild>
-                                <Button>Close</Button>
-                            </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            )}
+                                <DialogClose asChild>
+                                    <Button className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white">Close</Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )}
+            </div>
         </div>
     );
 }

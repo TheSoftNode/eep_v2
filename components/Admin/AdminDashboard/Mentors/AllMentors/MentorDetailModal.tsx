@@ -35,6 +35,7 @@ import {
     useGetMentorBusySlotsQuery,
     useRemoveAvailabilitySlotMutation
 } from '@/Redux/apiSlices/users/mentorAvailabilityApi';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MentorDetailModalProps {
     mentor: MentorSummary;
@@ -52,6 +53,7 @@ const MentorDetailModal: React.FC<MentorDetailModalProps> = ({
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     });
+    const { isAdmin } = useAuth()
 
     // API calls with proper typing
     const {
@@ -734,14 +736,17 @@ const MentorDetailModal: React.FC<MentorDetailModalProps> = ({
                                         <MessageSquare className="h-4 w-4 mr-2" />
                                         Message
                                     </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="hover:bg-slate-50 dark:hover:bg-slate-800"
-                                    >
-                                        <Edit className="h-4 w-4 mr-2" />
-                                        Edit
-                                    </Button>
+                                    {isAdmin() && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="hover:bg-slate-50 dark:hover:bg-slate-800"
+                                        >
+                                            <Edit className="h-4 w-4 mr-2" />
+                                            Edit
+                                        </Button>
+                                    )}
+
                                     <Button
                                         variant="ghost"
                                         size="sm"

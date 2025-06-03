@@ -211,17 +211,17 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
     };
 
     return (
-        <Card className="h-[calc(80vh-2rem)] border-purple-100">
+        <Card className="h-[calc(80vh-2rem)] border-indigo-100 dark:border-slate-700/50 dark:bg-slate-800/50 backdrop-blur-sm shadow-lg transition-all duration-300">
             <Tabs defaultValue="conversations" className="h-full flex flex-col">
-                <div className="px-4 pt-4 pb-3 border-b border-purple-100 flex items-center flex-wrap gap-3 justify-between">
-                    <h3 className="font-semibold text-lg">Messages</h3>
+                <div className="px-4 pt-4 pb-3 border-b border-indigo-100 dark:border-slate-700/50 flex items-center flex-wrap gap-3 justify-between">
+                    <h3 className="font-semibold text-lg dark:text-white">Messages</h3>
                     <div className="flex items-center justify-between gap-2">
-                        <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-200">
+                        <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30 border-0">
                             {totalUnread > 0 ? totalUnread : 0}
                         </Badge>
                         <Button
                             size="sm"
-                            className="bg-purple-600 hover:bg-purple-700"
+                            className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border-0"
                             onClick={() => setIsCreateDialogOpen(true)}
                         >
                             <Plus className="h-4 w-4 mr-1" />
@@ -238,14 +238,16 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
 
                 <div className="overflow-hidden flex flex-col flex-1">
                     <CardHeader className="pb-0 pt-3">
-                        <div className="flex items-center justify-between mb-3 overflow-x-auto flex-wrap gap-1 border-b pb-3">
+                        <div className="flex items-center justify-between mb-3 overflow-x-auto flex-wrap gap-1 border-b border-slate-200 dark:border-slate-700/50 pb-3">
                             <div className="flex overflow-x-auto space-x-1 pb-1">
                                 <Button
                                     variant={activeTab === 'all' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     className={cn(
-                                        "h-7 px-2 text-xs",
-                                        activeTab === 'all' && "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                                        "h-7 px-2 text-xs transition-colors",
+                                        activeTab === 'all'
+                                            ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30"
+                                            : "dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50"
                                     )}
                                     onClick={() => setActiveTab('all')}
                                 >
@@ -255,8 +257,10 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     variant={activeTab === 'direct' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     className={cn(
-                                        "h-7 px-2 text-xs",
-                                        activeTab === 'direct' && "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                                        "h-7 px-2 text-xs transition-colors",
+                                        activeTab === 'direct'
+                                            ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30"
+                                            : "dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50"
                                     )}
                                     onClick={() => setActiveTab('direct')}
                                 >
@@ -266,8 +270,10 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     variant={activeTab === 'group' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     className={cn(
-                                        "h-7 px-2 text-xs",
-                                        activeTab === 'group' && "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                                        "h-7 px-2 text-xs transition-colors",
+                                        activeTab === 'group'
+                                            ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30"
+                                            : "dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50"
                                     )}
                                     onClick={() => setActiveTab('group')}
                                 >
@@ -277,8 +283,10 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     variant={activeTab === 'unread' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     className={cn(
-                                        "h-7 px-2 text-xs",
-                                        activeTab === 'unread' && "bg-purple-100 text-purple-700 hover:bg-purple-200",
+                                        "h-7 px-2 text-xs transition-colors",
+                                        activeTab === 'unread'
+                                            ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30"
+                                            : "dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50",
                                         totalUnread > 0 && "font-medium"
                                     )}
                                     onClick={() => setActiveTab('unread')}
@@ -286,7 +294,7 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     Unread
                                     {totalUnread > 0 && (
                                         <Badge
-                                            className="ml-1 bg-purple-600 hover:bg-purple-700 h-4 min-w-4 flex items-center justify-center"
+                                            className="ml-1 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 h-4 min-w-4 flex items-center justify-center text-white border-0"
                                         >
                                             {totalUnread}
                                         </Badge>
@@ -296,8 +304,10 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     variant={activeTab === 'project' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     className={cn(
-                                        "h-7 px-2 text-xs",
-                                        activeTab === 'project' && "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                                        "h-7 px-2 text-xs transition-colors",
+                                        activeTab === 'project'
+                                            ? "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/30"
+                                            : "dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50"
                                     )}
                                     onClick={() => setActiveTab('project')}
                                 >
@@ -306,36 +316,42 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-700/50">
                                         <Filter className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
+                                <DropdownMenuContent align="end" className="dark:bg-slate-800/90 dark:border-slate-700/50 backdrop-blur-md">
                                     <DropdownMenuItem
                                         onClick={() => setSortOrder('newest')}
-                                        className={cn("cursor-pointer", sortOrder === 'newest' && "bg-purple-50 text-purple-700")}
+                                        className={cn(
+                                            "cursor-pointer dark:hover:bg-slate-700/50 dark:text-slate-300",
+                                            sortOrder === 'newest' && "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400"
+                                        )}
                                     >
                                         Most recent
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => setSortOrder('unread')}
-                                        className={cn("cursor-pointer", sortOrder === 'unread' && "bg-purple-50 text-purple-700")}
+                                        className={cn(
+                                            "cursor-pointer dark:hover:bg-slate-700/50 dark:text-slate-300",
+                                            sortOrder === 'unread' && "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400"
+                                        )}
                                     >
                                         Unread first
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="cursor-pointer">
+                                    <DropdownMenuSeparator className="dark:border-slate-700/50" />
+                                    <DropdownMenuItem className="cursor-pointer dark:hover:bg-slate-700/50 dark:text-slate-300">
                                         Show archived
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
                         <div className="relative mb-2">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500 dark:text-slate-400" />
                             <Input
                                 type="search"
                                 placeholder="Search messages..."
-                                className="pl-9"
+                                className="pl-9 dark:bg-slate-800/50 dark:border-slate-700/50 dark:text-slate-100 dark:placeholder-slate-400 backdrop-blur-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -345,11 +361,11 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                         <ScrollArea className="h-[calc(100%-85px)]">
                             {contacts.length === 0 ? (
                                 <div className="text-center py-12 px-4">
-                                    <div className="bg-purple-50 inline-flex rounded-full p-3 mb-4">
-                                        <Search className="h-6 w-6 text-purple-600" />
+                                    <div className="bg-indigo-50 dark:bg-indigo-900/20 inline-flex rounded-full p-3 mb-4">
+                                        <Search className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                                     </div>
-                                    <h3 className="text-gray-900 font-medium">No conversations found</h3>
-                                    <p className="text-gray-500 text-sm mt-1">
+                                    <h3 className="text-slate-900 dark:text-white font-medium">No conversations found</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
                                         {searchQuery
                                             ? `No results for "${searchQuery}"`
                                             : activeTab !== 'all'
@@ -358,7 +374,7 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                         }
                                     </p>
                                     <Button
-                                        className="mt-4 bg-purple-600 hover:bg-purple-700"
+                                        className="mt-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border-0"
                                         size="sm"
                                         onClick={() => setIsCreateDialogOpen(true)}
                                     >
@@ -367,7 +383,7 @@ export const ConversationsSidebar: React.FC<ConversationsSidebarProps> = ({
                                     </Button>
                                 </div>
                             ) : (
-                                <div className="divide-y">
+                                <div className="divide-y divide-slate-200 dark:divide-slate-700/50">
                                     <ContactList
                                         contacts={contacts}
                                         currentContactId={selectedConversationId}

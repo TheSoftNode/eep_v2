@@ -416,7 +416,7 @@ export default function ProjectAreaSection({
             </motion.div>
 
             {/* Progress Update Dialog */}
-            {selectedArea && (
+            {/* {selectedArea && (
                 <Dialog open={isProgressDialogOpen} onOpenChange={setIsProgressDialogOpen}>
                     <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                         <DialogHeader>
@@ -480,6 +480,172 @@ export default function ProjectAreaSection({
 
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsProgressDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleProgressUpdate}
+                                disabled={progressValue === selectedArea.progress || isUpdating}
+                                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                            >
+                                {isUpdating ? (
+                                    <>
+                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                        Updating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                        Update Progress
+                                    </>
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )} */}
+            /* Progress Update Dialog - Fixed Version */
+            {selectedArea && (
+                <Dialog open={isProgressDialogOpen} onOpenChange={setIsProgressDialogOpen}>
+                    <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                                    <BarChart3 className="h-4 w-4" />
+                                </div>
+                                Update Area Progress
+                            </DialogTitle>
+                            <DialogDescription>
+                                Manually update progress for <span className="font-semibold text-purple-600">{selectedArea.name}</span>
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="py-6 space-y-6">
+                            {/* Progress Input Section */}
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <Label htmlFor="progress" className="text-sm font-medium">
+                                        Progress Percentage
+                                    </Label>
+                                    <span className={cn("text-lg font-bold", getProgressTextColor(progressValue))}>
+                                        {progressValue}%
+                                    </span>
+                                </div>
+
+                                {/* Number Input for precise control */}
+                                <div className="flex items-center gap-3">
+                                    <Input
+                                        id="progress-number"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="1"
+                                        value={progressValue}
+                                        onChange={(e) => {
+                                            const value = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                                            setProgressValue(value);
+                                        }}
+                                        className="w-20 text-center"
+                                    />
+                                    <span className="text-sm text-slate-500">%</span>
+                                </div>
+
+                                {/* Range Slider - Fixed styling */}
+                                <div className="space-y-3">
+                                    <input
+                                        id="progress-range"
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        step="5"
+                                        value={progressValue}
+                                        onChange={(e) => setProgressValue(parseInt(e.target.value))}
+                                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700
+                                     [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 
+                                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:cursor-pointer
+                                     [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white
+                                     [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full 
+                                     [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-none"
+                                    />
+
+                                    {/* Progress markers */}
+                                    <div className="flex justify-between text-xs text-slate-500">
+                                        <span>0%</span>
+                                        <span>25%</span>
+                                        <span>50%</span>
+                                        <span>75%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+
+                                {/* Visual Progress Bar */}
+                                <div className="space-y-2">
+                                    <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">Preview:</div>
+                                    <Progress
+                                        value={progressValue}
+                                        className={cn("h-3", getProgressColor(progressValue))}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Quick Action Buttons */}
+                            <div className="grid grid-cols-5 gap-2">
+                                {[0, 25, 50, 75, 100].map((value) => (
+                                    <Button
+                                        key={value}
+                                        variant={progressValue === value ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setProgressValue(value)}
+                                        className={cn(
+                                            "text-xs",
+                                            progressValue === value
+                                                ? "bg-purple-600 hover:bg-purple-700 text-white"
+                                                : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                        )}
+                                    >
+                                        {value}%
+                                    </Button>
+                                ))}
+                            </div>
+
+                            {/* Progress Comparison */}
+                            <div className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-700/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                                <div className="grid grid-cols-3 gap-4 text-center">
+                                    <div>
+                                        <div className="text-sm font-medium text-slate-600 dark:text-slate-400">Current</div>
+                                        <div className={cn("text-lg font-bold", getProgressTextColor(selectedArea.progress))}>
+                                            {selectedArea.progress}%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-slate-600 dark:text-slate-400">New</div>
+                                        <div className={cn("text-lg font-bold", getProgressTextColor(progressValue))}>
+                                            {progressValue}%
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-slate-600 dark:text-slate-400">Change</div>
+                                        <div className={cn(
+                                            "text-lg font-bold",
+                                            progressValue > selectedArea.progress ? "text-emerald-600 dark:text-emerald-400" :
+                                                progressValue < selectedArea.progress ? "text-red-600 dark:text-red-400" :
+                                                    "text-slate-600 dark:text-slate-400"
+                                        )}>
+                                            {progressValue > selectedArea.progress ? '+' : ''}{progressValue - selectedArea.progress}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <DialogFooter className="flex justify-between">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setProgressValue(selectedArea.progress); // Reset to original value
+                                    setIsProgressDialogOpen(false);
+                                }}
+                                disabled={isUpdating}
+                            >
                                 Cancel
                             </Button>
                             <Button

@@ -17,8 +17,6 @@ import {
 import { cn } from "@/lib/utils";
 import { statusConfig, TaskStatus } from "./utils";
 
-
-
 interface StatusDropdownProps {
     currentStatus: TaskStatus;
     onStatusChange: (status: TaskStatus) => void;
@@ -39,6 +37,11 @@ export function StatusDropdown({
     const config = statusConfig[currentStatus];
     const statuses = availableStatuses || Object.keys(statusConfig) as TaskStatus[];
 
+    // Handle status change with proper event handling
+    const handleStatusChange = (status: TaskStatus) => {
+        onStatusChange(status);
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -56,6 +59,8 @@ export function StatusDropdown({
                         disabled && "opacity-50 cursor-not-allowed",
                         className
                     )}
+                    // FIXED: Add event propagation prevention
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex items-center gap-2">
                         <div className={cn("flex items-center", config.color)}>
@@ -75,6 +80,8 @@ export function StatusDropdown({
                 align="end"
                 className="w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-lg p-1"
                 sideOffset={4}
+                // FIXED: Add event propagation prevention
+                onClick={(e) => e.stopPropagation()}
             >
                 <DropdownMenuLabel className="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Update Task Status
@@ -86,7 +93,11 @@ export function StatusDropdown({
                     return (
                         <DropdownMenuItem
                             key={status}
-                            onClick={() => onStatusChange(status)}
+                            // FIXED: Proper event handling with propagation prevention
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatusChange(status);
+                            }}
                             className={cn(
                                 "p-3 cursor-pointer transition-all duration-200 rounded-md mx-1 my-0.5",
                                 statusConf.hoverColor,

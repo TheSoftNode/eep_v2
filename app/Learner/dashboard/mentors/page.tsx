@@ -28,7 +28,7 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
     const [pageSize, setPageSize] = useState<number>(12);
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-    const { user } = useAuth();
+    const { user, isMentor, isAdmin, isLearner } = useAuth();
 
     // Modal states with proper typing
     const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
@@ -106,7 +106,6 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
         return isNotCurrentUser && matchesSearch && matchesStatus;
     });
 
-    console.log(filteredMentors)
 
     // Handlers with proper typing
     const handleViewMentor = (mentor: MentorProfile): void => {
@@ -243,9 +242,20 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
                             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                                 All Mentors
                             </h1>
-                            <p className="text-slate-600 dark:text-slate-400">
-                                Manage and monitor all mentors in your platform
-                            </p>
+                            {isAdmin() ? (
+                                <>
+                                    <p className="text-slate-600 dark:text-slate-400">
+                                        Manage and monitor all mentors in your platform
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-slate-600 dark:text-slate-400">
+                                        Explore the available mentors
+                                    </p>
+                                </>
+                            )}
+
                         </div>
                     </motion.div>
 

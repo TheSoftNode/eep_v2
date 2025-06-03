@@ -39,6 +39,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetProjectAreasQuery } from "@/Redux/apiSlices/Projects/projectAreaApiSlice";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProjectCardProps {
     project: Project;
@@ -178,6 +179,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         sortOrder: 'asc'
     });
 
+    const { isAdmin, isMentor } = useAuth();
+
+    const canManage = isAdmin() || isMentor();
+
     // Fetch project members using the correct API
     const { data: membersResponse, isLoading: membersLoading } = useGetProjectMembersQuery(project.id);
 
@@ -264,13 +269,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                                             <Eye className="h-4 w-4 mr-2" />
                                             View Details
                                         </DropdownMenuItem>
-                                        {onEditProject && (
+                                        {canManage && onEditProject && (
                                             <DropdownMenuItem onClick={(e) => handleActionClick(e, () => onEditProject(project.id))}>
                                                 <Edit3 className="h-4 w-4 mr-2" />
                                                 Edit Project
                                             </DropdownMenuItem>
                                         )}
-                                        {onViewAnalytics && (
+                                        {canManage && onViewAnalytics && (
                                             <DropdownMenuItem onClick={(e) => handleActionClick(e, () => onViewAnalytics(project.id))}>
                                                 <TrendingUp className="h-4 w-4 mr-2" />
                                                 View Analytics

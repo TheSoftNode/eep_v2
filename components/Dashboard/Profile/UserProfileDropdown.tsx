@@ -134,61 +134,26 @@ const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ user }) => {
                     {/* Menu items with refined hover effects */}
                     <DropdownMenuGroup className="p-1.5">
                         <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <Link href="/Learner/dashboard/profile" className="flex items-center">
+                            <Link href={`${isAdmin() ? "/admin/dashboard/profile" : "/Learner/dashboard/profile"}`} className="flex items-center">
                                 <User className="mr-2 h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" />
                                 <span>Profile</span>
                                 <ChevronRight className="ml-auto h-3.5 w-3.5 text-indigo-400 dark:text-indigo-500/50" />
                             </Link>
                         </DropdownMenuItem>
 
-                        {/* <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <Link href="/dashboard/history" className="flex items-center">
-                                <History className="mr-2 h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-                                <span>Activity</span>
-                                <ChevronRight className="ml-auto h-3.5 w-3.5 text-indigo-400 dark:text-indigo-500/50" />
-                            </Link>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <Link href="/dashboard/security" className="flex items-center">
-                                <Shield className="mr-2 h-3.5 w-3.5 text-green-500 dark:text-green-400" />
-                                <span>Security</span>
-                                <ChevronRight className="ml-auto h-3.5 w-3.5 text-indigo-400 dark:text-indigo-500/50" />
-                            </Link>
-                        </DropdownMenuItem> */}
                     </DropdownMenuGroup>
 
                     <DropdownMenuSeparator className="my-0.5 bg-indigo-100/70 dark:bg-indigo-800/30" />
 
                     <DropdownMenuGroup className="p-1.5">
                         <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <Link href="/Learner/dashboard/settings" className="flex items-center">
+                            <Link href={`${isAdmin() ? "/admin/dashboard/settings" : "/Learner/dashboard/settings"}`} className="flex items-center">
                                 <Settings className="mr-2 h-3.5 w-3.5 text-purple-500 dark:text-purple-400" />
                                 <span>Settings</span>
                                 <ChevronRight className="ml-auto h-3.5 w-3.5 text-indigo-400 dark:text-indigo-500/50" />
                             </Link>
                         </DropdownMenuItem>
 
-                        {/* <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <Link href="/Leardashboard/help" className="flex items-center">
-                                <HelpCircle className="mr-2 h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" />
-                                <span>Help & Support</span>
-                                <ChevronRight className="ml-auto h-3.5 w-3.5 text-indigo-400 dark:text-indigo-500/50" />
-                            </Link>
-                        </DropdownMenuItem> */}
-
-                        {/* <DropdownMenuItem asChild className="h-8 px-2 text-sm rounded-md data-[highlighted]:bg-indigo-50 dark:data-[highlighted]:bg-indigo-800/30 cursor-pointer">
-                            <a
-                                href="https://docs.eeplearning.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                            >
-                                <ExternalLink className="mr-2 h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-                                <span>Documentation</span>
-                                <ExternalLink className="ml-auto h-3 w-3 text-indigo-400 dark:text-indigo-500/50" />
-                            </a>
-                        </DropdownMenuItem> */}
                     </DropdownMenuGroup>
 
                     <DropdownMenuSeparator className="my-0.5 bg-indigo-100/70 dark:bg-indigo-800/30" />

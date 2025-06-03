@@ -16,7 +16,6 @@ import {
     BookOpen,
     Tag,
     CheckCircle2,
-
     Eye,
     Star,
     TrendingUp,
@@ -28,7 +27,6 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     DropdownMenu,
@@ -50,7 +48,9 @@ import { UnifiedTask } from '@/Redux/types/Projects/task';
 import { ProjectMember } from '@/Redux/types/Projects';
 import { priorityConfig, statusConfig } from './utils';
 import { firebaseFormatDate } from '@/components/utils/dateUtils';
-
+import { StatusDropdown } from './StatusDropdown';
+import { PriorityDropdown } from './PriorityDropdown';
+import AssigneeDropdown from './AssigneeDropdown';
 
 interface TaskListProps {
     tasks: UnifiedTask[];
@@ -69,7 +69,6 @@ interface TaskListProps {
     showMetrics?: boolean;
     groupBy?: 'none' | 'status' | 'priority' | 'assignee';
 }
-
 
 const taskTypeIcons = {
     assignment: <FileText className="h-3 w-3" />,
@@ -100,7 +99,6 @@ export default function TaskList({
 }: TaskListProps) {
     const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
 
-
     const isOverdue = (dateString?: string | Date | null, status?: string): boolean => {
         if (!dateString || status === 'completed') return false;
         const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
@@ -109,7 +107,13 @@ export default function TaskList({
 
     const getAssigneeInfo = (assigneeId?: string | null) => {
         if (!assigneeId) return { name: 'Unassigned', initials: 'UN', avatar: null };
-        const member = members.find(m => m.id === assigneeId);
+
+        let member = members.find(m => m.id === assigneeId);
+
+        if (!member) {
+            member = members.find(m => m.userId === assigneeId);
+        }
+
         if (!member) return { name: 'Unknown', initials: 'UK', avatar: null };
 
         const initials = member.initials || member.name.split(' ')
@@ -236,7 +240,7 @@ export default function TaskList({
         const isTaskOverdue = isOverdue(firebaseFormatDate(task.dueDate), task.status);
         const isExpanded = expandedTasks.has(task.id);
 
-        // Return different layouts based on viewMode
+        // Compact view
         if (viewMode === 'compact') {
             return (
                 <motion.div
@@ -274,19 +278,13 @@ export default function TaskList({
 
                         {canUpdate && (
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 w-6 p-0"
-                                    onClick={() => {
-                                        const statusCycle = ['todo', 'in-progress', 'completed'] as const;
-                                        const currentIndex = statusCycle.indexOf(task.status as any);
-                                        const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-                                        onStatusChange(task.id, nextStatus);
-                                    }}
-                                >
-                                    <CheckCircle2 className="h-3 w-3" />
-                                </Button>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <StatusDropdown
+                                        currentStatus={task.status}
+                                        onStatusChange={(newStatus) => onStatusChange(task.id, newStatus)}
+                                        compact={true}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -294,6 +292,7 @@ export default function TaskList({
             );
         }
 
+        // Card view
         if (viewMode === 'card') {
             return (
                 <motion.div
@@ -310,6 +309,22 @@ export default function TaskList({
                         task.status === 'completed' && "opacity-75"
                     )}>
                         <CardContent className="p-4">
+                            {/* <div className="flex items-start justify-between mb-3">
+                                <div className={cn(
+                                    "flex items-center justify-center w-8 h-8 rounded-lg border",
+                                    statusConf.bgColor,
+                                    statusConf.borderColor
+                                )}>
+                                    <div className={statusConf.color}>
+                                        {statusConf.icon}
+                                    </div>
+                                </div>
+                                <PriorityDropdown
+                                    currentPriority={task.priority}
+                                    onPriorityChange={(newPriority) => onPriorityChange?.(task.id, newPriority)}
+                                    compact={true}
+                                />
+                            </div> */}
                             <div className="flex items-start justify-between mb-3">
                                 <div className={cn(
                                     "flex items-center justify-center w-8 h-8 rounded-lg border",
@@ -320,14 +335,13 @@ export default function TaskList({
                                         {statusConf.icon}
                                     </div>
                                 </div>
-                                <div className={cn(
-                                    "flex items-center gap-1 px-2 py-1 rounded-full border text-xs",
-                                    priorityConf.bgColor,
-                                    priorityConf.borderColor,
-                                    priorityConf.color
-                                )}>
-                                    {priorityConf.icon}
-                                    <span>{priorityConf.label}</span>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <PriorityDropdown
+                                        currentPriority={task.priority}
+                                        onPriorityChange={(newPriority) => onPriorityChange?.(task.id, newPriority)}
+                                        compact={true}
+                                        disabled={!canUpdate}
+                                    />
                                 </div>
                             </div>
 
@@ -352,19 +366,14 @@ export default function TaskList({
                             )}
 
                             <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="h-5 w-5">
-                                        {assigneeInfo.avatar ? (
-                                            <AvatarImage src={assigneeInfo.avatar} alt={assigneeInfo.name} />
-                                        ) : (
-                                            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs">
-                                                {assigneeInfo.initials}
-                                            </AvatarFallback>
-                                        )}
-                                    </Avatar>
-                                    <span className="text-xs text-slate-600 dark:text-slate-400 truncate">
-                                        {assigneeInfo.name}
-                                    </span>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <AssigneeDropdown
+                                        members={members}
+                                        currentAssignee={task.assigneeId}
+                                        onAssigneeChange={(assigneeId) => onAssigneeChange?.(task.id, assigneeId)}
+                                        compact={true}
+                                        variant="minimal"
+                                    />
                                 </div>
 
                                 {task.dueDate && (
@@ -382,7 +391,7 @@ export default function TaskList({
             );
         }
 
-        // Default detailed view (existing implementation)
+        // Default detailed view
         return (
             <motion.div
                 key={task.id}
@@ -422,9 +431,29 @@ export default function TaskList({
                             </TooltipProvider>
 
                             {/* Task Content */}
-                            <div className="flex-1 min-w-0" onClick={() => onTaskSelect?.(task)}>
+                            <div className="flex-1 min-w-0" >
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-3">
+                                    {/* <div className="flex items-center gap-2 flex-wrap">
+                                        {task.week && (
+                                            <Badge variant="outline" className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
+                                                Week {task.week}
+                                            </Badge>
+                                        )}
+                                        {task.taskType && (
+                                            <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                <div className="flex items-center gap-1">
+                                                    {taskTypeIcons[task.taskType]}
+                                                    <span className="capitalize">{task.taskType}</span>
+                                                </div>
+                                            </Badge>
+                                        )}
+                                        <PriorityDropdown
+                                            currentPriority={task.priority}
+                                            onPriorityChange={(newPriority) => onPriorityChange?.(task.id, newPriority)}
+                                            compact={true}
+                                        />
+                                    </div> */}
                                     <div className="flex items-center gap-2 flex-wrap">
                                         {task.week && (
                                             <Badge variant="outline" className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
@@ -439,17 +468,13 @@ export default function TaskList({
                                                 </div>
                                             </Badge>
                                         )}
-                                        <div className={cn(
-                                            "flex items-center gap-1 px-2 py-1 rounded-full border",
-                                            priorityConf.bgColor,
-                                            priorityConf.borderColor
-                                        )}>
-                                            <div className={priorityConf.color}>
-                                                {priorityConf.icon}
-                                            </div>
-                                            <span className={cn("text-xs font-medium", priorityConf.color)}>
-                                                {priorityConf.label}
-                                            </span>
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <PriorityDropdown
+                                                currentPriority={task.priority}
+                                                onPriorityChange={(newPriority) => onPriorityChange?.(task.id, newPriority)}
+                                                compact={true}
+                                                disabled={!canUpdate} // Add this to prevent interaction when user can't update
+                                            />
                                         </div>
                                     </div>
 
@@ -501,7 +526,9 @@ export default function TaskList({
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 line-clamp-1">
+                                <h3
+                                    onClick={() => onTaskSelect?.(task)}
+                                    className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 line-clamp-1">
                                     {task.title}
                                 </h3>
 
@@ -638,106 +665,25 @@ export default function TaskList({
                                 {/* Bottom Row */}
                                 <div className="flex items-center justify-between">
                                     {/* Assignee */}
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6 border-2 border-white dark:border-slate-800 shadow-sm">
-                                            {assigneeInfo.avatar ? (
-                                                <AvatarImage src={assigneeInfo.avatar} alt={assigneeInfo.name} />
-                                            ) : (
-                                                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs font-medium">
-                                                    {assigneeInfo.initials}
-                                                </AvatarFallback>
-                                            )}
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                                                {assigneeInfo.name}
-                                            </p>
-                                            {assigneeInfo.role && (
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                                                    {assigneeInfo.role}
-                                                </p>
-                                            )}
-                                        </div>
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <AssigneeDropdown
+                                            members={members}
+                                            currentAssignee={task.assigneeId}
+                                            onAssigneeChange={(assigneeId) => onAssigneeChange?.(task.id, assigneeId)}
+                                            compact={true}
+                                            showRole={true}
+                                        />
                                     </div>
 
-                                    {/* Status and Priority Controls */}
+                                    {/* Status Control */}
                                     {canUpdate && (
                                         <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                                {/* Status Dropdown */}
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className={cn(
-                                                        "h-7 px-2 text-xs border transition-all",
-                                                        statusConf.borderColor,
-                                                        statusConf.bgColor
-                                                    )}
-                                                    onClick={() => {
-                                                        // Cycle through common statuses for quick change
-                                                        const statusCycle = ['todo', 'in-progress', 'completed'] as const;
-                                                        const currentIndex = statusCycle.indexOf(task.status as any);
-                                                        const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-                                                        onStatusChange(task.id, nextStatus);
-                                                    }}
-                                                >
-                                                    <div className="flex items-center gap-1">
-                                                        <div className={statusConf.color}>
-                                                            {statusConf.icon}
-                                                        </div>
-                                                        <span className={statusConf.color}>
-                                                            {statusConf.label}
-                                                        </span>
-                                                    </div>
-                                                </Button>
-
-                                                {/* Priority Dropdown */}
-                                                {onPriorityChange && (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className={cn(
-                                                            "h-7 px-2 text-xs border transition-all",
-                                                            priorityConf.borderColor,
-                                                            priorityConf.bgColor
-                                                        )}
-                                                        onClick={() => {
-                                                            // Cycle through priorities for quick change
-                                                            const priorityCycle = ['low', 'medium', 'high', 'critical'] as const;
-                                                            const currentIndex = priorityCycle.indexOf(task.priority);
-                                                            const nextPriority = priorityCycle[(currentIndex + 1) % priorityCycle.length];
-                                                            onPriorityChange(task.id, nextPriority);
-                                                        }}
-                                                    >
-                                                        <div className="flex items-center gap-1">
-                                                            <div className={priorityConf.color}>
-                                                                {priorityConf.icon}
-                                                            </div>
-                                                            <span className={priorityConf.color}>
-                                                                {priorityConf.label}
-                                                            </span>
-                                                        </div>
-                                                    </Button>
-                                                )}
-
-                                                {/* Assignee Change */}
-                                                {onAssigneeChange && (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="h-7 px-2 text-xs"
-                                                        onClick={() => {
-                                                            // Cycle through assignees or unassign
-                                                            if (!task.assigneeId && members.length > 0) {
-                                                                onAssigneeChange(task.id, members[0].id);
-                                                            } else {
-                                                                onAssigneeChange(task.id, null);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <User className="h-3 w-3" />
-                                                    </Button>
-                                                )}
+                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <StatusDropdown
+                                                    currentStatus={task.status}
+                                                    onStatusChange={(newStatus) => onStatusChange(task.id, newStatus)}
+                                                    compact={true}
+                                                />
                                             </div>
                                         </div>
                                     )}

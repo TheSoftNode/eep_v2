@@ -25,6 +25,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MentorProfile } from '@/Redux/types/Users/mentor';
+import { useAuth } from '@/hooks/useAuth';
 
 // Table components with TypeScript
 interface TableProps {
@@ -98,6 +99,9 @@ interface MentorCardProps {
 }
 
 const MentorCard: React.FC<MentorCardProps> = ({ mentor, onViewMentor, onMessageMentor }) => {
+
+    const { isAdmin } = useAuth();
+
     const getStatusBadge = (mentor: MentorCardProps['mentor']) => {
         if (mentor.disabled) {
             return <Badge variant="destructive">Inactive</Badge>;
@@ -156,33 +160,39 @@ const MentorCard: React.FC<MentorCardProps> = ({ mentor, onViewMentor, onMessage
                                     <MessageSquare className="h-4 w-4 mr-2" />
                                     Send Message
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit Mentor
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <Calendar className="h-4 w-4 mr-2" />
-                                    View Schedule
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    {mentor.disabled ? (
+                                {
+                                    isAdmin() && (
                                         <>
-                                            <UserCheck className="h-4 w-4 mr-2" />
-                                            Activate
+                                            <DropdownMenuItem>
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Edit Mentor
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem>
+                                                <Calendar className="h-4 w-4 mr-2" />
+                                                View Schedule
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                {mentor.disabled ? (
+                                                    <>
+                                                        <UserCheck className="h-4 w-4 mr-2" />
+                                                        Activate
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <UserX className="h-4 w-4 mr-2" />
+                                                        Deactivate
+                                                    </>
+                                                )}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600">
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Delete Mentor
+                                            </DropdownMenuItem>
                                         </>
-                                    ) : (
-                                        <>
-                                            <UserX className="h-4 w-4 mr-2" />
-                                            Deactivate
-                                        </>
-                                    )}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete Mentor
-                                </DropdownMenuItem>
+                                    )
+                                }
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -290,6 +300,8 @@ interface MentorTableRowProps {
 }
 
 const MentorTableRow: React.FC<MentorTableRowProps> = ({ mentor, onViewMentor, onMessageMentor }) => {
+
+    const { isAdmin } = useAuth();
     const getStatusBadge = (mentor: MentorTableRowProps['mentor']) => {
         if (mentor.disabled) {
             return <Badge variant="destructive" className="text-xs">Inactive</Badge>;
@@ -379,28 +391,31 @@ const MentorTableRow: React.FC<MentorTableRowProps> = ({ mentor, onViewMentor, o
                     >
                         <MessageSquare className="h-4 w-4" />
                     </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Calendar className="h-4 w-4 mr-2" />
-                                Schedule
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    {isAdmin() && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Calendar className="h-4 w-4 mr-2" />
+                                    Schedule
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-red-600">
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+
                 </div>
             </TableCell>
         </TableRow>
