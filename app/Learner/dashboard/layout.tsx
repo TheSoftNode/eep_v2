@@ -254,7 +254,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
                 {/* Page Content */}
                 <div className="flex-1 overflow-auto">
-                    <div className="container mx-auto py-6 px-4 md:px-6">
+                    <div className=" mx-auto py-6 px-4 md:px-6">
                         <ReduxProvider>
                             <TooltipProvider>
                                 <LearnerGuard>

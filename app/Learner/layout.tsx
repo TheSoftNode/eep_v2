@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/Providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ReduxProvider } from "@/Redux/core/provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Navbar from "@/components/Layout/Navbar/Navbar";
-import Footer from "@/components/Layout/Footer/Footer";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",

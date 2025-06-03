@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
+// Import proper API hooks and types
 import { useGetAllMentorsQuery, useSearchMentorsQuery } from '@/Redux/apiSlices/users/mentorApi';
 import { MentorSearchParams, MentorProfile } from '@/Redux/types/Users/mentor';
 
-import MentorStatsHeader from '@/components/Admin/AdminDashboard/Mentors/AllMentors/MentorStatsHeader';
-import MentorSearchFilters from '@/components/Admin/AdminDashboard/Mentors/AllMentors/MentorSearchFilters';
+
 import MentorTable from '@/components/Admin/AdminDashboard/Mentors/AllMentors/MentorTable';
 import MentorDetailModal from '@/components/Admin/AdminDashboard/Mentors/AllMentors/MentorDetailModal';
 import MessageMentorModal from '@/components/Admin/AdminDashboard/Mentors/AllMentors/MessageMentorModal';
@@ -16,7 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface AllMentorsPageProps { }
 
-const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
+const AvailableMentorsPage: React.FC<AllMentorsPageProps> = () => {
     // State management with proper TypeScript types
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'available' | 'unavailable'>('all');
@@ -257,29 +257,6 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
                         </div>
                     </motion.div>
 
-                    {/* Stats Header */}
-                    <MentorStatsHeader
-                        mentorsData={data}
-                        onRefresh={handleRefresh}
-                        onCreate={handleCreateMentor}
-                        userRole={user?.role}
-                    />
-
-                    {/* Search and Filters */}
-                    <MentorSearchFilters
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        filterStatus={filterStatus}
-                        setFilterStatus={setFilterStatus}
-                        filterExpertise={filterExpertise}
-                        setFilterExpertise={setFilterExpertise}
-                        filterRating={filterRating}
-                        setFilterRating={setFilterRating}
-                        viewMode={viewMode}
-                        setViewMode={setViewMode}
-                        totalCount={filteredMentors.length}
-                    />
-
                     {/* Mentors Table/Grid */}
                     <MentorTable
                         mentors={filteredMentors}
@@ -326,4 +303,4 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
     );
 };
 
-export default AllMentorsPage;
+export default AvailableMentorsPage;

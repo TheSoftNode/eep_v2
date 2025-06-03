@@ -110,42 +110,42 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                     {/* Background decoration */}
                     <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-slate-500/5 to-slate-600/5 blur-2xl -mr-16 -mt-16 pointer-events-none" />
 
-                    <CardHeader className="pb-4 relative">
+                    <CardHeader className="pb-2 relative">
                         <div className="flex justify-between items-start">
                             <div>
-                                <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white">
+                                <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
                                     Current Project
                                 </CardTitle>
-                                <CardDescription className="text-slate-600 dark:text-slate-400">
+                                <CardDescription className="text-slate-600 dark:text-slate-400 text-sm">
                                     No active project
                                 </CardDescription>
                             </div>
-                            <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
+                            <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 text-xs">
                                 Inactive
                             </Badge>
                         </div>
                     </CardHeader>
 
-                    <CardContent className="p-6 text-center py-12 relative">
-                        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 mx-auto mb-4 shadow-lg">
-                            <AlertCircle className="h-8 w-8 text-slate-600 dark:text-slate-400" />
+                    <CardContent className="p-4 text-center py-6 relative">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 mx-auto mb-3 shadow-lg">
+                            <AlertCircle className="h-6 w-6 text-slate-600 dark:text-slate-400" />
                         </div>
-                        <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-2">No Active Project</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                        <h3 className="font-semibold text-base text-slate-900 dark:text-white mb-1">No Active Project</h3>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                             You are not currently assigned to any project. Join an existing project or create a new one to get started.
                         </p>
                     </CardContent>
 
-                    <CardFooter className="grid grid-cols-2 gap-3 p-6 bg-gradient-to-r from-slate-50/50 to-transparent dark:from-slate-800/30 border-t border-slate-200/70 dark:border-slate-700/70">
-                        <Button asChild className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+                    <CardFooter className="grid grid-cols-2 gap-2 p-4 bg-gradient-to-r from-slate-50/50 to-transparent dark:from-slate-800/30 border-t border-slate-200/70 dark:border-slate-700/70">
+                        <Button asChild className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-8">
                             <Link href="/dashboard/projects/join">
-                                <Play className="h-4 w-4 mr-2" />
+                                <Play className="h-3 w-3 mr-1" />
                                 Join Project
                             </Link>
                         </Button>
-                        <Button asChild variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <Button asChild variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-8">
                             <Link href="/dashboard/projects">
-                                <Eye className="h-4 w-4 mr-2" />
+                                <Eye className="h-3 w-3 mr-1" />
                                 Browse Projects
                             </Link>
                         </Button>
@@ -175,19 +175,19 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500/5 to-purple-500/5 blur-2xl -mr-16 -mt-16 pointer-events-none" />
 
-                <CardHeader className="pb-4 relative">
-                    <div className="flex justify-between items-start gap-3">
+                <CardHeader className="pb-2 relative">
+                    <div className="flex justify-between items-start gap-2">
                         <div className="flex-1 min-w-0">
-                            <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                            <CardTitle className="text-base font-semibold text-slate-900 dark:text-white mb-1">
                                 Current Project
                             </CardTitle>
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                                 <Badge variant="outline" className="text-xs capitalize font-medium border-indigo-200 text-indigo-700 dark:border-indigo-800 dark:text-indigo-400">
-                                    <Building2 className="h-3 w-3 mr-1" />
+                                    <Building2 className="h-3 w-3 mr-0.5" />
                                     {project.category?.replace('-', ' ')}
                                 </Badge>
                                 <Badge className={cn("text-xs font-medium border", getLevelBadgeColor(project.level))}>
-                                    <Target className="h-3 w-3 mr-1" />
+                                    <Target className="h-3 w-3 mr-0.5" />
                                     {project.level}
                                 </Badge>
                             </div>
@@ -195,34 +195,34 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
 
                         <div className="flex items-center gap-2">
                             <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50 text-xs font-medium border">
-                                <div className="w-1.5 h-1.5 rounded-full mr-1.5 bg-emerald-500"></div>
+                                <div className="w-1.5 h-1.5 rounded-full mr-1 bg-emerald-500"></div>
                                 Active
                             </Badge>
                         </div>
                     </div>
                 </CardHeader>
 
-                <CardContent className="space-y-5 relative">
+                <CardContent className="space-y-3 relative py-3">
                     {/* Project Name and Description */}
                     <div>
-                        <h3 className="font-semibold text-xl text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                             {project.name}
                         </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                             {project.description}
                         </p>
                     </div>
 
                     {/* Technologies */}
                     {project.technologies && project.technologies.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1">
                             {project.technologies.slice(0, 4).map((tech, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs py-1 px-2 h-6 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 border-0">
+                                <Badge key={index} variant="secondary" className="text-xs py-0.5 px-1.5 h-5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 border-0">
                                     {tech}
                                 </Badge>
                             ))}
                             {project.technologies.length > 4 && (
-                                <Badge variant="secondary" className="text-xs py-1 px-2 h-6 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                <Badge variant="secondary" className="text-xs py-0.5 px-1.5 h-5 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                     +{project.technologies.length - 4} more
                                 </Badge>
                             )}
@@ -230,41 +230,41 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                     )}
 
                     {/* Progress Section */}
-                    <div className="space-y-3 p-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-800/50 dark:to-slate-700/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                    <div className="space-y-2 p-3 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-800/50 dark:to-slate-700/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                         <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                <BarChart3 className="h-4 w-4 text-indigo-500" />
+                            <span className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                <BarChart3 className="h-3 w-3 text-indigo-500" />
                                 Overall Progress
                             </span>
-                            <span className={cn("text-sm font-bold", getProgressColor(progress))}>
+                            <span className={cn("text-xs font-bold", getProgressColor(progress))}>
                                 {progress}%
                             </span>
                         </div>
                         <Progress
                             value={progress}
-                            className={cn("h-2.5 bg-slate-200 dark:bg-slate-700", getProgressBarColor(progress))}
+                            className={cn("h-2 bg-slate-200 dark:bg-slate-700", getProgressBarColor(progress))}
                         />
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-3 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-800/10 rounded-lg border border-indigo-200/50 dark:border-indigo-800/30">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg">
-                                <Layout className="h-5 w-5 text-white" />
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-2 p-2 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-800/10 rounded-lg border border-indigo-200/50 dark:border-indigo-800/30">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg">
+                                <Layout className="h-4 w-4 text-white" />
                             </div>
                             <div>
                                 <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Areas</p>
-                                <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">{totalAreas}</p>
+                                <p className="text-base font-bold text-indigo-700 dark:text-indigo-300">{totalAreas}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 rounded-lg border border-emerald-200/50 dark:border-emerald-800/30">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg">
-                                <CheckSquare className="h-5 w-5 text-white" />
+                        <div className="flex items-center gap-2 p-2 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10 rounded-lg border border-emerald-200/50 dark:border-emerald-800/30">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg">
+                                <CheckSquare className="h-4 w-4 text-white" />
                             </div>
                             <div>
                                 <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Tasks</p>
-                                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                                <p className="text-base font-bold text-emerald-700 dark:text-emerald-300">
                                     {completedTasks}/{totalTasks}
                                 </p>
                             </div>
@@ -272,14 +272,14 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                     </div>
 
                     {/* Timeline Section */}
-                    <div className="space-y-3 p-4 bg-gradient-to-r from-blue-50/50 to-blue-100/30 dark:from-blue-900/10 dark:to-blue-800/5 rounded-lg border border-blue-200/50 dark:border-blue-800/30">
-                        <div className="flex justify-between items-center text-sm">
+                    <div className="space-y-2 p-3 bg-gradient-to-r from-blue-50/50 to-blue-100/30 dark:from-blue-900/10 dark:to-blue-800/5 rounded-lg border border-blue-200/50 dark:border-blue-800/30">
+                        <div className="flex justify-between items-center text-xs">
                             <span className="text-blue-700 dark:text-blue-300 flex items-center font-medium">
-                                <Calendar className="h-4 w-4 mr-2" />
+                                <Calendar className="h-3 w-3 mr-1" />
                                 Timeline
                             </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="grid grid-cols-2 gap-3 text-xs">
                             <div>
                                 <span className="text-blue-600 dark:text-blue-400 font-medium">Start Date</span>
                                 <p className="text-slate-900 dark:text-white font-semibold">{formatDate(project.startDate)}</p>
@@ -291,13 +291,13 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                         </div>
 
                         {/* Days Remaining */}
-                        <div className="flex items-center justify-between pt-2 border-t border-blue-200/50 dark:border-blue-800/30">
-                            <span className="text-blue-600 dark:text-blue-400 flex items-center text-sm font-medium">
-                                <Clock className="h-4 w-4 mr-2" />
+                        <div className="flex items-center justify-between pt-1.5 border-t border-blue-200/50 dark:border-blue-800/30">
+                            <span className="text-blue-600 dark:text-blue-400 flex items-center text-xs font-medium">
+                                <Clock className="h-3 w-3 mr-1" />
                                 Time Remaining
                             </span>
                             <span className={cn(
-                                "text-sm font-bold",
+                                "text-xs font-bold",
                                 daysStatus.isOverdue ? "text-red-600 dark:text-red-400" : "text-slate-900 dark:text-white"
                             )}>
                                 {daysStatus.text}
@@ -307,15 +307,15 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
 
                     {/* Project Links */}
                     {(project.repoUrl || project.demoUrl) && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                             {project.repoUrl && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="flex-1 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    className="flex-1 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 h-7"
                                     onClick={() => window.open(project.repoUrl!, '_blank')}
                                 >
-                                    <Github className="h-4 w-4 mr-2" />
+                                    <Github className="h-3 w-3 mr-1" />
                                     Repository
                                 </Button>
                             )}
@@ -323,10 +323,10 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="flex-1 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    className="flex-1 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 h-7"
                                     onClick={() => window.open(project.demoUrl!, '_blank')}
                                 >
-                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    <ExternalLink className="h-3 w-3 mr-1" />
                                     Live Demo
                                 </Button>
                             )}
@@ -334,18 +334,18 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
                     )}
                 </CardContent>
 
-                <CardFooter className="grid grid-cols-2 gap-3 p-6 bg-gradient-to-r from-slate-50/50 to-transparent dark:from-slate-800/30 border-t border-slate-200/70 dark:border-slate-700/70">
-                    <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group">
-                        <Link href={"/learners-dashboard/workspaces"} className="flex items-center">
-                            <Play className="h-4 w-4 mr-2 group-hover:translate-x-0.5 transition-transform" />
+                <CardFooter className="grid grid-cols-2 gap-2 p-4 bg-gradient-to-r from-slate-50/50 to-transparent dark:from-slate-800/30 border-t border-slate-200/70 dark:border-slate-700/70">
+                    <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group h-8">
+                        <Link href={"/Learner/dashboard/workspaces"} className="flex items-center">
+                            <Play className="h-3 w-3 mr-1 group-hover:translate-x-0.5 transition-transform" />
                             Continue Working
                         </Link>
                     </Button>
-                    <Button asChild variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group">
-                        <Link href={`/learners-dashboard/projects/${project?.id || 'current'}`} className="flex items-center">
-                            <Eye className="h-4 w-4 mr-2" />
+                    <Button asChild variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group h-8">
+                        <Link href={`/Learner/dashboard/projects/${project?.id || 'current'}`} className="flex items-center">
+                            <Eye className="h-3 w-3 mr-1" />
                             View Details
-                            <ChevronRight className="h-4 w-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" />
+                            <ChevronRight className="h-3 w-3 ml-0.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200" />
                         </Link>
                     </Button>
                 </CardFooter>
@@ -353,3 +353,4 @@ export default function CurrentProject({ project, overallProgress }: CurrentProj
         </motion.div>
     );
 }
+

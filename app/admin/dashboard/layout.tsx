@@ -274,7 +274,7 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ children })
 
                 {/* Page Content */}
                 <div className="flex-1 overflow-auto">
-                    <div className="container mx-auto py-6 px-4 md:px-0 lg:px-6">
+                    <div className="mx-auto py-6 px-4 md:px-0 lg:px-6">
                         <AdminGuard>
                             {children}
                         </AdminGuard>

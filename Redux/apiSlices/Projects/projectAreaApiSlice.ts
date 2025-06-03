@@ -37,9 +37,10 @@ export const projectAreasApiSlice = apiSlice.injectEndpoints({
                 result
                     ? [
                         ...result.data.map(({ id }) => ({ type: 'ProjectArea' as const, id })),
-                        { type: 'ProjectArea', id: projectId }
+                        { type: 'ProjectArea', id: projectId },
+                        { type: 'ProjectArea', id: 'LIST' }
                     ]
-                    : [{ type: 'ProjectArea', id: projectId }]
+                    : [{ type: 'ProjectArea', id: projectId }, { type: 'ProjectArea', id: 'LIST' }]
         }),
 
         // Get a specific project area
@@ -95,7 +96,8 @@ export const projectAreasApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { projectId, areaId }) => [
                 { type: 'ProjectArea', id: areaId },
-                { type: 'ProjectArea', id: projectId }
+                { type: 'ProjectArea', id: projectId },
+                { type: 'ProjectArea', id: 'LIST' }
             ]
         }),
 
