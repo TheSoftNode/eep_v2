@@ -97,7 +97,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "User Management",
-            href: "/admin/dashboard/users",
+            href: "#",
             icon: <UserCog className="h-4 w-4" />,
             subItems: [
                 {
@@ -134,7 +134,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Workspace Management",
-            href: "/admin/workspaces",
+            href: "#",
             icon: <FolderKanban className="h-4 w-4" />,
             subItems: [
                 {
@@ -151,7 +151,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Project Management",
-            href: "/admin/projects",
+            href: "#",
             icon: <Briefcase className="h-4 w-4" />,
             subItems: [
                 {
@@ -168,7 +168,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Learning Paths",
-            href: "/admin/learning-paths",
+            href: "#",
             icon: <Book className="h-4 w-4" />,
             subItems: [
                 {
@@ -185,7 +185,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Mentorship",
-            href: "/admin/mentorship",
+            href: "#",
             icon: <Users className="h-4 w-4" />,
             subItems: [
                 {
@@ -202,7 +202,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Session Management",
-            href: "/admin/dashboard/sessions",
+            href: "#",
             icon: <Calendar className="h-4 w-4" />,
             subItems: [
                 {
@@ -220,22 +220,22 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         },
         {
             name: "Certification",
-            href: "/admin/certificates",
+            href: "#",
             icon: <Award className="h-4 w-4" />,
             subItems: [
                 {
                     name: "All Certificates",
-                    href: "/admin/certificates",
+                    href: "/admin/dashboard/certificates",
                     icon: <Award className="h-4 w-4" />
                 },
                 {
                     name: "Create Certificate",
-                    href: "/admin/certificates/create",
+                    href: "/admin/dashboard/certificates/create",
                     icon: <FileCode className="h-4 w-4" />
                 },
                 {
                     name: "Certificate Templates",
-                    href: "/admin/certificates/templates",
+                    href: "/admin/dashboard/certificates/templates",
                     icon: <FileText className="h-4 w-4" />
                 }
             ]
@@ -243,7 +243,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
         {
             name: "Communications",
-            href: "/admin/communications",
+            href: "#",
             icon: <Mail className="h-4 w-4" />,
             subItems: [
                 {

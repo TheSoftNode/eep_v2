@@ -23,13 +23,15 @@ import SessionDetailModal from '@/components/Dashboard/Session/SessionDetailModa
 
 
 const SessionsPage: React.FC = () => {
-    const { user } = useAuth();
+    const { user, isAdmin, isMentor } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'accepted' | 'completed' | 'cancelled'>('all');
     const [filterTimeframe, setFilterTimeframe] = useState<'all' | 'upcoming' | 'past' | 'this_week' | 'this_month'>('all');
     const [selectedSession, setSelectedSession] = useState<SessionData | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
-    const [showRequestModal, setShowRequestModal] = useState(false); // Add this
+    const [showRequestModal, setShowRequestModal] = useState(false);
+
+    const canManage = isMentor() || isAdmin();
 
     // API hooks
     const { data: sessionsData, isLoading, error, refetch } = useGetMyUpcomingSessionsQuery();
@@ -221,22 +223,7 @@ const SessionsPage: React.FC = () => {
                         transition={{ duration: 0.5 }}
                         className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
                     >
-                        <div>
-                            <div className="flex items-center space-x-3 mb-2">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                                    <Clock className="h-6 w-6 text-white" />
-                                </div>
-                                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                                    My Sessions
-                                </h1>
-                            </div>
-                            <p className="text-slate-600 dark:text-slate-400">
-                                {user?.role === 'mentor'
-                                    ? 'Manage your mentoring sessions and learner requests'
-                                    : 'View and manage your learning sessions with mentors'
-                                }
-                            </p>
-                        </div>
+
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}

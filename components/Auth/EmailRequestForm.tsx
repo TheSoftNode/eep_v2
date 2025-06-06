@@ -27,10 +27,10 @@ const EmailRequestForm: React.FC<EmailRequestFormProps> = ({ onCodeSent, onRemem
     const getRedirectPathByRole = (role: string): string => {
         switch (role) {
             case 'admin': return '/admin';
-            case 'mentor': return 'Learner/dashboard';
+            case 'mentor': return '/Learner/dashboard';
             case 'learner':
-            case 'user': return 'Learner/dashboard';
-            default: return 'Learner/dashboard';
+            case 'user': return '/Learner/dashboard';
+            default: return '/Learner/dashboard';
         }
     };
 

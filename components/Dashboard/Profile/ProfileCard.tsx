@@ -29,7 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useUpdateProfilePictureMutation, useUpdateUserProfileMutation } from '@/Redux/apiSlices/users/profileApi';
-import { ProfileResponse, UpdateProfilePictureRequest } from '@/Redux/types/Users/profile';
+import { UpdateProfilePictureRequest } from '@/Redux/types/Users/profile';
 import { User } from '@/Redux/types/Users/user';
 
 interface ProfileCardProps {

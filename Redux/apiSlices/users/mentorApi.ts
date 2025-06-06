@@ -5,7 +5,7 @@ import {
     SessionRequest,
     MentorReview,
     SessionReview,
-    MentorProfile
+    MentorProfile,
 } from "@/Redux/types/Users/mentor";
 
 export const mentorApi = apiSlice.injectEndpoints({
@@ -210,7 +210,8 @@ export const mentorApi = apiSlice.injectEndpoints({
                 { type: 'Session', id },
                 'Session'
             ]
-        })
+        }),
+
     })
 });
 

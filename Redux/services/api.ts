@@ -123,7 +123,9 @@ export const apiSlice = createApi({
         'UnreadCount',
         'WorkspaceMessage',
         'PinnedMessage',
-        'WorkspaceAttachment'
+        'WorkspaceAttachment',
+        'OpenSession',
+        'MySession'
     ],
     endpoints: () => ({}),
 });
