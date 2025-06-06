@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/Providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ReduxProvider } from "@/Redux/core/provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ActiveProjectProvider } from "@/components/Admin/AdminDashboard/Workspace/ActiveProjectContexts/ActiveProjectContext";
 
 const geistSans = localFont({
     src: "../fonts/GeistVF.woff",
@@ -40,7 +41,13 @@ export default function RootLayout({
                 >
                     <ReduxProvider>
                         <TooltipProvider>
-                            {children}
+                            <ActiveProjectProvider
+                                autoExpireHours={24}
+                                enablePersistence={true}
+                                enableNotifications={true}
+                            >
+                                {children}
+                            </ActiveProjectProvider>
                         </TooltipProvider>
                         <Toaster />
 

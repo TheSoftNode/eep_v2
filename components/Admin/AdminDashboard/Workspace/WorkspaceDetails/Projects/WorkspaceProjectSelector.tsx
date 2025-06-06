@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ChevronDown,
@@ -11,7 +11,8 @@ import {
     Calendar,
     Tag,
     Loader2,
-    CheckCircle
+    CheckCircle,
+    X
 } from 'lucide-react';
 import {
     Dialog,
@@ -36,10 +37,6 @@ import { useAddProjectToWorkspaceMutation } from '@/Redux/apiSlices/workspaces/w
 import { firebaseFormatDate } from '@/components/utils/dateUtils';
 import { ProjectSummary } from '@/Redux/types/Workspace/project-summary';
 
-export interface WorkspaceProjectSelectorRef {
-    openAddProjectDialog: () => void;
-}
-
 interface WorkspaceProjectSelectorProps {
     workspaceId: string;
     workspaceProjects: ProjectSummary[];
@@ -47,25 +44,26 @@ interface WorkspaceProjectSelectorProps {
     onProjectSelect: (projectId: string) => void;
     refetchWorkspace: () => void;
     minimal?: boolean;
+    isAddProjectDialogOpen: boolean;
+    onOpenAddProjectDialog: () => void;
+    onCloseAddProjectDialog: () => void;
 }
 
-const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, WorkspaceProjectSelectorProps>(({
+const WorkspaceProjectSelector: React.FC<WorkspaceProjectSelectorProps> = ({
     workspaceId,
     workspaceProjects = [],
     canManageWorkspace,
     onProjectSelect,
     refetchWorkspace,
-    minimal = false
-}, ref) => {
+    minimal = false,
+    isAddProjectDialogOpen,
+    onOpenAddProjectDialog,
+    onCloseAddProjectDialog
+}) => {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-    const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
     const { toast } = useToast();
-
-    useImperativeHandle(ref, () => ({
-        openAddProjectDialog: () => setIsAddProjectDialogOpen(true)
-    }));
 
     // RTK Query hooks
     const { data: projectsResponse, isLoading: isLoadingProjects } = useGetProjectsQuery({});
@@ -84,7 +82,8 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
 
     // Set first project as selected when component mounts or projects change
     useEffect(() => {
-        if (workspaceProjects.length > 0 && !selectedProjectId) {
+        if (workspaceProjects.length > 0 && selectedProjectId === null && workspaceProjects.length === 1) {
+            // Only auto-select if there's exactly one project and nothing is selected
             setSelectedProjectId(workspaceProjects[0].id);
             if (onProjectSelect) {
                 onProjectSelect(workspaceProjects[0].id);
@@ -94,34 +93,69 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
 
     const handleAddProject = async (projectId: string) => {
         try {
+            // First add the project to the workspace
             const result = await addProject({
                 workspaceId,
                 projectId
             }).unwrap();
 
-            toast({
-                title: "Success",
-                description: "Project added successfully",
-                variant: "default"
-            });
-            setIsAddProjectDialogOpen(false);
-            refetchWorkspace();
+            // Get the added project data from the result or find it in available projects
+            const addedProject = availableProjects.find(p => p.id === projectId);
+
+            if (addedProject) {
+                // Immediately set this as the active project if it's the first project in workspace
+                if (workspaceProjects.length === 0) {
+                    onProjectSelect(projectId);
+
+                    toast({
+                        title: "Project Added & Selected",
+                        description: `${addedProject.name} has been added to the workspace and is now active`,
+                        variant: "default"
+                    });
+                } else {
+                    toast({
+                        title: "Project Added",
+                        description: `${addedProject.name} has been added to the workspace`,
+                        variant: "default"
+                    });
+                }
+            }
+
+            onCloseAddProjectDialog();
+            refetchWorkspace(); // This will refresh the workspace projects list
         } catch (error: any) {
             console.error("Error adding project:", error);
             toast({
                 title: "Error",
-                description: error.message || "Failed to add project",
+                description: error.message || "Failed to add project to workspace",
                 variant: "destructive"
             });
         }
     };
 
     const handleProjectSelect = (projectId: string) => {
+        if (projectId === '') {
+            // Clear selection
+            setSelectedProjectId(null);
+            if (onProjectSelect) {
+                onProjectSelect(''); // Signal to parent to clear
+            }
+            setIsDropdownOpen(false);
+            return;
+        }
+
+        // Rest of existing logic for normal project selection
         setSelectedProjectId(projectId);
         if (onProjectSelect) {
             onProjectSelect(projectId);
         }
         setIsDropdownOpen(false);
+
+        // Notify parent to update context
+        if (workspaceProjects.length > 0) {
+            const selectedProject = workspaceProjects.find(p => p.id === projectId);
+            // This will be handled by the parent component's onProjectSelect
+        }
     };
 
     // Get the selected project data
@@ -164,7 +198,7 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
                                     <Folder className="h-3 w-3 text-white" />
                                 </div>
                                 <span className="truncate text-sm font-medium">
-                                    {selectedProject ? selectedProject.name : 'Select Project'}
+                                    {selectedProject ? selectedProject.name : 'No Project Selected'}
                                 </span>
                             </div>
                             <ChevronDown className={cn(
@@ -185,7 +219,114 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
                             </p>
                         </div>
 
+                        {/* <div className="py-2 max-h-64 overflow-y-auto">
+                            <AnimatePresence>
+                                {workspaceProjects.map((project, index) => (
+                                    <motion.button
+                                        key={project.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2, delay: index * 0.05 }}
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 dark:hover:from-slate-800 dark:hover:to-slate-700 flex items-center transition-all duration-200 group",
+                                            selectedProjectId === project.id && 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20'
+                                        )}
+                                        onClick={() => handleProjectSelect(project.id)}
+                                    >
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            <div className={cn(
+                                                "p-2 rounded-lg shadow-sm",
+                                                selectedProjectId === project.id
+                                                    ? `bg-gradient-to-r ${getStatusColor(project.status || 'active')}`
+                                                    : "bg-gradient-to-r from-slate-200 to-gray-200 dark:from-slate-700 dark:to-slate-600"
+                                            )}>
+                                                {selectedProjectId === project.id ? (
+                                                    <CheckCircle className="h-4 w-4 text-white" />
+                                                ) : (
+                                                    <FolderOpen className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                                                )}
+                                            </div>
+
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-medium text-sm text-slate-900 dark:text-slate-100 truncate">
+                                                        {project.name}
+                                                    </span>
+                                                    {selectedProjectId === project.id && (
+                                                        <Badge className="text-xs px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-none shadow-sm">
+                                                            Active
+                                                        </Badge>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                                    {project.category && (
+                                                        <span className="flex items-center">
+                                                            <Tag className="h-3 w-3 mr-1" />
+                                                            {project.category}
+                                                        </span>
+                                                    )}
+                                                    {project.memberCount && (
+                                                        <span className="flex items-center">
+                                                            <Users className="h-3 w-3 mr-1" />
+                                                            {project.memberCount}
+                                                        </span>
+                                                    )}
+                                                    {project.progress !== undefined && (
+                                                        <span className="flex items-center">
+                                                            <div className="w-8 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mr-1">
+                                                                <div
+                                                                    className={`h-full rounded-full bg-gradient-to-r ${getStatusColor(project.status || 'active')}`}
+                                                                    style={{ width: `${project.progress}%` }}
+                                                                />
+                                                            </div>
+                                                            {project.progress}%
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.button>
+                                ))}
+                            </AnimatePresence>
+                        </div> */}
+
                         <div className="py-2 max-h-64 overflow-y-auto">
+                            {/* Clear Selection Option */}
+                            <motion.button
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={cn(
+                                    "w-full text-left px-4 py-3 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/20 dark:hover:to-red-900/20 flex items-center transition-all duration-200 group",
+                                    !selectedProjectId && 'bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700'
+                                )}
+                                onClick={() => handleProjectSelect('')}
+                            >
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <div className="p-2 rounded-lg shadow-sm bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700">
+                                        <X className="h-4 w-4 text-white" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="font-medium text-sm text-slate-900 dark:text-slate-100">
+                                                Clear Selection
+                                            </span>
+                                            {!selectedProjectId && (
+                                                <Badge className="text-xs px-2 py-0.5 bg-slate-500 text-white border-none shadow-sm">
+                                                    Current
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                            View workspace without project focus
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.button>
+
+                            {/* Separator */}
+                            <div className="border-t border-slate-200 dark:border-slate-700 my-2"></div>
+
                             <AnimatePresence>
                                 {workspaceProjects.map((project, index) => (
                                     <motion.button
@@ -264,7 +405,7 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
                                     size="sm"
                                     className="w-full justify-start text-green-600 dark:text-green-400 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/20 dark:hover:to-emerald-900/20 transition-all duration-200 rounded-lg"
                                     onClick={() => {
-                                        setIsAddProjectDialogOpen(true);
+                                        onOpenAddProjectDialog();
                                         setIsDropdownOpen(false);
                                     }}
                                 >
@@ -278,7 +419,7 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
             </div>
 
             {/* Enhanced Add Project Dialog */}
-            <Dialog open={isAddProjectDialogOpen} onOpenChange={setIsAddProjectDialogOpen}>
+            <Dialog open={isAddProjectDialogOpen} onOpenChange={onCloseAddProjectDialog}>
                 <DialogContent className="sm:max-w-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     {/* Gradient Header */}
                     <div className="h-2 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 rounded-t-2xl -m-6 mb-4" />
@@ -402,7 +543,7 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setIsAddProjectDialogOpen(false)}
+                            onClick={onCloseAddProjectDialog}
                             className="px-6 py-3 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl"
                         >
                             Cancel
@@ -412,7 +553,7 @@ const WorkspaceProjectSelector = forwardRef<WorkspaceProjectSelectorRef, Workspa
             </Dialog>
         </>
     );
-});
+};
 
 WorkspaceProjectSelector.displayName = 'WorkspaceProjectSelector';
 

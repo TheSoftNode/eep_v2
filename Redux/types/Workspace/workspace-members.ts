@@ -19,6 +19,8 @@ export interface WorkspaceMembersResponse extends ApiResponse<WorkspaceMember[]>
     observers?: WorkspaceMember[];
 }
 
+export type WorkspaceRole = string;
+
 /**
  * Interface for member details response
  */

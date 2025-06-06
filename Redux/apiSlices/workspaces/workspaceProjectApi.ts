@@ -30,7 +30,9 @@ export const workspaceProjectApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { workspaceId }) => [
                 { type: 'WorkspaceProject', id: 'LIST' },
-                { type: 'Workspace', id: workspaceId }
+                { type: 'Workspace', id: workspaceId },
+                { type: 'Workspace', id: workspaceId },
+                'Project'
             ]
         }),
 

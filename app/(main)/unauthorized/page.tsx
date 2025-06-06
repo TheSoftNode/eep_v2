@@ -16,10 +16,10 @@ export default function Unauthorized() {
             case 'admin':
                 return '/admin/dashboard';
             case 'mentor':
-                return '/mentor/dashboard';
+                return '/Learner/dashboard';
             case 'learner':
             case 'user':
-                return '/dashboard';
+                return '/Learner/dashboard';
             default:
                 return '/';
         }

@@ -8,12 +8,13 @@ import {
     AlertCircle,
     FolderKanban,
     BarChart3,
-    RefreshCw
+    RefreshCw,
+    BellRing
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import {
     useGetAllWorkspacesQuery,
 } from '@/Redux/apiSlices/workspaces/workspaceApi';
@@ -21,8 +22,9 @@ import { WorkspaceStatus } from '@/Redux/types/Workspace/workspace';
 import AdminWorkspaceFilters from '@/components/Admin/AdminDashboard/Workspace/AllWorkspaces/AdminWorkspaceFilters';
 import AdminCreateWorkspaceCard from '@/components/Admin/AdminDashboard/Workspace/AllWorkspaces/AdminCreateWorkspaceCard';
 import AdminWorkspaceCard from '@/components/Admin/AdminDashboard/Workspace/AllWorkspaces/AdminWorkspaceCard';
-
-
+import { useAuth } from '@/hooks/useAuth';
+import { useGetUserInvitationsQuery, useRespondToInvitationMutation } from '@/Redux/apiSlices/workspaces/workspaceInvitationApi';
+import InvitationCard from '@/components/Admin/AdminDashboard/Workspace/Invitations/InvitationCard';
 
 interface FilterState {
     search: string;
@@ -32,8 +34,10 @@ interface FilterState {
     sortOrder: 'asc' | 'desc';
 }
 
-const AdminWorkspacesPage: React.FC = () => {
+const WorkspacesPage: React.FC = () => {
     const router = useRouter();
+    const { toast } = useToast();
+    const { isAdmin } = useAuth();
 
     // State for filters
     const [filters, setFilters] = useState<FilterState>({
@@ -44,7 +48,10 @@ const AdminWorkspacesPage: React.FC = () => {
         sortOrder: 'desc'
     });
 
-    // API calls
+    // State for invitation processing
+    const [processingInvitationId, setProcessingInvitationId] = useState<string | null>(null);
+
+    // API calls for workspaces
     const {
         data: workspacesResponse,
         isLoading,
@@ -61,7 +68,23 @@ const AdminWorkspacesPage: React.FC = () => {
         ...(filters.search && { search: filters.search })
     });
 
+    // API calls for invitations
+    const {
+        data: invitationsResponse,
+        isLoading: isLoadingInvitations,
+        error: invitationsError,
+        refetch: refetchInvitations
+    } = useGetUserInvitationsQuery({ status: 'pending' });
 
+    console.log(invitationsResponse)
+
+    // API mutation for responding to invitations
+    const [respondToInvitation, { isLoading: isProcessingInvitation }] = useRespondToInvitationMutation();
+
+    // Get pending invitations
+    const pendingInvitations = invitationsResponse?.data?.filter(
+        invitation => invitation.status === 'pending'
+    ) || [];
 
     // Filter and sort workspaces based on current filters
     const filteredWorkspaces = useMemo(() => {
@@ -102,7 +125,70 @@ const AdminWorkspacesPage: React.FC = () => {
         router.push(`/admin/dashboard/workspaces/${workspaceId}`);
     };
 
+    // Handle invitation actions
+    const handleAcceptInvitation = async (invitationId: string, message?: string) => {
+        setProcessingInvitationId(invitationId);
 
+        try {
+            const response = await respondToInvitation({
+                invitationId,
+                accept: true,
+                ...(message && { message })
+            }).unwrap();
+
+            if (response.success) {
+                toast({
+                    title: "Success",
+                    description: "Invitation accepted successfully",
+                });
+
+                refetchInvitations();
+                refetch(); // Refetch workspaces
+
+                // Navigate to the workspace if available
+                if (response.data?.workspaceId) {
+                    router.push(`/admin/dashboard/workspaces/${response.data.workspaceId}`);
+                }
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.message || "Failed to accept invitation",
+                variant: "destructive"
+            });
+        } finally {
+            setProcessingInvitationId(null);
+        }
+    };
+
+    const handleDeclineInvitation = async (invitationId: string, message?: string) => {
+        setProcessingInvitationId(invitationId);
+
+        try {
+            const response = await respondToInvitation({
+                invitationId,
+                accept: false,
+                ...(message && { message })
+            }).unwrap();
+
+            if (response.success) {
+                toast({
+                    title: "Success",
+                    description: "Invitation declined",
+                });
+
+                refetchInvitations();
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.message || "Failed to decline invitation",
+                variant: "destructive"
+            });
+        } finally {
+            setProcessingInvitationId(null);
+        }
+    };
 
     // Get workspace statistics
     const workspaceStats = useMemo(() => {
@@ -173,13 +259,15 @@ const AdminWorkspacesPage: React.FC = () => {
                         <BarChart3 className="h-4 w-4 mr-2" />
                         Analytics
                     </Button>
-                    <Button
-                        onClick={handleCreateWorkspace}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Workspace
-                    </Button>
+                    {isAdmin() && (
+                        <Button
+                            onClick={handleCreateWorkspace}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Workspace
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -249,6 +337,47 @@ const AdminWorkspacesPage: React.FC = () => {
                 </div>
             )}
 
+            {/* Pending Invitations Alert */}
+            {pendingInvitations.length > 0 && (
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg p-4 flex items-start gap-3">
+                    <BellRing className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+                    <div className="flex-1">
+                        <h3 className="font-medium text-indigo-800 dark:text-indigo-300">
+                            You have {pendingInvitations.length} pending invitation{pendingInvitations.length !== 1 ? 's' : ''}
+                        </h3>
+                        <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-3">
+                            You've been invited to join workspace{pendingInvitations.length !== 1 ? 's' : ''} as an admin.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {pendingInvitations.map(invitation => {
+                                const isProcessing = processingInvitationId === invitation.id && isProcessingInvitation;
+
+                                return (
+                                    <InvitationCard
+                                        key={invitation.id}
+                                        invitation={invitation}
+                                        onAccept={(message) => handleAcceptInvitation(invitation.id, message)}
+                                        onDecline={(message) => handleDeclineInvitation(invitation.id, message)}
+                                        isLoading={isProcessing}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Error messages */}
+            {invitationsError && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error Loading Invitations</AlertTitle>
+                    <AlertDescription>
+                        Failed to load workspace invitations. Please try again later.
+                    </AlertDescription>
+                </Alert>
+            )}
+
             {/* Filters */}
             <AdminWorkspaceFilters
                 filters={filters}
@@ -287,21 +416,27 @@ const AdminWorkspacesPage: React.FC = () => {
                     <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-1">
                         No workspaces yet
                     </h3>
-                    <p className="text-slate-500 dark:text-slate-400 mb-4">
-                        Get started by creating your first workspace
-                    </p>
-                    <Button
-                        onClick={handleCreateWorkspace}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create First Workspace
-                    </Button>
+                    {isAdmin() && (
+                        <>
+                            <p className="text-slate-500 dark:text-slate-400 mb-4">
+                                Get started by creating your first workspace
+                            </p>
+                            <Button
+                                onClick={handleCreateWorkspace}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Create First Workspace
+                            </Button>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Create workspace card */}
-                    <AdminCreateWorkspaceCard onClick={handleCreateWorkspace} />
+                    {isAdmin() && (
+                        <AdminCreateWorkspaceCard onClick={handleCreateWorkspace} />
+                    )}
 
                     {/* Workspace cards */}
                     {filteredWorkspaces.map((workspace) => (
@@ -317,6 +452,4 @@ const AdminWorkspacesPage: React.FC = () => {
     );
 };
 
-export default AdminWorkspacesPage;
-
-
+export default WorkspacesPage;

@@ -157,7 +157,8 @@ export const notificationsApi = apiSlice.injectEndpoints({
                 { type: 'Notification', id: 'STATS' }
             ]
         })
-    })
+    }),
+    overrideExisting: true
 });
 
 export const {

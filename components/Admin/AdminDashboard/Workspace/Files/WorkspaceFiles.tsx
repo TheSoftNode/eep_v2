@@ -393,7 +393,7 @@ export default function WorkspaceFiles({
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
             {/* Header Section */}
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-indigo-100 dark:border-indigo-800">
                 <div className="flex items-center justify-between">

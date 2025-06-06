@@ -4,24 +4,7 @@ import { firebaseFormatDate } from '@/components/utils/dateUtils';
 import { ActiveProjectData, ActiveWorkspaceData, STORAGE_KEY, StoredActiveProject } from './ActiveProjectTypes';
 import { Project } from '@/Redux/types/Projects';
 
-// Data transformation functions
-// export const transformProjectData = (project: ProjectSummary | ActiveProjectData): ActiveProjectData => {
-//     return {
-//         id: project.id,
-//         name: project.name,
-//         description: project.description,
-//         status: project.status,
-//         progress: project.progress,
-//         memberCount: project.memberCount,
-//         lastActivityAt: firebaseFormatDate(project.lastActivityAt),
-//         category: project.category,
-//         technologies: project.technologies,
-//         visibility: project.visibility,
-//         thumbnailUrl: project.thumbnailUrl,
-//         createdAt: firebaseFormatDate(project.createdAt),
-//         updatedAt: firebaseFormatDate(project.updatedAt),
-//     };
-// };
+
 
 export const transformProjectData = (
     project: Project | ProjectSummary | ActiveProjectData

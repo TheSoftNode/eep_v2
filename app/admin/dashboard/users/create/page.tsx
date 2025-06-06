@@ -20,6 +20,7 @@ import { BasicInformationSection } from "@/components/Admin/AdminDashboard/Users
 import { ProfessionalInformationSection } from "@/components/Admin/AdminDashboard/Users/AddUser/ProfessionalInformationSection";
 import { AdditionalInformationSection } from "@/components/Admin/AdminDashboard/Users/AddUser/AdditionalInformationSection";
 import { FormPreview } from "@/components/Admin/AdminDashboard/Users/AddUser/FormPreview";
+import { MentorInformationSection } from "@/components/Admin/AdminDashboard/Users/AddUser/MentorInformationSection";
 
 
 
@@ -31,6 +32,12 @@ interface FormData {
     company: string;
     website: string;
     github: string;
+    expertise: string[];
+    skills: string[];
+    languages: string[];
+    experience: number;
+    timezone: string;
+    isAvailable: boolean;
 }
 
 const AddUserPage: React.FC = () => {
@@ -43,7 +50,13 @@ const AddUserPage: React.FC = () => {
         bio: '',
         company: '',
         website: '',
-        github: ''
+        github: '',
+        expertise: [],
+        skills: [],
+        languages: ['English'],
+        experience: 0,
+        timezone: 'UTC+00:00',
+        isAvailable: true
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
@@ -74,6 +87,16 @@ const AddUserPage: React.FC = () => {
 
         if (formData.github && formData.github.includes('@')) {
             newErrors.github = 'GitHub username should not include @ symbol';
+        }
+
+        if (formData.role === 'mentor') {
+            if (!formData.expertise || formData.expertise.length === 0) {
+                newErrors.expertise = 'At least one area of expertise is required for mentors';
+            }
+
+            if (formData.experience < 0 || formData.experience > 50) {
+                newErrors.experience = 'Experience must be between 0 and 50 years';
+            }
         }
 
         setErrors(newErrors);
@@ -113,7 +136,18 @@ const AddUserPage: React.FC = () => {
                 bio: formData.bio.trim() || undefined,
                 company: formData.company.trim() || undefined,
                 website: formData.website.trim() || undefined,
-                github: formData.github.trim() || undefined
+                github: formData.github.trim() || undefined,
+
+                ...(formData.role === 'mentor' && {
+                    metadata: {
+                        expertise: formData.expertise,
+                        skills: formData.skills,
+                        languages: formData.languages,
+                        experience: formData.experience,
+                        timezone: formData.timezone,
+                        isAvailable: formData.isAvailable
+                    }
+                })
             };
 
             await createUser(userData).unwrap();
@@ -131,7 +165,13 @@ const AddUserPage: React.FC = () => {
                 bio: '',
                 company: '',
                 website: '',
-                github: ''
+                github: '',
+                expertise: [],
+                skills: [],
+                languages: ['English'],
+                experience: 0,
+                timezone: 'UTC+00:00',
+                isAvailable: true
             });
             setErrors({});
             setShowPreview(false);
@@ -149,11 +189,14 @@ const AddUserPage: React.FC = () => {
         router.back();
     };
 
-    const hasRequiredFields = formData.fullName.trim() && formData.email.trim();
+    const hasRequiredFields = formData.fullName.trim() &&
+        formData.email.trim() &&
+        (formData.role !== 'mentor' || formData.expertise.length > 0);
+
     const hasErrors = Object.keys(errors).length > 0;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 px-6">
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -210,6 +253,19 @@ const AddUserPage: React.FC = () => {
                                 errors={errors}
                                 onInputChange={handleInputChange}
                             />
+
+                            {formData.role === 'mentor' && (
+                                <MentorInformationSection
+                                    formData={formData}
+                                    errors={errors}
+                                    onExpertiseChange={(expertise) => setFormData(prev => ({ ...prev, expertise }))}
+                                    onSkillsChange={(skills) => setFormData(prev => ({ ...prev, skills }))}
+                                    onLanguagesChange={(languages) => setFormData(prev => ({ ...prev, languages }))}
+                                    onExperienceChange={(experience) => setFormData(prev => ({ ...prev, experience }))}
+                                    onTimezoneChange={(timezone) => setFormData(prev => ({ ...prev, timezone }))}
+                                    onAvailabilityChange={(isAvailable) => setFormData(prev => ({ ...prev, isAvailable }))}
+                                />
+                            )}
 
                             <AdditionalInformationSection
                                 formData={formData}

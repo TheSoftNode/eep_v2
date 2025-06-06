@@ -6,8 +6,6 @@ import {
     Folder,
     ExternalLink,
     X,
-    Sparkles,
-    ArrowRight,
     ChevronRight,
     Globe,
     Lock,
@@ -41,7 +39,7 @@ const ActiveProjectIndicator: React.FC = () => {
     }
 
     const navigateToProject = () => {
-        router.push(`/workspaces/${activeWorkspace.id}`);
+        router.push(`/admin/dashboard/workspaces/${activeWorkspace.id}`);
     };
 
     const getVisibilityIcon = () => {

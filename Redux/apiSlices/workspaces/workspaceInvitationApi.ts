@@ -1,4 +1,3 @@
-// Import workspace invitation types
 import {
     WorkspaceRole
 } from "@/Redux/types/Workspace/workspace";
@@ -31,7 +30,7 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
             { workspaceId: string } & CreateWorkspaceInvitationRequest
         >({
             query: ({ workspaceId, ...data }) => ({
-                url: `/workspacesInvites/${workspaceId}/invitations`,
+                url: `/workspacesInvites/${workspaceId}/invite`,
                 method: 'POST',
                 body: data
             }),
@@ -66,7 +65,7 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
             InvitationsResponse,
             { status?: string }
         >({
-            query: ({ status = 'pending' }) => `/invitations/user?status=${status}`,
+            query: ({ status = 'pending' }) => `/workspacesInvites/my/invitations?status=${status}`,
             providesTags: [{ type: 'WorkspaceInvitation', id: 'USER' }]
         }),
 
@@ -78,8 +77,8 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
             { invitationId: string } & RespondToInvitationRequest
         >({
             query: ({ invitationId, ...data }) => ({
-                url: `/invitations/${invitationId}/respond`,
-                method: 'POST',
+                url: `/workspacesInvites/invitations/${invitationId}/respond`,
+                method: 'PATCH',
                 body: data
             }),
             invalidatesTags: (result) => [
@@ -98,8 +97,8 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
             string
         >({
             query: (invitationId) => ({
-                url: `/invitations/${invitationId}/cancel`,
-                method: 'POST'
+                url: `/workspacesInvites/invitations/${invitationId}/cancel`,
+                method: 'PATCH'
             }),
             invalidatesTags: [
                 { type: 'WorkspaceInvitation', id: 'LIST' },
@@ -112,7 +111,7 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
         //==========================================================================
 
         /**
-         * Request to join a workspace (for public/findable workspacesInvites)
+         * Request to join a workspace (for public/findable workspaces)
          */
         requestToJoinWorkspace: builder.mutation<
             InvitationResponse,
@@ -137,8 +136,8 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
             { requestId: string; accept: boolean; message?: string; assignedRole?: WorkspaceRole }
         >({
             query: ({ requestId, ...data }) => ({
-                url: `/invitations/${requestId}/respond-join-request`,
-                method: 'POST',
+                url: `/workspacesInvites/join-requests/${requestId}/respond`,
+                method: 'PATCH',
                 body: data
             }),
             invalidatesTags: (result) => [
@@ -172,7 +171,7 @@ export const workspaceInvitationsApiSlice = apiSlice.injectEndpoints({
         >({
             query: (requestId) => ({
                 url: `/workspacesInvites/join-requests/${requestId}/withdraw`,
-                method: 'POST'
+                method: 'PATCH'
             }),
             invalidatesTags: [
                 { type: 'WorkspaceInvitation', id: 'USER' },

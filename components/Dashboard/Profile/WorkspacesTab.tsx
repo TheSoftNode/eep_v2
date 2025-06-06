@@ -9,7 +9,6 @@ import {
     ChevronRight,
     Sparkles,
     Clock,
-    Shield,
     ExternalLink
 } from 'lucide-react';
 import {
@@ -24,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { WorkspaceSummary } from '@/Redux/types/Users/profile';
 import EmptyState from './EmptyState';
+import { useRouter } from 'next/navigation';
 
 
 interface WorkspacesTabProps {
@@ -32,9 +32,17 @@ interface WorkspacesTabProps {
 }
 
 const WorkspacesTab: React.FC<WorkspacesTabProps> = ({ workspaces, workspaceDetails }) => {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const isAdminOrMentor = user?.role === 'admin' || user?.role === 'mentor';
     const [hoveredWorkspace, setHoveredWorkspace] = useState<string | null>(null);
+    const router = useRouter();
+
+    const handleWorkspaceView = (workspaceId: string) => {
+        isAdmin() ?
+            router.push(`/admin/dashboard/workspaces/${workspaceId}`) :
+            router.push(`/Learner/dashboard/workspaces/${workspaceId}`)
+            ;
+    };
 
     // Dynamic background animation for cards
     const BackgroundAnimation = () => (
@@ -81,6 +89,10 @@ const WorkspacesTab: React.FC<WorkspacesTabProps> = ({ workspaces, workspaceDeta
                         {isAdminOrMentor && (
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button
+                                    onClick={() => router.push(`${isAdmin() ?
+                                        `/admin/dashboard/workspaces/create` :
+                                        `/Learner/dashboard/workspaces/create`
+                                        }`)}
                                     size="sm"
                                     className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md shadow-indigo-500/20 dark:shadow-indigo-900/20 border-0"
                                 >
@@ -179,6 +191,7 @@ const WorkspacesTab: React.FC<WorkspacesTabProps> = ({ workspaces, workspaceDeta
                                                 whileTap={{ scale: 0.95 }}
                                             >
                                                 <Button
+                                                    onClick={() => handleWorkspaceView(workspace.id)}
                                                     size="sm"
                                                     className="bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/40 dark:hover:bg-indigo-800/60 text-indigo-700 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 border-0 transition-colors shadow-sm"
                                                 >
@@ -255,6 +268,10 @@ const WorkspacesTab: React.FC<WorkspacesTabProps> = ({ workspaces, workspaceDeta
 
                 <CardFooter className="px-6 pb-6 pt-2">
                     <Button
+                        onClick={() => router.push(`${isAdmin() ?
+                            `/admin/dashboard/workspaces` :
+                            `/Learner/dashboard/workspaces`
+                            }`)}
                         variant="outline"
                         className="w-full bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800/80 border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:border-indigo-300 dark:hover:border-indigo-700/70 transition-all shadow-sm group"
                     >

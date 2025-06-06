@@ -43,7 +43,8 @@ import {
     Users,
     Send,
     Settings,
-    Filter
+    Filter,
+    Watch
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -365,6 +366,7 @@ export default function InviteMemberDialog({
                                                         {availableRole === 'mentor' && <Crown className="h-4 w-4 text-indigo-500" />}
                                                         {availableRole === 'admin' && <Crown className="h-4 w-4 text-purple-500" />}
                                                         {availableRole === 'learner' && <GraduationCap className="h-4 w-4 text-emerald-500" />}
+                                                        {availableRole === 'observer' && <Search className="h-4 w-4 text-emerald-500" />}
                                                         <span>
                                                             {availableRole === 'mentor' ? 'Mentor' :
                                                                 availableRole === 'admin' ? 'Admin' :

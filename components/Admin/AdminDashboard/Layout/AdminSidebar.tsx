@@ -9,10 +9,7 @@ import {
     Book,
     Calendar,
     Award,
-    Settings,
-    HelpCircle,
     LogOut,
-    Terminal,
     FileText,
     BarChart3,
     FolderKanban,
@@ -23,18 +20,13 @@ import {
     UserCog,
     ChevronDown,
     Database,
-    Server,
-    GitBranch,
-    Shield,
     FileCode,
     UserPlus,
     UserMinus,
     Layers,
-    Share2,
-    Key,
-    Settings2,
     Mail,
     MessageCircle,
+    Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -206,11 +198,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     href: "/admin/dashboard/mentor-availablity",
                     icon: <UserMinus className="h-4 w-4" />
                 },
-                {
-                    name: "Mentorship Stats",
-                    href: "/admin/mentorship/stats",
-                    icon: <BarChart3 className="h-4 w-4" />
-                }
             ]
         },
         {
@@ -253,43 +240,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 }
             ]
         },
-        {
-            name: "Analytics",
-            href: "/admin/analytics",
-            icon: <BarChart3 className="h-4 w-4" />,
-            subItems: [
-                {
-                    name: "User Analytics",
-                    href: "/admin/analytics/users",
-                    icon: <Users className="h-4 w-4" />
-                },
-                {
-                    name: "Project Analytics",
-                    href: "/admin/analytics/projects",
-                    icon: <Briefcase className="h-4 w-4" />
-                },
-                {
-                    name: "Workspace Analytics",
-                    href: "/admin/analytics/workspaces",
-                    icon: <FolderKanban className="h-4 w-4" />
-                },
-                {
-                    name: "Learning Analytics",
-                    href: "/admin/analytics/learning",
-                    icon: <Book className="h-4 w-4" />
-                },
-                {
-                    name: "Session Analytics",
-                    href: "/admin/sessions/analytics",
-                    icon: <BarChart3 className="h-4 w-4" />
-                },
-                {
-                    name: "System Analytics",
-                    href: "/admin/analytics/system",
-                    icon: <Server className="h-4 w-4" />
-                }
-            ]
-        },
+
         {
             name: "Communications",
             href: "/admin/communications",
@@ -317,34 +268,34 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 }
             ]
         },
-        {
-            name: "System Settings",
-            href: "/admin/settings",
-            icon: <Settings className="h-4 w-4" />,
-            subItems: [
-                {
-                    name: "General Settings",
-                    href: "/admin/settings/general",
-                    icon: <Settings2 className="h-4 w-4" />
-                },
-                {
-                    name: "Security Settings",
-                    href: "/admin/settings/security",
-                    icon: <Shield className="h-4 w-4" />
-                },
-                {
-                    name: "API Management",
-                    href: "/admin/settings/api",
-                    icon: <Terminal className="h-4 w-4" />
-                },
-                {
-                    name: "Backup & Restore",
-                    href: "/admin/settings/backup",
-                    icon: <Database className="h-4 w-4" />
-                }
-            ]
+        // {
+        //     name: "System Settings",
+        //     href: "/admin/settings",
+        //     icon: <Settings className="h-4 w-4" />,
+        //     subItems: [
+        //         {
+        //             name: "General Settings",
+        //             href: "/admin/settings/general",
+        //             icon: <Settings2 className="h-4 w-4" />
+        //         },
+        //         {
+        //             name: "Security Settings",
+        //             href: "/admin/settings/security",
+        //             icon: <Shield className="h-4 w-4" />
+        //         },
+        //         {
+        //             name: "API Management",
+        //             href: "/admin/settings/api",
+        //             icon: <Terminal className="h-4 w-4" />
+        //         },
+        //         {
+        //             name: "Backup & Restore",
+        //             href: "/admin/settings/backup",
+        //             icon: <Database className="h-4 w-4" />
+        //         }
+        //     ]
 
-        },
+        // },
         {
             name: "Notifications",
             href: "/admin/dashboard/notifications",
@@ -357,9 +308,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     // Utilities section
     const utilityItems: NavItem[] = [
         {
-            name: "Help & Support",
-            href: "/admin/support",
-            icon: <HelpCircle className="h-4 w-4" />
+            name: "Profile",
+            href: "/admin/dashboard/profile",
+            icon: <UserCog className="h-4 w-4" />
+        },
+        {
+            name: "Settings",
+            href: "/admin/dashboard/settings",
+            icon: <Settings className="h-4 w-4" />
         }
     ];
 

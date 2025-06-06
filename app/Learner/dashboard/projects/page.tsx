@@ -132,7 +132,7 @@ const StatsCard = ({
 export default function LearnerProjectsPage() {
     const router = useRouter();
     const { toast } = useToast();
-    const { isLearner, isAdmin, isMentor } = useAuth();
+    const { isAdmin, isMentor } = useAuth();
 
     // Filter states
     const [searchQuery, setSearchQuery] = useState('');

@@ -154,15 +154,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
             },
         }),
 
-        // Get current user (for auth persistence)
-        getCurrentUser: builder.query<IAuthResponse, void>({
-            query: () => ({
-                url: '/profile/current-user',
-                method: 'GET',
-            }),
-            providesTags: ['User'],
-        }),
-
         // Logout
         logout: builder.mutation<{ success: boolean; message: string }, void>({
             query: () => ({
@@ -193,6 +184,5 @@ export const {
     useCheckRememberMeStatusMutation,
     useVerifyLoginCodeMutation,
     useVerify2FALoginMutation,
-    useGetCurrentUserQuery,
     useLogoutMutation,
 } = authApiSlice;

@@ -30,7 +30,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
     isLoading = false,
     className
 }) => {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const isAdminOrMentor = user?.role === 'admin' || user?.role === 'mentor';
     const router = useRouter();
 
@@ -164,7 +164,10 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
                         </div>
                         {isAdminOrMentor && (
                             <Button
-                                onClick={() => router.push("/learners-dashboard/projects/create")}
+                                onClick={() => router.push(`${isAdmin() ?
+                                    `/admin/dashboard/projects/create` :
+                                    `/Learner/dashboard/projects/create`
+                                    }`)}
                                 size="sm"
                                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm border-0 hover:shadow transition-all duration-200"
                             >
@@ -212,7 +215,10 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
                                                 "rounded-xl hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all duration-200 group",
                                                 "backdrop-blur-sm hover:shadow-sm"
                                             )}
-                                            onClick={() => router.push(`/learners-dashboard/projects/${project.id}`)}
+                                            onClick={() => router.push(`${isAdmin() ?
+                                                `/admin/dashboard/projects/${project.id}` :
+                                                `/Learner/dashboard/projects/${project.id}`
+                                                }`)}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md">
@@ -249,7 +255,10 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
                                                 "rounded-xl hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all duration-200 group",
                                                 "backdrop-blur-sm hover:shadow-sm"
                                             )}
-                                            onClick={() => router.push(`/learners-dashboard/projects/${projectId}`)}
+                                            onClick={() => router.push(`${isAdmin() ?
+                                                `/admin/dashboard/projects/${projectId}` :
+                                                `/Learner/dashboard/projects/${projectId}`
+                                                }`)}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md">
@@ -279,7 +288,10 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
 
                 <CardFooter className="px-6 pb-6 pt-2">
                     <Button
-                        onClick={() => router.push("/learners-dashboard/projects")}
+                        onClick={() => router.push(`${isAdmin() ?
+                            `/admin/dashboard/projects` :
+                            `/Learner/dashboard/projects`
+                            }`)}
                         variant="outline"
                         className="w-full border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-800 dark:hover:text-indigo-300 transition-all duration-200"
                     >

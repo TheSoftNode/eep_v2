@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import "../globals.css";
 import { ReduxProvider } from "@/Redux/core/provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ActiveProjectProvider } from "@/components/Admin/AdminDashboard/Workspace/ActiveProjectContexts/ActiveProjectContext";
 
 // Font configurations
 const inter = Inter({
@@ -92,7 +93,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           >
             <ReduxProvider>
               <TooltipProvider>
-                {children}
+                <ActiveProjectProvider
+                  autoExpireHours={24}
+                  enablePersistence={true}
+                  enableNotifications={true}
+                >
+                  {children}
+                </ActiveProjectProvider>
                 <Toaster />
               </TooltipProvider>
             </ReduxProvider >

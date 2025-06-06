@@ -160,7 +160,7 @@ const LearningPathDashboardPage: React.FC = () => {
 
     // Action handlers
     const handleEdit = () => {
-        router.push(`/admin/dashboard/learning-paths/create?projectId=${projectId}`);
+        router.push(`/admin/dashboard/projects/learning-paths/create?projectId=${projectId}`);
     };
 
     const handleExport = async (format: 'json' | 'csv' = 'csv') => {

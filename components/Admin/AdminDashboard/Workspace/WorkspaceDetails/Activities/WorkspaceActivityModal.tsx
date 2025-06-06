@@ -11,15 +11,28 @@ import {
     AlertTriangle,
     Search,
     User,
-    GitCommit,
     MessageSquare,
     Settings,
-    Play,
-    CheckCircle,
+    FileText,
     Plus,
-    X
+    CheckCircle,
+    UserPlus,
+    UserMinus,
+    Mail,
+    Folder,
+    Flag,
+    Crown,
+    Shield,
+    Globe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import {
     Avatar,
     AvatarFallback,
@@ -32,67 +45,141 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
-    useGetProjectActivityQuery,
-    useDeleteProjectActivityMutation,
-    useClearAllProjectActivitiesMutation
-} from '@/Redux/apiSlices/Projects/projectsApiSlice';
+    useGetWorkspaceActivitiesQuery,
+    useDeleteWorkspaceActivityMutation,
+    useClearAllWorkspaceActivitiesMutation
+} from '@/Redux/apiSlices/workspaces/workspaceActivitiesApi';
 import { cn } from '@/lib/utils';
-import { convertToDate, formatDate } from '@/components/utils/dateUtils';
+import { convertFirebaseDateRobust, firebaseFormatDate } from '@/components/utils/dateUtils';
 
-// Activity type configurations
-const ACTIVITY_CONFIGS = {
-    task_created: {
+// Activity type configurations (same as parent component)
+const WORKSPACE_ACTIVITY_CONFIGS = {
+    // Workspace actions
+    created_workspace: {
+        icon: FileText,
+        color: 'text-indigo-600',
+        bg: 'bg-indigo-100 dark:bg-indigo-900/30',
+        label: 'Workspace Created'
+    },
+    updated_workspace: {
+        icon: Settings,
+        color: 'text-blue-600',
+        bg: 'bg-blue-100 dark:bg-blue-900/30',
+        label: 'Workspace Updated'
+    },
+
+    // Member actions
+    added_member: {
+        icon: UserPlus,
+        color: 'text-emerald-600',
+        bg: 'bg-emerald-100 dark:bg-emerald-900/30',
+        label: 'Member Added'
+    },
+    removed_member: {
+        icon: UserMinus,
+        color: 'text-red-600',
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        label: 'Member Removed'
+    },
+    role_changed: {
+        icon: Crown,
+        color: 'text-purple-600',
+        bg: 'bg-purple-100 dark:bg-purple-900/30',
+        label: 'Role Changed'
+    },
+
+    // Invitation actions
+    sent_invitation: {
+        icon: Mail,
+        color: 'text-orange-600',
+        bg: 'bg-orange-100 dark:bg-orange-900/30',
+        label: 'Invitation Sent'
+    },
+    invitation_accepted: {
+        icon: CheckCircle,
+        color: 'text-green-600',
+        bg: 'bg-green-100 dark:bg-green-900/30',
+        label: 'Invitation Accepted'
+    },
+    invitation_declined: {
+        icon: UserMinus,
+        color: 'text-red-600',
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        label: 'Invitation Declined'
+    },
+
+    // Project actions
+    added_project: {
+        icon: Folder,
+        color: 'text-yellow-600',
+        bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+        label: 'Project Added'
+    },
+    removed_project: {
+        icon: Folder,
+        color: 'text-red-600',
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        label: 'Project Removed'
+    },
+
+    // Task actions
+    created_task: {
         icon: Plus,
         color: 'text-emerald-600',
         bg: 'bg-emerald-100 dark:bg-emerald-900/30',
         label: 'Task Created'
     },
-    task_updated: {
-        icon: Settings,
-        color: 'text-blue-600',
-        bg: 'bg-blue-100 dark:bg-blue-900/30',
-        label: 'Task Updated'
-    },
-    task_completed: {
+    completed_task: {
         icon: CheckCircle,
-        color: 'text-emerald-600',
-        bg: 'bg-emerald-100 dark:bg-emerald-900/30',
+        color: 'text-green-600',
+        bg: 'bg-green-100 dark:bg-green-900/30',
         label: 'Task Completed'
     },
-    member_joined: {
-        icon: User,
-        color: 'text-purple-600',
-        bg: 'bg-purple-100 dark:bg-purple-900/30',
-        label: 'Member Joined'
+
+    // Meeting actions
+    scheduled_meeting: {
+        icon: Clock,
+        color: 'text-blue-600',
+        bg: 'bg-blue-100 dark:bg-blue-900/30',
+        label: 'Meeting Scheduled'
     },
-    member_left: {
-        icon: User,
+    canceled_meeting: {
+        icon: Clock,
         color: 'text-red-600',
         bg: 'bg-red-100 dark:bg-red-900/30',
-        label: 'Member Left'
+        label: 'Meeting Canceled'
     },
-    project_updated: {
-        icon: GitCommit,
-        color: 'text-indigo-600',
-        bg: 'bg-indigo-100 dark:bg-indigo-900/30',
-        label: 'Project Updated'
+
+    // Milestone actions
+    completed_milestone: {
+        icon: Flag,
+        color: 'text-purple-600',
+        bg: 'bg-purple-100 dark:bg-purple-900/30',
+        label: 'Milestone Completed'
     },
-    comment_added: {
+
+    // Communication actions
+    created_comment: {
         icon: MessageSquare,
-        color: 'text-orange-600',
-        bg: 'bg-orange-100 dark:bg-orange-900/30',
+        color: 'text-blue-600',
+        bg: 'bg-blue-100 dark:bg-blue-900/30',
         label: 'Comment Added'
     },
-    status_changed: {
-        icon: Play,
-        color: 'text-yellow-600',
-        bg: 'bg-yellow-100 dark:bg-yellow-900/30',
-        label: 'Status Changed'
-    },
+
     default: {
         icon: Activity,
         color: 'text-slate-600',
@@ -101,8 +188,8 @@ const ACTIVITY_CONFIGS = {
     }
 };
 
-const getActivityConfig = (action: string) => {
-    return ACTIVITY_CONFIGS[action as keyof typeof ACTIVITY_CONFIGS] || ACTIVITY_CONFIGS.default;
+const getWorkspaceActivityConfig = (action: string) => {
+    return WORKSPACE_ACTIVITY_CONFIGS[action as keyof typeof WORKSPACE_ACTIVITY_CONFIGS] || WORKSPACE_ACTIVITY_CONFIGS.default;
 };
 
 const getUserInitials = (name: string) => {
@@ -118,7 +205,7 @@ const formatActivityTime = (timestamp: any) => {
     if (!timestamp) return 'recently';
 
     try {
-        const date = convertToDate(timestamp);
+        const date = convertFirebaseDateRobust(timestamp);
         if (!date) return 'recently';
 
         const now = new Date();
@@ -129,139 +216,100 @@ const formatActivityTime = (timestamp: any) => {
         if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
         if (diffInMinutes < 10080) return `${Math.floor(diffInMinutes / 1440)}d ago`;
 
-        return formatDate(timestamp);
+        return firebaseFormatDate(timestamp);
     } catch {
         return 'recently';
     }
 };
 
-const formatActivityDescription = (action: string, details: any) => {
-    if (!details) return '';
+const formatWorkspaceActivityDescription = (action: string, details: any, entityName?: string) => {
+    if (!details && !entityName) return action.replace(/_/g, ' ');
 
     switch (action) {
-        case 'task_created':
-            return `created task "${details.taskTitle || 'Untitled'}"`;
-        case 'task_updated':
-            return `updated task "${details.taskTitle || 'Untitled'}"`;
-        case 'task_completed':
-            return `completed task "${details.taskTitle || 'Untitled'}"`;
-        case 'member_joined':
-            return `joined the project`;
-        case 'member_left':
-            return `left the project`;
-        case 'project_updated':
-            return `updated project settings`;
-        case 'comment_added':
-            return `added a comment`;
-        case 'status_changed':
-            return `changed status ${details.from ? `from ${details.from}` : ''} to ${details.to || 'unknown'}`;
+        case 'created_workspace':
+            return 'created this workspace';
+        case 'updated_workspace':
+            return 'updated workspace settings';
+        case 'added_member':
+            return `added ${details?.memberName || 'a member'} as ${details?.memberRole || 'team member'}`;
+        case 'removed_member':
+            return `removed ${details?.memberName || 'a member'} from the workspace`;
+        case 'role_changed':
+            return `changed ${details?.memberName || 'a member'}'s role to ${details?.newRole || 'team member'}`;
+        case 'sent_invitation':
+            return `sent an invitation to ${details?.recipientEmail || 'a user'}`;
+        case 'invitation_accepted':
+            return 'accepted the workspace invitation';
+        case 'invitation_declined':
+            return 'declined the workspace invitation';
+        case 'added_project':
+            return `added project "${details?.projectName || entityName || 'a project'}"`;
+        case 'removed_project':
+            return `removed project "${details?.projectName || entityName || 'a project'}"`;
+        case 'created_task':
+            return `created task "${details?.taskName || entityName || 'a task'}"`;
+        case 'completed_task':
+            return `completed task "${details?.taskName || entityName || 'a task'}"`;
+        case 'scheduled_meeting':
+            return `scheduled a meeting: "${details?.meetingTitle || entityName || 'untitled'}"`;
+        case 'canceled_meeting':
+            return `canceled meeting: "${details?.meetingTitle || entityName || 'untitled'}"`;
+        case 'completed_milestone':
+            return `completed milestone: "${details?.milestoneName || entityName || 'a milestone'}"`;
+        case 'created_comment':
+            return `commented on ${details?.entityType || 'an item'}`;
         default:
-            return action.replace(/_/g, ' ');
+            return action?.replace(/_/g, ' ');
     }
 };
 
-// Custom Alert Dialog Component
-interface AlertDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onConfirm: () => void;
-    title: string;
-    description: string;
-    confirmText: string;
-    isLoading?: boolean;
-    icon?: React.ReactNode;
-}
-
-const CustomAlertDialog: React.FC<AlertDialogProps> = ({
-    open,
-    onOpenChange,
-    onConfirm,
-    title,
-    description,
-    confirmText,
-    isLoading = false,
-    icon
-}) => {
-    return (
-        <AnimatePresence>
-            {open && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/50"
-                        onClick={() => onOpenChange(false)}
-                    />
-
-                    {/* Dialog */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md mx-4"
-                    >
-                        <div className="space-y-4">
-                            <div>
-                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                                    {icon}
-                                    {title}
-                                </h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                                    {description}
-                                </p>
-                            </div>
-
-                            <div className="flex justify-end gap-3">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => onOpenChange(false)}
-                                    disabled={isLoading}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={onConfirm}
-                                    className="bg-red-600 hover:bg-red-700"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                            {confirmText.includes('Delete') ? 'Deleting...' : 'Clearing...'}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Trash2 className="h-4 w-4 mr-2" />
-                                            {confirmText}
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
-    );
+const getRoleIcon = (role: string) => {
+    switch (role?.toLowerCase()) {
+        case 'admin':
+            return <Crown className="h-3 w-3 text-purple-500" />;
+        case 'mentor':
+            return <Shield className="h-3 w-3 text-blue-500" />;
+        case 'learner':
+            return <User className="h-3 w-3 text-green-500" />;
+        case 'observer':
+            return <Globe className="h-3 w-3 text-slate-500" />;
+        default:
+            return <User className="h-3 w-3 text-slate-500" />;
+    }
 };
 
-interface ActivityViewModalProps {
-    projectId: string;
+const getRoleColor = (role: string) => {
+    switch (role?.toLowerCase()) {
+        case 'admin':
+            return 'text-purple-600 bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800';
+        case 'mentor':
+            return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800';
+        case 'learner':
+            return 'text-green-600 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+        case 'observer':
+            return 'text-slate-600 bg-slate-50 dark:bg-slate-900/20 border-slate-200 dark:border-slate-800';
+        default:
+            return 'text-slate-600 bg-slate-50 dark:bg-slate-900/20 border-slate-200 dark:border-slate-800';
+    }
+};
+
+interface WorkspaceActivityModalProps {
+    workspaceId: string;
+    projectId?: string;
     open: boolean;
     onClose: () => void;
 }
 
-export function ActivityViewModal({
+export function WorkspaceActivityModal({
+    workspaceId,
     projectId,
     open,
     onClose
-}: ActivityViewModalProps) {
+}: WorkspaceActivityModalProps) {
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activityScope, setActivityScope] = useState("all");
-    const [sortDirection, setSortDirection] = useState("desc");
+    const [entityType, setEntityType] = useState("all");
+    const [importance, setImportance] = useState("all");
     const [allActivities, setAllActivities] = useState<any[]>([]);
     const [isManualRefreshing, setIsManualRefreshing] = useState(false);
     const [deleteActivityId, setDeleteActivityId] = useState<string | null>(null);
@@ -273,34 +321,10 @@ export function ActivityViewModal({
     const handleClose = () => {
         setPage(1);
         setSearchTerm('');
-        setActivityScope("all");
+        setEntityType("all");
+        setImportance("all");
         onClose();
     };
-
-    // Handle escape key
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && open) {
-                handleClose();
-            }
-        };
-
-        document.addEventListener('keydown', handleEscape);
-        return () => document.removeEventListener('keydown', handleEscape);
-    }, [open]);
-
-    // Prevent body scroll when modal is open
-    useEffect(() => {
-        if (open) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
-
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [open]);
 
     // API hooks
     const {
@@ -309,19 +333,19 @@ export function ActivityViewModal({
         isError,
         refetch,
         isFetching
-    } = useGetProjectActivityQuery({
-        id: projectId,
+    } = useGetWorkspaceActivitiesQuery({
+        workspaceId,
+        entityId: projectId,
         page,
         limit: 20,
-        scope: activityScope === 'all' ? undefined : activityScope,
-        sortBy: 'createdAt',
-        sortDirection: sortDirection as 'asc' | 'desc'
+        entityType: entityType === 'all' ? undefined : entityType,
+        importance: importance === 'all' ? undefined : importance as 'low' | 'medium' | 'high'
     }, {
-        skip: !open || !projectId,
+        skip: !open || !workspaceId,
     });
 
-    const [deleteActivity, { isLoading: isDeleting }] = useDeleteProjectActivityMutation();
-    const [clearAllActivities, { isLoading: isClearing }] = useClearAllProjectActivitiesMutation();
+    const [deleteActivity, { isLoading: isDeleting }] = useDeleteWorkspaceActivityMutation();
+    const [clearAllActivities, { isLoading: isClearing }] = useClearAllWorkspaceActivitiesMutation();
 
     // Update activities when data changes
     useEffect(() => {
@@ -342,7 +366,8 @@ export function ActivityViewModal({
         if (open) {
             setPage(1);
             setSearchTerm('');
-            setActivityScope("all");
+            setEntityType("all");
+            setImportance("all");
             setIsManualRefreshing(false);
         }
     }, [open]);
@@ -364,7 +389,7 @@ export function ActivityViewModal({
 
     const handleDeleteActivity = async (activityId: string) => {
         try {
-            await deleteActivity({ projectId, activityId }).unwrap();
+            await deleteActivity({ workspaceId, activityId }).unwrap();
             setAllActivities(prev => prev.filter(a => a.id !== activityId));
             setDeleteActivityId(null);
             toast({
@@ -382,12 +407,12 @@ export function ActivityViewModal({
 
     const handleClearAllActivities = async () => {
         try {
-            await clearAllActivities({ id: projectId }).unwrap();
+            await clearAllActivities({ workspaceId }).unwrap();
             setAllActivities([]);
             setShowClearAllDialog(false);
             toast({
                 title: "Activities Cleared",
-                description: "All project activities have been cleared successfully.",
+                description: "All workspace activities have been cleared successfully.",
             });
         } catch (error: any) {
             toast({
@@ -411,65 +436,37 @@ export function ActivityViewModal({
         return (
             activity.userName?.toLowerCase().includes(searchLower) ||
             activity.action?.toLowerCase().includes(searchLower) ||
-            formatActivityDescription(activity.action, activity.details).toLowerCase().includes(searchLower)
+            activity.entityName?.toLowerCase().includes(searchLower) ||
+            formatWorkspaceActivityDescription(activity.action, activity.details, activity.entityName).toLowerCase().includes(searchLower)
         );
     });
 
     const isLoadingContent = isLoading || isManualRefreshing;
-    const canDelete = activityResponse?.canDelete || false;
-    const canClearAll = activityResponse?.canClearAll || false;
-
-    if (!open) return null;
+    const canDelete = true; // Assuming workspace activities can be deleted
+    const canClearAll = true; // Assuming workspace activities can be cleared
 
     return (
         <>
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-                {/* Backdrop */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/50"
-                    onClick={handleClose}
-                />
-
-                {/* Modal */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4"
-                >
-                    {/* Header */}
-                    <div className="p-6 pb-4 border-b border-slate-200 dark:border-slate-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex items-center gap-3 text-xl font-semibold mb-2">
-                                    <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
-                                        <Clock className="h-5 w-5" />
-                                    </div>
-                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                        Project Activity Log
-                                    </span>
-                                </div>
-                                <p className="text-slate-600 dark:text-slate-400">
-                                    Complete history of all actions and updates on this project
-                                </p>
+            <Dialog open={open} onOpenChange={handleClose}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+                    <DialogHeader className="pb-4 border-b border-slate-200 dark:border-slate-700">
+                        <DialogTitle className="flex items-center gap-3 text-xl">
+                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+                                <Activity className="h-5 w-5" />
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleClose}
-                                className="h-10 w-10 rounded-full"
-                            >
-                                <X className="h-5 w-5" />
-                            </Button>
-                        </div>
-                    </div>
+                            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                {projectId ? 'Project Activity Log' : 'Workspace Activity Log'}
+                            </span>
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-600 dark:text-slate-400">
+                            {projectId
+                                ? 'Complete history of all actions and updates on this project'
+                                : 'Complete history of all actions and updates in this workspace'
+                            }
+                        </DialogDescription>
+                    </DialogHeader>
 
-                    {/* Content */}
-                    <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-200px)]">
+                    <div className="py-6 space-y-4">
                         {/* Filters and Search */}
                         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                             <div className="flex-1 max-w-md">
@@ -484,27 +481,32 @@ export function ActivityViewModal({
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Select value={activityScope} onValueChange={setActivityScope}>
-                                    <SelectTrigger className="w-32">
+                            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <Select value={entityType} onValueChange={setEntityType}>
+                                    <SelectTrigger className="w-36">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Types</SelectItem>
-                                        <SelectItem value="project">Project</SelectItem>
-                                        <SelectItem value="area">Areas</SelectItem>
+                                        <SelectItem value="workspace">Workspace</SelectItem>
+                                        <SelectItem value="project">Projects</SelectItem>
                                         <SelectItem value="task">Tasks</SelectItem>
                                         <SelectItem value="member">Members</SelectItem>
+                                        <SelectItem value="milestone">Milestones</SelectItem>
+                                        <SelectItem value="meeting">Meetings</SelectItem>
+                                        <SelectItem value="comment">Comments</SelectItem>
                                     </SelectContent>
                                 </Select>
 
-                                <Select value={sortDirection} onValueChange={setSortDirection}>
+                                <Select value={importance} onValueChange={setImportance}>
                                     <SelectTrigger className="w-32">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="desc">Newest First</SelectItem>
-                                        <SelectItem value="asc">Oldest First</SelectItem>
+                                        <SelectItem value="all">All Priority</SelectItem>
+                                        <SelectItem value="high">High</SelectItem>
+                                        <SelectItem value="medium">Medium</SelectItem>
+                                        <SelectItem value="low">Low</SelectItem>
                                     </SelectContent>
                                 </Select>
 
@@ -525,7 +527,7 @@ export function ActivityViewModal({
                                     size="sm"
                                     onClick={handleRefresh}
                                     disabled={isLoadingContent}
-                                    className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                                    className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-800 dark:hover:bg-indigo-900/20"
                                 >
                                     <RefreshCw className={cn("h-4 w-4 mr-2", isLoadingContent && "animate-spin")} />
                                     Refresh
@@ -553,7 +555,7 @@ export function ActivityViewModal({
                                 <div className="flex flex-col items-center justify-center p-12 text-red-500">
                                     <AlertCircle className="h-12 w-12 mb-4" />
                                     <p className="text-lg font-medium mb-2">Failed to Load Activities</p>
-                                    <p className="text-sm text-slate-500 mb-4">There was an error loading the project activities</p>
+                                    <p className="text-sm text-slate-500 mb-4">There was an error loading the workspace activities</p>
                                     <Button
                                         variant="outline"
                                         onClick={handleRefresh}
@@ -570,14 +572,19 @@ export function ActivityViewModal({
                                         {searchTerm ? 'No matching activities' : 'No activities found'}
                                     </p>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                                        {searchTerm ? 'Try adjusting your search terms' : 'Project activity will appear here as work progresses'}
+                                        {searchTerm
+                                            ? 'Try adjusting your search terms'
+                                            : projectId
+                                                ? 'Project activity will appear here as work progresses'
+                                                : 'Workspace activity will appear here as team members collaborate'
+                                        }
                                     </p>
                                 </div>
                             ) : (
                                 <div className="p-4 space-y-3">
                                     <AnimatePresence>
                                         {filteredActivities.map((activity, index) => {
-                                            const config = getActivityConfig(activity.action);
+                                            const config = getWorkspaceActivityConfig(activity.action);
                                             const IconComponent = config.icon;
 
                                             return (
@@ -603,7 +610,7 @@ export function ActivityViewModal({
                                                                     {activity.userAvatar ? (
                                                                         <AvatarImage src={activity.userAvatar} alt={activity.userName} />
                                                                     ) : (
-                                                                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-medium">
+                                                                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs font-medium">
                                                                             {getUserInitials(activity.userName)}
                                                                         </AvatarFallback>
                                                                     )}
@@ -613,12 +620,13 @@ export function ActivityViewModal({
                                                                         <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                                                                             {activity.userName || 'Team Member'}
                                                                         </span>
-                                                                        <Badge variant="outline" className="text-xs">
-                                                                            {config.label}
+                                                                        <Badge variant="outline" className={cn("text-xs border", getRoleColor(activity.userRole))}>
+                                                                            {getRoleIcon(activity.userRole)}
+                                                                            <span className="ml-1 capitalize">{activity.userRole}</span>
                                                                         </Badge>
                                                                     </div>
                                                                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                                        {formatActivityDescription(activity.action, activity.details)}
+                                                                        {formatWorkspaceActivityDescription(activity.action, activity.details, activity.entityName)}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -627,11 +635,26 @@ export function ActivityViewModal({
                                                                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                                                                     <Clock className="h-3 w-3" />
                                                                     <span>{formatActivityTime(activity.createdAt)}</span>
-                                                                    {activity.scope && (
+                                                                    {activity.entityType && (
                                                                         <>
                                                                             <span>•</span>
-                                                                            <Badge variant="secondary" className="text-xs py-0 h-4">
-                                                                                {activity.scope}
+                                                                            <Badge variant="secondary" className="text-xs py-0 h-4 capitalize">
+                                                                                {activity.entityType.replace('_', ' ')}
+                                                                            </Badge>
+                                                                        </>
+                                                                    )}
+                                                                    {activity.importance && activity.importance !== 'medium' && (
+                                                                        <>
+                                                                            <span>•</span>
+                                                                            <Badge
+                                                                                variant="secondary"
+                                                                                className={cn(
+                                                                                    "text-xs py-0 h-4",
+                                                                                    activity.importance === 'high' && "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
+                                                                                    activity.importance === 'low' && "bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+                                                                                )}
+                                                                            >
+                                                                                {activity.importance}
                                                                             </Badge>
                                                                         </>
                                                                     )}
@@ -662,7 +685,7 @@ export function ActivityViewModal({
                                                 variant="outline"
                                                 onClick={handleLoadMore}
                                                 disabled={isLoading}
-                                                className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                                                className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-800 dark:hover:bg-indigo-900/20"
                                             >
                                                 {isLoading && page > 1 ? (
                                                     <>
@@ -696,32 +719,82 @@ export function ActivityViewModal({
                             </div>
                         )}
                     </div>
-                </motion.div>
-            </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Delete Activity Confirmation Dialog */}
-            <CustomAlertDialog
-                open={!!deleteActivityId}
-                onOpenChange={() => setDeleteActivityId(null)}
-                onConfirm={() => deleteActivityId && handleDeleteActivity(deleteActivityId)}
-                title="Delete Activity"
-                description="Are you sure you want to delete this activity? This action cannot be undone and will permanently remove this entry from the project history."
-                confirmText="Delete Activity"
-                isLoading={isDeleting}
-                icon={<AlertTriangle className="h-5 w-5 text-red-500" />}
-            />
+            <AlertDialog open={!!deleteActivityId} onOpenChange={() => setDeleteActivityId(null)}>
+                <AlertDialogContent className='bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm'>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                            Delete Activity
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this activity? This action cannot be undone and will permanently remove this entry from the workspace history.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            className='bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm'
+                            disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => deleteActivityId && handleDeleteActivity(deleteActivityId)}
+                            disabled={isDeleting}
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                    Deleting...
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete Activity
+                                </>
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* Clear All Activities Confirmation Dialog */}
-            <CustomAlertDialog
-                open={showClearAllDialog}
-                onOpenChange={setShowClearAllDialog}
-                onConfirm={handleClearAllActivities}
-                title="Clear All Activities"
-                description={`Are you sure you want to clear the entire activity history? This will permanently remove all ${allActivities.length} activities and cannot be undone. This action is irreversible.`}
-                confirmText="Clear All Activities"
-                isLoading={isClearing}
-                icon={<AlertTriangle className="h-5 w-5 text-red-500" />}
-            />
+            <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog} >
+                <AlertDialogContent className='bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm'>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                            Clear All Activities
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to clear the entire activity history? This will permanently remove all {allActivities.length} activities and cannot be undone. This action is irreversible.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            className='bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm'
+                            disabled={isClearing}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleClearAllActivities}
+                            disabled={isClearing}
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            {isClearing ? (
+                                <>
+                                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                    Clearing All...
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Clear All Activities
+                                </>
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

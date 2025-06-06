@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useGetProjectAreasQuery } from "@/Redux/apiSlices/Projects/projectAreaApiSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { convertFirebaseDateRobust, firebaseFormatDate } from "@/components/utils/dateUtils";
 
 interface ProjectCardProps {
     project: Project;
@@ -470,7 +471,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                     <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-indigo-500" />
                         <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                            {formatDate(project.startDate)} → {formatDate(project.endDate)}
+                            {firebaseFormatDate(project.startDate)} → {firebaseFormatDate(project.endDate)}
                         </span>
                     </div>
 

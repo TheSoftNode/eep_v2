@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     ArrowLeft,
@@ -18,7 +18,8 @@ import {
     FileText,
     Users,
     Sparkles,
-    Activity
+    Activity,
+    Edit
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -28,7 +29,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useGetWorkspaceByIdQuery } from '@/Redux/apiSlices/workspaces/workspaceApi';
 import WorkspaceMembers from './Members/WorkspaceMembers';
-import WorkspaceProjectSelector, { WorkspaceProjectSelectorRef } from './Projects/WorkspaceProjectSelector';
+import WorkspaceProjectSelector from './Projects/WorkspaceProjectSelector';
 import { useGetWorkspaceProjectsQuery } from '@/Redux/apiSlices/workspaces/workspaceProjectApi';
 import WorkspaceOverview from './Overview/WorkspaceOverview';
 import WorkspaceFiles from '../Files/WorkspaceFiles';
@@ -38,6 +39,9 @@ import EditWorkspaceDialog from './EditWorkspace/EditWorkspaceDialog';
 import WorkspaceProgressComponent from './WorkspaceProgress/WorkspaceProgressComponent';
 import { WorkspaceDetailed } from '@/Redux/types/Workspace/workspace';
 import WorkspaceChat from './Chat/WorkspaceChat';
+
+import { useActiveProject } from '../ActiveProjectContexts/ActiveProjectContext';
+import ActiveProjectIndicator from './Projects/ActiveProjectIndicator';
 
 interface WorkspaceDetailPageProps {
     workspaceId: string;
@@ -50,10 +54,12 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
     const [activeTab, setActiveTab] = useState('overview');
     const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
     const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+    const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+    const { setActiveProjectWithContext, activeProject, clearActiveProject } = useActiveProject();
+    const [localActiveProjectId, setLocalActiveProjectId] = useState<string | null>(null);
 
-    const projectSelectorRef = useRef<WorkspaceProjectSelectorRef>(null);
+    const activeProjectId = activeProject?.id || localActiveProjectId;
 
     // RTK Query hooks
     const {
@@ -64,7 +70,7 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
     } = useGetWorkspaceByIdQuery({
         id: workspaceId,
         includeMembers: true,
-        includeProjects: false, // We'll fetch projects separately
+        includeProjects: false,
         includeMilestones: true,
         includeActivity: true,
         includeProgress: true,
@@ -80,15 +86,49 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
         skip: !workspaceId
     });
 
-    // Set default active project if none is selected and projects load
-    useEffect(() => {
-        if (projectsResponse?.data && projectsResponse.data.length > 0 && !activeProjectId) {
-            setActiveProjectId(projectsResponse.data[0].id);
-        }
-    }, [projectsResponse, activeProjectId]);
+    // Add this memoized callback
+    const handleMemberUpdate = useCallback(() => {
+        refetchWorkspace();
+        refetchProjects();
+    }, [refetchWorkspace, refetchProjects]);
+
+
 
     const handleProjectSelect = (projectId: string) => {
-        setActiveProjectId(projectId);
+        if (projectId === '' || !projectId) {
+            // Clear selection
+            setLocalActiveProjectId(null);
+            clearActiveProject(); // This clears the context
+
+            toast({
+                title: "Project Cleared",
+                description: "No project is currently selected",
+                variant: "default",
+            });
+            return;
+        }
+
+        // Rest of existing logic for normal project selection...
+        try {
+            const selectedProject = projects.find(p => p.id === projectId);
+            if (selectedProject && workspace) {
+                setLocalActiveProjectId(projectId);
+                setActiveProjectWithContext(selectedProject, workspace);
+
+                toast({
+                    title: "Project Selected",
+                    description: `Now working on ${selectedProject.name}`,
+                    variant: "default",
+                });
+            }
+        } catch (error) {
+            console.error('Error selecting project:', error);
+            toast({
+                title: "Error",
+                description: "Failed to select project",
+                variant: "destructive",
+            });
+        }
     };
 
     // Determine user permissions
@@ -107,6 +147,42 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
         setActiveTab(value);
         // Could add analytics tracking here
     };
+
+    // Sync selected project with context when projects load
+    useEffect(() => {
+        if (projectsResponse?.data && projectsResponse.data.length > 0) {
+            // If no active project in context or local state, set the first one
+            if (!activeProject && !localActiveProjectId) {
+                const firstProject = projectsResponse.data[0];
+                setLocalActiveProjectId(firstProject.id);
+                setActiveProjectWithContext(firstProject, workspace);
+            }
+        }
+    }, [projectsResponse, activeProject, localActiveProjectId, workspace, setActiveProjectWithContext]);
+
+    // Handle first project addition to empty workspace
+    useEffect(() => {
+        if (projectsResponse?.data) {
+            const projectCount = projectsResponse.data.length;
+
+            if (projectCount === 1 && !activeProject && !localActiveProjectId) {
+                // This is the first project added to the workspace
+                const firstProject = projectsResponse.data[0];
+                setLocalActiveProjectId(firstProject.id);
+                setActiveProjectWithContext(firstProject, workspace);
+
+                toast({
+                    title: "Welcome to your workspace!",
+                    description: `${firstProject.name} is now your active project`,
+                    variant: "default",
+                });
+            } else if (projectCount > 1 && !activeProject && !localActiveProjectId) {
+                // Multiple projects but none selected - auto-select first
+                const firstProject = projectsResponse.data[0];
+                setLocalActiveProjectId(firstProject.id);
+            }
+        }
+    }, [projectsResponse?.data, activeProject, localActiveProjectId, workspace, setActiveProjectWithContext, toast]);
 
     // Combined loading state
     const isLoading = isLoadingWorkspace || isLoadingProjects;
@@ -169,8 +245,6 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
         );
     }
 
-    const activeProject = projects.find(project => project.id === activeProjectId);
-
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'active':
@@ -196,7 +270,10 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => router.push('/workspaces')}
+                                onClick={() => router.push(`${isAdmin ?
+                                    "/admin/dashboard/workspaces" :
+                                    "/Learner/dashboard/workspaces"
+                                    }`)}
                                 className="mr-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                             >
                                 <ArrowLeft className="h-4 w-4" />
@@ -234,10 +311,9 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                         </div>
 
                         <div className="flex items-center gap-2">
-                            {/* Project Selector */}
-                            {projects && projects.length > 0 && (
+                            {/* Project Selector or Add First Project Button */}
+                            {projects && projects.length > 0 ? (
                                 <WorkspaceProjectSelector
-                                    ref={projectSelectorRef}
                                     workspaceId={workspaceId}
                                     workspaceProjects={projects}
                                     canManageWorkspace={canManageWorkspace}
@@ -247,14 +323,28 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                                         refetchProjects();
                                     }}
                                     minimal={true}
+                                    isAddProjectDialogOpen={isAddProjectDialogOpen}
+                                    onOpenAddProjectDialog={() => setIsAddProjectDialogOpen(true)}
+                                    onCloseAddProjectDialog={() => setIsAddProjectDialogOpen(false)}
                                 />
-                            )}
-
-                            {canManageWorkspace && (
+                            ) : canManageWorkspace ? (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => projectSelectorRef.current?.openAddProjectDialog()}
+                                    onClick={() => setIsAddProjectDialogOpen(true)}
+                                    className="border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                >
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    Add First Project
+                                </Button>
+                            ) : null}
+
+                            {/* Additional Add Project Button when projects exist */}
+                            {canManageWorkspace && projects.length > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setIsAddProjectDialogOpen(true)}
                                     className="border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                                 >
                                     <Plus className="h-4 w-4 mr-1" />
@@ -290,7 +380,7 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                                     onClick={() => setIsSettingsDialogOpen(true)}
                                     className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                                 >
-                                    <Settings className="h-4 w-4" />
+                                    <Edit className="h-4 w-4" />
                                 </Button>
                             )}
                         </div>
@@ -496,17 +586,17 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                             </TabsContent>
 
                             <TabsContent value="schedule" className="h-full m-0">
-                                <div className="p-4 sm:p-6">
-                                    {activeProject && (
-                                        <div className="mb-4">
-                                            <div className="flex items-center p-3 rounded-lg bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-200 dark:border-orange-800">
-                                                <Folder className="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2" />
-                                                <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
-                                                    Schedule for: {activeProject.name}
-                                                </span>
-                                            </div>
+                                {activeProject && (
+                                    <div className="p-4 sm:p-6 pb-0">
+                                        <div className="flex items-center p-3 rounded-lg bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-200 dark:border-orange-800 mb-4">
+                                            <Folder className="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2" />
+                                            <span className="text-sm font-medium text-orange-800 dark:text-orange-300">
+                                                Schedule for: {activeProject.name}
+                                            </span>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
+                                <div className={activeProject ? "h-[calc(100%-80px)]" : "h-full"}>
                                     <WorkspaceSchedulePlaceholder workspaceId={workspace.id} />
                                 </div>
                             </TabsContent>
@@ -521,17 +611,35 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                             workspaceId={workspace.id}
                             mentors={workspace.mentors || []}
                             learners={workspace.learners || []}
+                            admins={workspace.admins || []}
                             currentUserId={user?.id || ''}
-                            availableRoles={workspace.availableRoles || ['admin', 'mentor', 'learner']}
+                            availableRoles={workspace.availableRoles || ['admin', 'mentor', 'learner', 'observer']}
                             creatorId={workspace.createdBy}
-                            onMemberUpdate={() => {
-                                refetchWorkspace();
-                                refetchProjects();
-                            }}
+                            onMemberUpdate={handleMemberUpdate}
                         />
                     </div>
                 )}
             </div>
+
+            {/* Hidden WorkspaceProjectSelector for modal when no projects exist */}
+            {projects.length === 0 && (
+                <div className="hidden">
+                    <WorkspaceProjectSelector
+                        workspaceId={workspaceId}
+                        workspaceProjects={[]}
+                        canManageWorkspace={canManageWorkspace}
+                        onProjectSelect={handleProjectSelect}
+                        refetchWorkspace={() => {
+                            refetchWorkspace();
+                            refetchProjects();
+                        }}
+                        minimal={true}
+                        isAddProjectDialogOpen={isAddProjectDialogOpen}
+                        onOpenAddProjectDialog={() => setIsAddProjectDialogOpen(true)}
+                        onCloseAddProjectDialog={() => setIsAddProjectDialogOpen(false)}
+                    />
+                </div>
+            )}
 
             {/* Dialogs */}
             {isInviteDialogOpen && (
@@ -559,6 +667,8 @@ export default function WorkspaceDetailPage({ workspaceId }: WorkspaceDetailPage
                     }}
                 />
             )}
+
+            <ActiveProjectIndicator />
         </div>
     );
 }

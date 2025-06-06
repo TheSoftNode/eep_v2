@@ -41,7 +41,8 @@ import {
     AlertCircle,
     Save,
     X,
-    RefreshCw
+    RefreshCw,
+    GraduationCap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -222,7 +223,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
     if (isLoading) {
         return (
             <Dialog open={isOpen} onOpenChange={onClose}>
-                <DialogContent className="sm:max-w-2xl">
+                <DialogContent className="sm:max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                     <LoadingSpinner size="md" />
                 </DialogContent>
             </Dialog>
@@ -233,7 +234,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
     if (isError || !userData?.data) {
         return (
             <Dialog open={isOpen} onOpenChange={onClose}>
-                <DialogContent className="sm:max-w-2xl">
+                <DialogContent className="sm:max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                     <DialogHeader>
                         <DialogTitle className="text-red-600 dark:text-red-400">Error Loading User</DialogTitle>
                     </DialogHeader>
@@ -263,7 +264,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
     return (
         <>
             <Dialog open={isOpen} onOpenChange={onClose}>
-                <DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <DialogContent className="sm:max-w-4xl max-h-[97vh] overflow-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                     <div className="flex flex-col h-full">
                         {/* Compact Header */}
                         <div className="border-b border-slate-200 dark:border-slate-700 p-4">
@@ -385,6 +386,15 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
                                         <Building2 className="h-3 w-3 mr-1" />
                                         Professional
                                     </TabsTrigger>
+                                    {user.role === 'mentor' && (
+                                        <TabsTrigger
+                                            value="mentor"
+                                            className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 dark:data-[state=active]:bg-indigo-900/20 dark:data-[state=active]:text-indigo-400 text-xs"
+                                        >
+                                            <GraduationCap className="h-3 w-3 mr-1" />
+                                            Mentor
+                                        </TabsTrigger>
+                                    )}
                                     <TabsTrigger
                                         value="security"
                                         className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 dark:data-[state=active]:bg-indigo-900/20 dark:data-[state=active]:text-indigo-400 text-xs"
@@ -539,6 +549,121 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
                                                     </div>
                                                 )}
                                             </div>
+                                        </CardContent>
+                                    </Card>
+                                </TabsContent>
+
+                                <TabsContent value="mentor" className="mt-0">
+                                    <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <GraduationCap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                                <h3 className="font-medium text-slate-900 dark:text-white">Mentor Information</h3>
+                                            </div>
+
+                                            {user.role === 'mentor' && user.metadata ? (
+                                                <div className="space-y-4">
+                                                    {/* Expertise */}
+                                                    {user.metadata.expertise && user.metadata.expertise.length > 0 && (
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Areas of Expertise</span>
+                                                            <div className="flex flex-wrap gap-1 mt-2">
+                                                                {user.metadata.expertise.map((skill: string, index: number) => (
+                                                                    <Badge key={index} className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 text-xs">
+                                                                        {skill}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Skills */}
+                                                    {user.metadata.skills && user.metadata.skills.length > 0 && (
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Technical Skills</span>
+                                                            <div className="flex flex-wrap gap-1 mt-2">
+                                                                {user.metadata.skills.map((skill: string, index: number) => (
+                                                                    <Badge key={index} className="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 text-xs">
+                                                                        {skill}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Experience and Languages Row */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Experience</span>
+                                                            <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">
+                                                                {user.metadata.experience || 0} years
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Timezone</span>
+                                                            <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">
+                                                                {user.metadata.timezone || 'UTC+00:00'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Languages */}
+                                                    {user.metadata.languages && user.metadata.languages.length > 0 && (
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Languages</span>
+                                                            <div className="flex flex-wrap gap-1 mt-2">
+                                                                {user.metadata.languages.map((lang: string, index: number) => (
+                                                                    <Badge key={index} className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 text-xs">
+                                                                        {lang}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Availability Status */}
+                                                    <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Availability Status</span>
+                                                                <p className="text-sm text-slate-900 dark:text-white mt-1">
+                                                                    {user.metadata.isAvailable ? 'Available for mentoring' : 'Not available'}
+                                                                </p>
+                                                            </div>
+                                                            <Badge className={cn(
+                                                                "text-xs",
+                                                                user.metadata.isAvailable
+                                                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300"
+                                                                    : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                                                            )}>
+                                                                {user.metadata.isAvailable ? 'Available' : 'Not Available'}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Achievements */}
+                                                    {user.metadata.achievements && user.metadata.achievements.length > 0 && (
+                                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Achievements</span>
+                                                            <div className="space-y-1 mt-2">
+                                                                {user.metadata.achievements.map((achievement: string, index: number) => (
+                                                                    <p key={index} className="text-sm text-slate-900 dark:text-white">
+                                                                        • {achievement}
+                                                                    </p>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="p-6 text-center bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                    <GraduationCap className="h-8 w-8 mx-auto mb-2 text-slate-400" />
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                                        {user.role === 'mentor' ? 'No mentor information available' : 'This user is not a mentor'}
+                                                    </p>
+                                                </div>
+                                            )}
                                         </CardContent>
                                     </Card>
                                 </TabsContent>

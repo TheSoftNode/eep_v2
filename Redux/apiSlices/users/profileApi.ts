@@ -85,7 +85,8 @@ export const profileApi = apiSlice.injectEndpoints({
             }),
             transformResponse: (response: { success: boolean; user: User }) => response.user,
         })
-    })
+    }),
+    overrideExisting: true
 });
 
 export const {

@@ -57,21 +57,8 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ children })
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Animation for background elements
-    useEffect(() => {
-        const animate = () => {
-            setAnimationProgress((prev) => (prev >= 100 ? 0 : prev + 0.2));
-            animationRef.current = requestAnimationFrame(animate);
-        };
 
-        animationRef.current = requestAnimationFrame(animate);
 
-        return () => {
-            if (animationRef.current) {
-                cancelAnimationFrame(animationRef.current);
-            }
-        };
-    }, []);
     // Handle scroll for navbar shadow
     useEffect(() => {
         const handleScroll = () => {

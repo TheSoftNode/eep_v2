@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Edit, Trash2, Settings, MoreVertical, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -60,7 +60,6 @@ export default function ProjectDetailPage() {
     // Determine user permissions
     const isAdmin = user?.role === 'admin';
     const isMentor = user?.role === 'mentor';
-    const canManage = isAdmin || isMentor;
 
     // API hooks - Updated for normalized structure
     const {
@@ -94,14 +93,14 @@ export default function ProjectDetailPage() {
             });
             // Navigate back after showing error
             setTimeout(() => {
-                router.push('/admin/dashboard/projects');
+                router.push(`${isAdmin ? "/admin/dashboard/projects" : "/Learner/dashboard/projects"}`);
             }, 2000);
         }
     }, [isProjectError, router, toast]);
 
     const handleEditProject = () => {
         if (projectId) {
-            router.push(`/admin/dashboard/projects/${projectId}/edit`);
+            router.push(`${isAdmin ? `/admin/dashboard/projects/${projectId}/edit` : `/Learner/dashboard/projects/${projectId}/edit`}`);
         }
     };
 
@@ -161,6 +160,9 @@ export default function ProjectDetailPage() {
     const project = projectResponse.data;
     const projectMembers = membersResponse?.data || [];
 
+    const canManage = isAdmin || (project.createdBy === user?.id);
+    const canSoftManage = isAdmin || isMentor;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/30 dark:from-slate-900 dark:to-slate-800">
             <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -174,7 +176,7 @@ export default function ProjectDetailPage() {
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
-                            onClick={() => router.push('/admin/projects')}
+                            onClick={() => router.push(`${isAdmin ? "/admin/dashboard/projects" : "/Learner/dashboard/projects"}`)}
                             className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-900/20"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -288,8 +290,8 @@ export default function ProjectDetailPage() {
 
                         <ProjectFeedback
                             projectId={projectId}
-                            canManage={canManage}
-                            limit={5} // Show recent feedback
+                            canManage={canSoftManage}
+                            limit={5}
                         />
                     </div>
                 </div>
@@ -311,50 +313,77 @@ export default function ProjectDetailPage() {
             />
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-                <AlertDialogContent className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                            <Trash2 className="h-5 w-5" />
-                            Delete Project
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
-                            Are you sure you want to delete "{project.name}"? This action cannot be undone and will permanently remove:
-                            <ul className="list-disc list-inside mt-2 space-y-1">
-                                <li>All project tasks and areas</li>
-                                <li>Team member assignments</li>
-                                <li>Project resources and files</li>
-                                <li>All activity history</li>
-                            </ul>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel
-                            disabled={isDeletingProject}
-                            className="border-slate-300 dark:border-slate-600"
+            {/* Delete Project Confirmation Dialog */}
+            <AnimatePresence>
+                {showDeleteConfirm && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/50"
+                            onClick={() => setShowDeleteConfirm(false)}
+                        />
+
+                        {/* Dialog */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md mx-4"
                         >
-                            Cancel
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteProject}
-                            disabled={isDeletingProject}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                            {isDeletingProject ? (
-                                <>
-                                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                    Deleting...
-                                </>
-                            ) : (
-                                <>
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete Project
-                                </>
-                            )}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                            <div className="space-y-4">
+                                {/* Header */}
+                                <div>
+                                    <h3 className="text-lg font-semibold flex items-center gap-2 text-red-600 dark:text-red-400">
+                                        <Trash2 className="h-5 w-5" />
+                                        Delete Project
+                                    </h3>
+                                    <div className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                        Are you sure you want to delete "{project.name}"? This action cannot be undone and will permanently remove:
+                                        <ul className="list-disc list-inside mt-2 space-y-1">
+                                            <li>All project tasks and areas</li>
+                                            <li>Team member assignments</li>
+                                            <li>Project resources and files</li>
+                                            <li>All activity history</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex justify-end gap-3">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                        disabled={isDeletingProject}
+                                        className="border-slate-300 dark:border-slate-600"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleDeleteProject}
+                                        disabled={isDeletingProject}
+                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                    >
+                                        {isDeletingProject ? (
+                                            <>
+                                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                                Deleting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Delete Project
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

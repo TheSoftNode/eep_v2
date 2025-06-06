@@ -55,7 +55,7 @@ const AdminUsersPage: React.FC = () => {
         order,
         searchQuery: searchQuery.trim(),
         searchField: searchQuery.trim() ? searchField : undefined,
-        status: filterStatus as 'active' | 'disabled' | undefined
+        // status: filterStatus as 'active' | 'disabled' | undefined
     });
 
     // Fetch user statistics

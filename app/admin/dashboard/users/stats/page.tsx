@@ -77,7 +77,7 @@ const UserStatisticsPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="px-6 space-y-6">
             {/* Page Header */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
