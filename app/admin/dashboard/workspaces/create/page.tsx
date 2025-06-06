@@ -20,6 +20,7 @@ import { BasicWorkspaceSection } from "@/components/Admin/AdminDashboard/Workspa
 import { TimelineSection } from "@/components/Admin/AdminDashboard/Workspace/CreateWorkspace/TimelineSection";
 import { ConfigurationSection } from "@/components/Admin/AdminDashboard/Workspace/CreateWorkspace/ConfigurationSection";
 import { WorkspacePreview } from "@/components/Admin/AdminDashboard/Workspace/CreateWorkspace/WorkspacePreview";
+import { useAuth } from "@/hooks/useAuth";
 
 
 
@@ -141,7 +142,7 @@ const CreateWorkspacePage: React.FC = () => {
             setShowPreview(false);
 
             // Navigate to workspace list or the created workspace
-            router.push('/admin/workspaces');
+            router.push('/admin/dashboard/workspaces');
 
         } catch (error: any) {
             console.log(error)

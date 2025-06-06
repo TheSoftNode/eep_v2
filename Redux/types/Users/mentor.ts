@@ -90,6 +90,14 @@ export interface SessionData {
     isReviewed?: boolean;
     reviewId?: string;
     notes?: string;
+
+    createdBy?: string;
+    creatorName?: string;
+    maxParticipants?: number;
+    currentParticipants?: number;
+    participants?: string[];
+    isPublic?: boolean;
+    sessionType?: 'individual' | 'group';
 }
 
 export interface SessionReview {
