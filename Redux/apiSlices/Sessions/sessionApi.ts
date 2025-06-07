@@ -161,6 +161,101 @@ export const mentorApi = apiSlice.injectEndpoints({
                 'MySession'
             ]
         }),
+
+        // Add these to your sessionApi.ts
+        getSessionParticipants: builder.query<{
+            success: boolean;
+            data: Array<{
+                id: string;
+                name: string;
+                email: string;
+                profilePicture?: string;
+                joinedAt: string;
+            }>;
+        }, string>({
+            query: (id) => `/sessions/open-sessions/${id}/participants`,
+            providesTags: (result, error, id) => [{ type: 'SessionParticipants', id }]
+        }),
+
+        removeSessionParticipant: builder.mutation<{
+            success: boolean;
+            message: string;
+        }, {
+            sessionId: string;
+            participantId: string;
+        }>({
+            query: ({ sessionId, participantId }) => ({
+                url: `/sessions/open-sessions/${sessionId}/participants`,
+                method: 'DELETE',
+                body: { participantId }
+            }),
+            invalidatesTags: (result, error, { sessionId }) => [
+                { type: 'SessionParticipants', id: sessionId },
+                { type: 'OpenSession', id: sessionId }
+            ]
+        }),
+
+        completeOpenSession: builder.mutation<{
+            success: boolean;
+            message: string;
+            data: {
+                sessionId: string;
+                status: string;
+            };
+        }, {
+            id: string;
+            notes?: string;
+        }>({
+            query: ({ id, notes }) => ({
+                url: `/sessions/open-sessions/${id}/complete`,
+                method: 'PATCH',
+                body: { notes }
+            }),
+            invalidatesTags: (result, error, { id }) => [
+                { type: 'OpenSession', id },
+                'OpenSession',
+                'MySession'
+            ]
+        }),
+
+        // Start session (you may need to implement this endpoint in your backend)
+        startOpenSession: builder.mutation<{
+            success: boolean;
+            message: string;
+            data: {
+                sessionId: string;
+                status: string;
+            };
+        }, string>({
+            query: (id) => ({
+                url: `/sessions/open-sessions/${id}/start`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'OpenSession', id },
+                'OpenSession',
+                'MySession'
+            ]
+        }),
+
+        // Bulk remove participants (you may need to implement this endpoint in your backend)
+        bulkRemoveParticipants: builder.mutation<{
+            success: boolean;
+            message: string;
+        }, {
+            sessionId: string;
+            participantIds: string[];
+        }>({
+            query: ({ sessionId, participantIds }) => ({
+                url: `/sessions/open-sessions/${sessionId}/participants/bulk-remove`,
+                method: 'DELETE',
+                body: { participantIds }
+            }),
+            invalidatesTags: (result, error, { sessionId }) => [
+                { type: 'SessionParticipants', id: sessionId },
+                { type: 'OpenSession', id: sessionId }
+            ]
+        }),
     })
 });
 
@@ -172,6 +267,11 @@ export const {
     useJoinOpenSessionMutation,
     useLeaveOpenSessionMutation,
     useUpdateOpenSessionMutation,
-    useCancelOpenSessionMutation
+    useCancelOpenSessionMutation,
+    useGetSessionParticipantsQuery,
+    useRemoveSessionParticipantMutation,
+    useCompleteOpenSessionMutation,
+    useStartOpenSessionMutation,
+    useBulkRemoveParticipantsMutation,
 } = mentorApi;
 

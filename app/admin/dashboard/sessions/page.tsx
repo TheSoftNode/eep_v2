@@ -1,3 +1,4 @@
+// Updated SessionsPage component to include the management modal
 "use client";
 
 import React, { useState } from 'react';
@@ -18,14 +19,21 @@ import {
     useSubmitSessionReviewMutation,
 } from '@/Redux/apiSlices/users/mentorApi';
 
+import {
+    useGetAllOpenSessionsQuery,
+    useGetMyCreatedSessionsQuery,
+    useJoinOpenSessionMutation,
+    useLeaveOpenSessionMutation
+} from '@/Redux/apiSlices/Sessions/sessionApi';
 
 import SessionStatsHeader from '@/components/Dashboard/Session/SessionStatsHeader';
 import SessionFilters from '@/components/Dashboard/Session/SessionFilters';
 import SessionCard from '@/components/Dashboard/Session/SessionCard';
 import SessionRequestModal from '@/components/Dashboard/Session/SessionRequestModal';
 import SessionDetailModal from '@/components/Dashboard/Session/SessionDetailModal';
+import OpenSessionDetailModal from '@/components/Dashboard/Session/OpenSessionDetailModal';
+import OpenSessionManagementModal from '@/components/Dashboard/Session/OpenSessionManagementModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetAllOpenSessionsQuery, useGetMyCreatedSessionsQuery, useJoinOpenSessionMutation, useLeaveOpenSessionMutation } from '@/Redux/apiSlices/Sessions/sessionApi';
 import OpenSessionCard from '@/components/Dashboard/Session/OpenSessionCard';
 import SessionReviewModal from '@/components/Dashboard/Session/SessionReviewModal';
 
@@ -38,6 +46,8 @@ const SessionsPage: React.FC = () => {
     const [selectedSession, setSelectedSession] = useState<SessionData | null>(null);
     const [selectedOpenSession, setSelectedOpenSession] = useState<OpenSessionData | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showOpenSessionDetailModal, setShowOpenSessionDetailModal] = useState(false);
+    const [showManagementModal, setShowManagementModal] = useState(false);
     const [showRequestModal, setShowRequestModal] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [reviewingSessionId, setReviewingSessionId] = useState<string | null>(null);
@@ -210,7 +220,13 @@ const SessionsPage: React.FC = () => {
 
     const handleViewOpenSession = (session: OpenSessionData) => {
         setSelectedOpenSession(session);
-        setShowDetailModal(true);
+        setShowOpenSessionDetailModal(true);
+    };
+
+    // NEW: Handle manage session
+    const handleManageSession = (session: OpenSessionData) => {
+        setSelectedOpenSession(session);
+        setShowManagementModal(true);
     };
 
     const handleRescheduleSession = (sessionId: string) => {
@@ -238,8 +254,15 @@ const SessionsPage: React.FC = () => {
 
     const handleCloseModal = () => {
         setShowDetailModal(false);
+        setShowOpenSessionDetailModal(false);
+        setShowManagementModal(false);
         setSelectedSession(null);
         setSelectedOpenSession(null);
+    };
+
+    const handleManagementUpdate = () => {
+        refetchOpenSessions();
+        refetchCreatedSessions();
     };
 
     const isLoadingAny = isLoading || isLoadingOpenSessions || isLoadingCreatedSessions;
@@ -476,6 +499,7 @@ const SessionsPage: React.FC = () => {
                                                     onView={handleViewOpenSession}
                                                     onJoin={handleJoinOpenSession}
                                                     onLeave={handleLeaveOpenSession}
+                                                    onManage={handleManageSession}
                                                 />
                                             ))}
                                         </div>
@@ -520,6 +544,7 @@ const SessionsPage: React.FC = () => {
                                                         onView={handleViewOpenSession}
                                                         onJoin={handleJoinOpenSession}
                                                         onLeave={handleLeaveOpenSession}
+                                                        onManage={handleManageSession}
                                                         isCreator={true}
                                                     />
                                                 ))}
@@ -577,6 +602,29 @@ const SessionsPage: React.FC = () => {
                 />
             )}
 
+            {/* Open Session Detail Modal */}
+            {selectedOpenSession && showOpenSessionDetailModal && (
+                <OpenSessionDetailModal
+                    session={selectedOpenSession}
+                    isOpen={showOpenSessionDetailModal}
+                    onClose={handleCloseModal}
+                    currentUserId={user?.id || ''}
+                    onJoin={handleJoinOpenSession}
+                    onLeave={handleLeaveOpenSession}
+                    isCreator={selectedOpenSession.createdBy === user?.id}
+                />
+            )}
+
+            {/* Open Session Management Modal */}
+            {selectedOpenSession && showManagementModal && (
+                <OpenSessionManagementModal
+                    session={selectedOpenSession}
+                    isOpen={showManagementModal}
+                    onClose={handleCloseModal}
+                    onUpdate={handleManagementUpdate}
+                />
+            )}
+
             {/* Session Review Modal */}
             {showReviewModal && reviewingSessionId && (
                 <SessionReviewModal
@@ -594,3 +642,5 @@ const SessionsPage: React.FC = () => {
 };
 
 export default SessionsPage;
+
+

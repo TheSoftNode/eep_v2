@@ -125,7 +125,8 @@ export const apiSlice = createApi({
         'PinnedMessage',
         'WorkspaceAttachment',
         'OpenSession',
-        'MySession'
+        'MySession',
+        'SessionParticipants'
     ],
     endpoints: () => ({}),
 });

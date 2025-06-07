@@ -13,7 +13,8 @@ import {
     MoreVertical,
     ExternalLink,
     MapPin,
-    Target
+    Target,
+    Settings
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,7 @@ interface OpenSessionCardProps {
     onView: (session: OpenSessionData) => void;
     onJoin?: (sessionId: string) => void;
     onLeave?: (sessionId: string) => void;
+    onManage?: (session: OpenSessionData) => void; // NEW: Added manage function
     isCreator?: boolean;
 }
 
@@ -44,6 +46,7 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
     onView,
     onJoin,
     onLeave,
+    onManage,
     isCreator = false
 }) => {
     const formatTime = (dateString: string) => {
@@ -71,7 +74,7 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
     };
 
     const getStatusBadge = (status: string) => {
-        const baseClasses = "px-3 py-1 text-xs font-medium rounded-full border";
+        const baseClasses = "px-2 text-xs font-medium rounded-full border";
         switch (status) {
             case 'open':
                 return <Badge className={`${baseClasses} bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-800/30`}>Open</Badge>;
@@ -192,6 +195,17 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
                                             <ExternalLink className="h-4 w-4 mr-3" />
                                             Open Session Link
                                         </DropdownMenuItem>
+                                    )}
+
+                                    {/* NEW: Added manage option for creators */}
+                                    {isOwner && onManage && (
+                                        <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onClick={() => onManage(session)} className="cursor-pointer text-purple-600">
+                                                <Settings className="h-4 w-4 mr-3" />
+                                                Manage Session
+                                            </DropdownMenuItem>
+                                        </>
                                     )}
 
                                     {canJoin && onJoin && (
@@ -338,6 +352,19 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
                         </div>
 
                         <div className="flex items-center space-x-2">
+                            {/* NEW: Added manage button for creators */}
+                            {isOwner && onManage && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onManage(session)}
+                                    className="border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800/30 dark:text-purple-400 dark:hover:bg-purple-950/20 px-2 py-1 h-auto"
+                                >
+                                    <Settings className="h-3 w-3 mr-1" />
+                                    Manage
+                                </Button>
+                            )}
+
                             {canJoin && onJoin && (
                                 <Button
                                     size="sm"
@@ -354,9 +381,9 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
                                     size="sm"
                                     variant="outline"
                                     onClick={() => onLeave(session.id!)}
-                                    className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800/30 dark:text-red-400 dark:hover:bg-red-950/20 px-4 py-2 h-auto"
+                                    className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800/30 dark:text-red-400 dark:hover:bg-red-950/20 px-2 py-1 h-auto"
                                 >
-                                    <UserMinus className="h-4 w-4 mr-2" />
+                                    <UserMinus className="h-3 w-3 mr-1" />
                                     Leave
                                 </Button>
                             )}
@@ -364,9 +391,9 @@ const OpenSessionCard: React.FC<OpenSessionCardProps> = ({
                                 size="sm"
                                 variant="outline"
                                 onClick={() => onView(session)}
-                                className="border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 px-4 py-2 h-auto"
+                                className="border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 px-2 py-1 h-auto"
                             >
-                                <Eye className="h-4 w-4 mr-2" />
+                                <Eye className="h-3 w-3 mr-1" />
                                 View
                             </Button>
                         </div>
