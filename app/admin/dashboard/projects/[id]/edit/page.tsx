@@ -302,7 +302,7 @@ const EditProjectPage: React.FC<EditProjectPageProps> = ({ params }) => {
                 description: "The project has been permanently deleted.",
             });
 
-            router.push('/admin/projects');
+            router.push('/admin/dashboard/projects');
         } catch (error: any) {
             toast({
                 title: "Failed to Delete Project",

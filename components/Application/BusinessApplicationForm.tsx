@@ -199,7 +199,7 @@ export const BusinessApplicationForm: React.FC = () => {
                 description: "We'll review your business proposal and contact you soon.",
             });
 
-            router.push("/business-application-status");
+            router.push("/application-status");
 
             // Reset form
             setFormData({
