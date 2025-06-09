@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import LoaderSimple from '@/components/common/LoaderSimple';
+import { useRouter } from 'next/navigation';
 import { useGetAllUsersQuery, useGetUserStatsQuery } from '@/Redux/apiSlices/users/adminApi';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, UserCheck, UserX, RefreshCw } from 'lucide-react';
@@ -27,6 +28,8 @@ const AdminUsersPage: React.FC = () => {
     const [searchField, setSearchField] = useState<'email' | 'fullName' | 'role'>('email');
     const [activeTab, setActiveTab] = useState('all');
     const [filterStatus, setFilterStatus] = useState<string | null>(null);
+
+    const router = useRouter();
 
     // Update query parameters based on filter selections
     useEffect(() => {
@@ -79,6 +82,11 @@ const AdminUsersPage: React.FC = () => {
     const handleOpenCreateModal = () => {
         setIsCreateModalOpen(true);
     };
+
+    const handleOpenCreateUser = () => {
+        router.push("/admin/dashboard/users/create");
+    };
+
 
     const handleCloseCreateModal = () => {
         setIsCreateModalOpen(false);
@@ -193,7 +201,7 @@ const AdminUsersPage: React.FC = () => {
             <UserFilters
                 onSearch={handleSearch}
                 onClearSearch={handleClearSearch}
-                onCreateUser={handleOpenCreateModal}
+                onCreateUser={handleOpenCreateUser}
                 searchQuery={searchQuery}
                 searchField={searchField}
             />

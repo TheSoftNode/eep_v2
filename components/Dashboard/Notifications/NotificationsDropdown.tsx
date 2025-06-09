@@ -358,7 +358,7 @@ const NotificationsDropdown: React.FC = () => {
                                                                 )}
                                                                 onClick={() => {
                                                                     markAsRead(notification.id);
-                                                                    window.location.href = `/dashboard/sessions/${notification.sessionId}`;
+                                                                    window.location.href = `/Learner/dashboard/sessions/`;
                                                                 }}
                                                             >
                                                                 <Eye className="h-3 w-3" />

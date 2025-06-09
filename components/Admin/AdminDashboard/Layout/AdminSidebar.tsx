@@ -194,6 +194,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     icon: <UserPlus className="h-4 w-4" />
                 },
                 {
+                    name: "Create Mentor",
+                    href: "/admin/dashboard/mentors/create",
+                    icon: <UserPlus className="h-4 w-4" />
+                },
+                {
                     name: "Mentor availability",
                     href: "/admin/dashboard/mentor-availablity",
                     icon: <UserMinus className="h-4 w-4" />

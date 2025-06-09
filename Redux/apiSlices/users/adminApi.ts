@@ -20,6 +20,28 @@ export const adminApi = apiSlice.injectEndpoints({
             invalidatesTags: ['AdminUser']
         }),
 
+        verifyUserEmail: builder.mutation<ApiResponse<User>, string>({
+            query: (id) => ({
+                url: `/admin/users/${id}/verify-email`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'AdminUser', id },
+                { type: 'AdminUser', id: 'LIST' }
+            ]
+        }),
+
+        unverifyUserEmail: builder.mutation<ApiResponse<User>, string>({
+            query: (id) => ({
+                url: `/admin/users/${id}/unverify-email`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'AdminUser', id },
+                { type: 'AdminUser', id: 'LIST' }
+            ]
+        }),
+
         getAllUsers: builder.query<ApiResponse<User[]>, UserQueryParams>({
             query: (params) => ({
                 url: '/admin/users',
@@ -194,5 +216,7 @@ export const {
     useBulkDeleteUsersMutation,
     useAssignMentorMutation,
     useRemoveMentorMutation,
-    useExportUsersQuery
+    useExportUsersQuery,
+    useVerifyUserEmailMutation,
+    useUnverifyUserEmailMutation
 } = adminApi;

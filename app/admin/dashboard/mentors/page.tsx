@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 // Import proper API hooks and types
 import { useGetAllMentorsQuery, useSearchMentorsQuery } from '@/Redux/apiSlices/users/mentorApi';
@@ -29,6 +30,7 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
     const { user } = useAuth();
+    const router = useRouter();
 
     // Modal states with proper typing
     const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
@@ -116,7 +118,7 @@ const AllMentorsPage: React.FC<AllMentorsPageProps> = () => {
     };
 
     const handleCreateMentor = (): void => {
-        setShowCreateModal(true);
+        router.push("/admin/dashboard/mentors/create")
     };
 
     const handleRefresh = (): void => {

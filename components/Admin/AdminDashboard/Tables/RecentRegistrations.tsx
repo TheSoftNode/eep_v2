@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Users, Calendar, MoreHorizontal, UserCheck, Mail, Eye } from "lucide-react";
+import { Users, MoreHorizontal, UserCheck, Mail, Eye, RefreshCw, Power } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,22 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetRecentUsersQuery, useToggleUserStatusMutation } from "@/Redux/apiSlices/users/adminApi";
+import { useGetRecentUsersQuery, useToggleUserStatusMutation, useVerifyUserEmailMutation, useUnverifyUserEmailMutation } from "@/Redux/apiSlices/users/adminApi";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@/Redux/types/Users/user";
 import { cn } from "@/lib/utils";
+import UserModal from "../Users/Main/UserDetailModal";
 
 const RecentRegistrations: React.FC = () => {
+
+    const [selectedUserId, setSelectedUserId] = useState<string>('');
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
     const { toast } = useToast();
-    const { data: usersData, isLoading, error } = useGetRecentUsersQuery({ limit: 5 });
-    const [toggleUserStatus] = useToggleUserStatusMutation();
+    const { data: usersData, isLoading, error, refetch: refetchUsers } = useGetRecentUsersQuery({ limit: 10 });
+    const [toggleUserStatus, { isLoading: isTogglingStatus }] = useToggleUserStatusMutation();
+    const [verifyUserEmail, { isLoading: isVerifyingEmail }] = useVerifyUserEmailMutation();
+    const [unverifyUserEmail, { isLoading: isUnverifyingEmail }] = useUnverifyUserEmailMutation();
 
     const recentUsers = usersData?.data || [];
 
@@ -66,12 +73,28 @@ const RecentRegistrations: React.FC = () => {
         return 'Active';
     };
 
+    const handleViewDetails = (userId: string) => {
+        setSelectedUserId(userId);
+        setIsUserModalOpen(true);
+    };
+
+    const handleCloseUserModal = () => {
+        setIsUserModalOpen(false);
+        setSelectedUserId('');
+    };
+
+    const handleRefreshData = () => {
+        refetchUsers();
+    };
+
     const handleToggleStatus = async (userId: string, currentDisabled: boolean) => {
         try {
             await toggleUserStatus({
                 id: userId,
                 disabled: !currentDisabled
             }).unwrap();
+
+            refetchUsers();
 
             toast({
                 title: "Success",
@@ -81,6 +104,38 @@ const RecentRegistrations: React.FC = () => {
             toast({
                 title: "Error",
                 description: error?.data?.message || "Failed to update user status",
+                variant: "destructive"
+            });
+        }
+    };
+
+    const handleToggleEmailVerification = async (userId: string, currentEmailVerified: boolean) => {
+        try {
+            if (!currentEmailVerified) {
+                // If email is not verified, verify it
+                await verifyUserEmail(userId).unwrap();
+
+                refetchUsers();
+
+                toast({
+                    title: "Success",
+                    description: "User email verified successfully"
+                });
+            } else {
+                // If email is verified, unverify it
+                await unverifyUserEmail(userId).unwrap();
+
+                refetchUsers();
+
+                toast({
+                    title: "Success",
+                    description: "User email verification revoked successfully"
+                });
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error?.data?.message || "Failed to update email verification",
                 variant: "destructive"
             });
         }
@@ -190,14 +245,48 @@ const RecentRegistrations: React.FC = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => handleViewDetails(user.id)}
+                                    >
                                         <Eye className="h-4 w-4 mr-2" />
                                         View Details
                                     </DropdownMenuItem>
+
+
+                                    <DropdownMenuItem
+                                        onClick={() => handleToggleEmailVerification(user.id, user.emailVerified)}
+                                        disabled={isVerifyingEmail || isUnverifyingEmail}
+                                        className={cn(
+                                            "h-7 px-2 text-xs transition-colors",
+                                            !user.emailVerified
+                                                ? "text-emerald-600 hover:bg-emerald-50"
+                                                : "text-orange-600 hover:bg-orange-50"
+                                        )}
+                                    >
+                                        {(isVerifyingEmail || isUnverifyingEmail) ? (
+                                            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                        ) : (
+                                            <Mail className="h-3 w-3 mr-1" />
+                                        )}
+                                        {!user.emailVerified ? 'Activate User' : 'Deactivate User'}
+                                    </DropdownMenuItem>
+
                                     <DropdownMenuItem
                                         onClick={() => handleToggleStatus(user.id, user.disabled || false)}
+                                        disabled={isTogglingStatus}
+                                        className={cn(
+                                            "h-7 px-2 text-xs transition-colors",
+                                            user.disabled
+                                                ? "border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+                                                : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+                                        )}
                                     >
-                                        <UserCheck className="h-4 w-4 mr-2" />
+                                        {isTogglingStatus ? (
+                                            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                        ) : (
+                                            <Power className="h-3 w-3 mr-1" />
+                                        )}
+                                        {/* <UserCheck className="h-4 w-4 mr-2" /> */}
                                         {user.disabled ? 'Enable' : 'Disable'} User
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -213,6 +302,13 @@ const RecentRegistrations: React.FC = () => {
                     <p className="text-sm">No recent registrations</p>
                 </div>
             )}
+
+            <UserModal
+                userId={selectedUserId}
+                isOpen={isUserModalOpen}
+                onClose={handleCloseUserModal}
+                onUserUpdated={handleRefreshData}
+            />
         </motion.div>
     );
 };
