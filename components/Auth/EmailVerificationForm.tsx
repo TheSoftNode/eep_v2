@@ -27,10 +27,10 @@ const EmailVerificationForm: React.FC<EmailVerificationFormProps> = ({ email, on
     const getRedirectPathByRole = (role: string): string => {
         switch (role) {
             case 'admin': return '/admin';
-            case 'mentor': return '/dashboard';
+            case 'mentor': return '/Learner/dashboard';
             case 'learner':
-            case 'user': return '/dashboard';
-            default: return '/dashboard';
+            case 'user': return '/Learner/dashboard';
+            default: return '/Learner/dashboard';
         }
     };
 
