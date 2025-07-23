@@ -1,4 +1,3 @@
-// components/Admin/Auth/LoginForm.tsx (Updated with Redux integration)
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -17,12 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { useSelector } from "react-redux";
-import {
-    selectIsTwoFactorRequired,
-    selectTempEmail,
-    selectRememberMe
-} from "@/Redux/features/auth/authSlice";
 import { useCheckRememberMeStatusMutation, useRequestLoginCodeMutation, useVerifyLoginCodeMutation } from "@/Redux/apiSlices/users/authApi";
 
 interface LoginFormProps {
@@ -177,20 +170,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 rememberMe
             }).unwrap();
 
-            if (!result.requireTwoFactor) {
-                toast({
-                    title: "Two-factor authentication setup required",
-                    description: "Please set up 2FA to secure your admin account"
-                });
-                onNeedsTwoFactorSetup(email, rememberMe);
-                return;
-            }
+            // if (!result.requireTwoFactor) {
+            //     toast({
+            //         title: "Two-factor authentication setup required",
+            //         description: "Please set up 2FA to secure your admin account"
+            //     });
+            //     onNeedsTwoFactorSetup(email, rememberMe);
+            //     return;
+            // }
 
-            toast({
-                title: "Two-factor authentication required",
-                description: "Please complete two-factor authentication"
-            });
-            onNeedsTwoFactor(email, rememberMe);
+            // toast({
+            //     title: "Two-factor authentication required",
+            //     description: "Please complete two-factor authentication"
+            // });
+            // onNeedsTwoFactor(email, rememberMe);
 
 
         } catch (error: any) {
