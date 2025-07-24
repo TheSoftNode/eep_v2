@@ -170,20 +170,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 rememberMe
             }).unwrap();
 
-            // if (!result.requireTwoFactor) {
-            //     toast({
-            //         title: "Two-factor authentication setup required",
-            //         description: "Please set up 2FA to secure your admin account"
-            //     });
-            //     onNeedsTwoFactorSetup(email, rememberMe);
-            //     return;
-            // }
+            if (!result.requireTwoFactor) {
+                toast({
+                    title: "Two-factor authentication setup required",
+                    description: "Please set up 2FA to secure your admin account"
+                });
+                onNeedsTwoFactorSetup(email, rememberMe);
+                return;
+            }
 
-            // toast({
-            //     title: "Two-factor authentication required",
-            //     description: "Please complete two-factor authentication"
-            // });
-            // onNeedsTwoFactor(email, rememberMe);
+            toast({
+                title: "Two-factor authentication required",
+                description: "Please complete two-factor authentication"
+            });
+            onNeedsTwoFactor(email, rememberMe);
 
 
         } catch (error: any) {
