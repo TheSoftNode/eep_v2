@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { motion } from "framer-motion";
 import {
     X,
     User,
@@ -19,13 +20,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Application, LearnerApplication, BusinessApplication } from "@/Redux/types/Communication/communication";
 
@@ -41,18 +35,31 @@ const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
     onClose
 }) => {
 
+    // Handle escape key
     useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+
         if (isOpen) {
+            document.addEventListener('keydown', handleEscape);
+            // Prevent body scroll
             document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
         }
 
-        // Cleanup function
         return () => {
+            document.removeEventListener('keydown', handleEscape);
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
+
+    const handleBackdropClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -96,20 +103,48 @@ const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
         return app.type === "learner_application";
     };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Application Details
-                    </DialogTitle>
-                    <DialogDescription>
-                        Detailed information for {application.fullName}'s application
-                    </DialogDescription>
-                </DialogHeader>
+    if (!isOpen) return null;
 
-                <div className="space-y-6">
+    return (
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={handleBackdropClick}
+        >
+            {/* Backdrop */}
+            <div className="fixed inset-0 bg-black/50" />
+            
+            {/* Dialog Content */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="relative w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-lg"
+            >
+                {/* Header */}
+                <div className="p-6 pb-0">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Application Details
+                            </h2>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                Detailed information for {application.fullName}'s application
+                            </p>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onClose}
+                            className="h-8 w-8 p-0"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6 space-y-6">
                     {/* Status and Type */}
                     <div className="flex items-center gap-4">
                         <Badge className={`gap-2 ${getStatusColor(application.status)}`}>
@@ -348,8 +383,8 @@ const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                         </Button>
                     </div>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </motion.div>
+        </div>
     );
 };
 

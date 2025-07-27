@@ -340,7 +340,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
                         <div className="flex flex-col h-full">
                             {/* Compact Header */}
                             <div className="border-b border-slate-200 dark:border-slate-700 p-4">
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-wrap items-center gap-4">
                                     <div className="relative">
                                         <Avatar className="h-16 w-16 border-2 border-slate-200 dark:border-slate-700">
                                             <AvatarImage src={user.profilePicture || undefined} />
@@ -411,7 +411,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
                                                     initial={{ opacity: 0, scale: 0.95 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     exit={{ opacity: 0, scale: 0.95 }}
-                                                    className="flex items-center gap-2"
+                                                    className="flex flex-wrap items-center gap-2"
                                                 >
                                                     <Select value={selectedRole} onValueChange={setSelectedRole}>
                                                         <SelectTrigger className="w-28 h-8 text-xs">
@@ -451,7 +451,7 @@ const UserModal: React.FC<UserModalProps> = ({ userId, isOpen, onClose, onUserUp
                                                     initial={{ opacity: 0, scale: 0.95 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     exit={{ opacity: 0, scale: 0.95 }}
-                                                    className="flex items-center gap-2"
+                                                    className="flex flex-wrap items-center gap-2"
                                                 >
                                                     <Badge className={cn("text-xs font-medium border", roleStyle.badge)}>
                                                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
